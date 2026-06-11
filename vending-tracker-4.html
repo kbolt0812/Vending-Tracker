@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Vending Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a1a1a;background:#f0ede8;min-height:100vh;padding-bottom:80px}
+h1{font-size:20px;font-weight:700;margin-bottom:1rem}
+h2{font-size:16px;font-weight:600;margin-bottom:.75rem}
+h3{font-size:14px;font-weight:600;margin-bottom:.5rem}
+.container{max-width:700px;margin:0 auto;padding:1rem}
+.card{background:#fff;border:1px solid #e0ddd5;border-radius:14px;padding:1rem;margin-bottom:.75rem}
+label{font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:500}
+select,input[type="text"],input[type="number"],input[type="date"]{
+  padding:10px 12px;border-radius:10px;border:1.5px solid #ddd;background:#fff;
+  color:#1a1a1a;font-size:16px;font-family:inherit;width:100%;outline:none;
+  -webkit-appearance:none;appearance:none}
+select:focus,input:focus{border-color:#1a6fc4;box-shadow:0 0 0 3px rgba(26,111,196,.12)}
+button{padding:11px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;
+  cursor:pointer;font-size:15px;font-family:inherit;color:#1a1a1a;font-weight:500;
+  transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:44px}
+button:active{opacity:.75;transform:scale(.97)}
+button.primary{background:#1a6fc4;color:#fff;border-color:#1a6fc4}
+button.success{background:#2d7a2d;color:#fff;border-color:#2d7a2d}
+button.sm{padding:7px 12px;font-size:13px;min-height:36px}
+button.danger-solid{background:#c0392b;color:#fff;border-color:#c0392b;padding:7px 12px;font-size:13px;min-height:36px}
+button.full{width:100%;margin-bottom:8px}
+button:disabled{opacity:.5}
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0ddd5;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;border:none;background:transparent;cursor:pointer;color:#888;font-size:10px;font-weight:500;gap:3px;min-height:56px;-webkit-tap-highlight-color:transparent}
+.nav-btn.active{color:#1a6fc4}
+.nav-icon{font-size:22px;line-height:1}
+/* Stats */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem}
+.stat-grid.four{grid-template-columns:1fr 1fr}
+.stat{background:#f4f4f0;border-radius:10px;padding:.65rem .85rem}
+.stat-label{font-size:11px;color:#888;margin-bottom:2px}
+.stat-value{font-size:20px;font-weight:700}
+/* Slot cards on mobile */
+.slot-card{background:#f9f8f6;border:1.5px solid #e8e4de;border-radius:12px;padding:.85rem;margin-bottom:.65rem;position:relative}
+.slot-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+.slot-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.slot-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.slot-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.input-group label{font-size:11px;color:#666;margin-bottom:3px}
+.arrival-inp{background:#f0f7ee;border-color:#b8ddb0}
+.restock-inp{background:#e8f3ff;border-color:#a8cff0}
+.calc-row{display:flex;gap:6px;margin-top:6px;background:#f4f4f0;border-radius:8px;padding:6px 8px;align-items:center}
+.calc-item{flex:1;text-align:center}
+.calc-label{font-size:10px;color:#888;margin-bottom:1px}
+.calc-val{font-size:14px;font-weight:700}
+.prev-tag{font-size:10px;color:#aaa;display:block;margin-top:2px;text-align:center}
+.green{color:#1a6b2a;font-weight:700}
+.red{color:#a32d2d;font-weight:700}
+.muted{color:#888}
+/* History cards */
+.history-card{background:#fff;border:1px solid #e0ddd5;border-radius:14px;padding:1rem;margin-bottom:.75rem}
+.history-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;gap:8px}
+.history-stats{display:flex;gap:12px;font-size:13px;flex-wrap:wrap;margin-bottom:.75rem}
+.history-item-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0ede8;font-size:13px}
+.history-item-row:last-child{border-bottom:none}
+.item-qty-badges{display:flex;gap:5px;align-items:center}
+.qty-badge{padding:2px 7px;border-radius:6px;font-size:12px;font-weight:600}
+.qty-arr{background:#f0f7ee;color:#2d6b20}
+.qty-rst{background:#e8f3ff;color:#1a5c9e}
+.qty-sold{background:#fff3cd;color:#7a5200}
+/* Monthly */
+.top-bot-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem}
+.bar-wrap{background:#e8e6e0;border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
+.bar{height:6px;border-radius:4px}
+.badge{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:600;margin-left:4px}
+.badge-top{background:#d4edda;color:#1a6b2a}
+.badge-low{background:#fde8e8;color:#a32d2d}
+.monthly-item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px;gap:8px}
+.monthly-item-row:last-child{border-bottom:none}
+.monthly-item-right{display:flex;gap:10px;align-items:center;flex-shrink:0}
+/* Status & toast */
+.status-bar{border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem;display:none}
+.status-bar.error{background:#fde8e8;border:1px solid #c0392b;display:block}
+.status-bar.success{background:#d4edda;border:1px solid #2d7a2d;display:block}
+.status-bar.info{background:#e8f3ff;border:1px solid #1a6fc4;display:block}
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 22px;border-radius:99px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1}
+.note-bar{background:#fff8e1;border:1px solid #f0c040;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem}
+/* Totals bar */
+.totals-bar{background:#1a1a1a;color:#fff;border-radius:12px;padding:.75rem 1rem;display:flex;justify-content:space-around;margin-bottom:.75rem}
+.total-item{text-align:center}
+.total-label{font-size:10px;opacity:.6;margin-bottom:2px}
+.total-val{font-size:16px;font-weight:700}
+.section-actions{display:flex;flex-direction:column;gap:8px}
+.flex-row{display:flex;gap:8px}
+.flex-row button{flex:1}
+/* Table fallback for desktop */
+@media(min-width:650px){
+  .slot-card-desktop{display:block}
+  .slot-cards-mobile{display:none}
+  table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+  thead th{font-weight:600;font-size:11px;color:#666;text-align:left;padding:6px 5px;border-bottom:1px solid #ddd;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
+  tbody td{padding:5px;vertical-align:middle;border-bottom:1px solid #f0ede8}
+  tbody tr:last-child td{border-bottom:none}
+  tfoot td{padding:6px 5px;border-top:1px solid #ddd;font-weight:600;font-size:13px}
+  .arrival-col{background:#f0f7ee}
+  .restock-col{background:#e8f3ff}
+  .overflow{overflow-x:auto}
+  .bottom-nav{display:none}
+  .desktop-tabs{display:flex!important}
+  body{padding-bottom:0}
+}
+@media(max-width:649px){
+  .slot-card-desktop{display:none}
+  .slot-cards-mobile{display:block}
+  .desktop-tabs{display:none!important}
+}
+.desktop-tabs{display:none;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.desktop-tab{padding:8px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-size:14px;color:#666;font-weight:500}
+.desktop-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="statusBar" class="status-bar"></div>
+  <h1>&#x1F3EA; Vending Tracker</h1>
+
+  <!-- Desktop tabs -->
+  <div class="desktop-tabs" id="desktopTabs">
+    <button class="desktop-tab active" onclick="showTab('sheet')" id="dtab-sheet">&#x1F4CB; Visit Sheet</button>
+    <button class="desktop-tab" onclick="showTab('history')" id="dtab-history">&#x1F4C5; Visit History</button>
+    <button class="desktop-tab" onclick="showTab('monthly')" id="dtab-monthly">&#x1F4CA; Monthly Sales</button>
+  </div>
+
+  <!-- VISIT SHEET -->
+  <div id="pane-sheet">
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label>Location</label>
+          <select id="locSel" onchange="switchLoc()">
+            <option value="1">Location 1</option><option value="2">Location 2</option>
+            <option value="3">Location 3</option><option value="4">Location 4</option>
+            <option value="5">Location 5</option>
+          </select>
+        </div>
+        <div>
+          <label>Visit date</label>
+          <input type="date" id="visitDate"/>
+        </div>
+      </div>
+      <div>
+        <label>Location name</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="locName" placeholder="e.g. Main Street Office"/>
+          <button class="sm" onclick="saveLocName()" style="white-space:nowrap">&#x2713; Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="prevRestockNote" class="note-bar" style="display:none"></div>
+
+    <!-- MOBILE: slot cards -->
+    <div class="slot-cards-mobile" id="slotCardsMobile"></div>
+
+    <!-- DESKTOP: table -->
+    <div class="slot-card-desktop">
+      <div class="card">
+        <div class="overflow">
+          <table>
+            <colgroup>
+              <col style="width:50px"><col style="width:auto">
+              <col style="width:78px"><col style="width:78px">
+              <col style="width:68px"><col style="width:68px">
+              <col style="width:54px"><col style="width:76px"><col style="width:76px"><col style="width:34px">
+            </colgroup>
+            <thead><tr>
+              <th>Slot</th><th>Item</th>
+              <th style="text-align:center;background:#f0f7ee">Arrival<br><span style="font-size:9px;font-weight:400">(left)</span></th>
+              <th style="text-align:center;background:#e8f3ff">Restock<br><span style="font-size:9px;font-weight:400">(filled to)</span></th>
+              <th style="text-align:right">Price</th>
+              <th style="text-align:right">Cost</th>
+              <th style="text-align:center">Sold</th>
+              <th style="text-align:right">Revenue</th>
+              <th style="text-align:right">Profit</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="slotBody"></tbody>
+            <tfoot><tr>
+              <td colspan="6" class="muted" style="font-size:12px">Totals</td>
+              <td id="tot-sold" style="text-align:center"></td>
+              <td id="tot-rev" style="text-align:right"></td>
+              <td id="tot-profit" style="text-align:right"></td>
+              <td></td>
+            </tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-actions">
+      <button onclick="addSlot()" style="border-style:dashed">+ Add Slot</button>
+      <div class="flex-row">
+        <button class="primary" onclick="saveSheet()">&#x1F4BE; Save Sheet</button>
+        <button class="success" onclick="submitReport()" id="submitBtn">&#x1F4C4; Submit Report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="pane-history" style="display:none">
+    <div style="margin-bottom:.75rem">
+      <label>Filter by location</label>
+      <select id="histLoc" onchange="renderHistory()">
+        <option value="all">All locations</option>
+        <option value="1">Location 1</option><option value="2">Location 2</option>
+        <option value="3">Location 3</option><option value="4">Location 4</option>
+        <option value="5">Location 5</option>
+      </select>
+    </div>
+    <div id="historyList"><p class="muted" style="font-size:13px">Loading...</p></div>
+  </div>
+
+  <!-- MONTHLY -->
+  <div id="pane-monthly" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.75rem">
+      <div>
+        <label>Month</label>
+        <select id="monthSel" onchange="renderMonthly()"></select>
+      </div>
+      <div>
+        <label>Location</label>
+        <select id="monthLoc" onchange="renderMonthly()">
+          <option value="all">All locations</option>
+          <option value="1">Location 1</option><option value="2">Location 2</option>
+          <option value="3">Location 3</option><option value="4">Location 4</option>
+          <option value="5">Location 5</option>
+        </select>
+      </div>
+    </div>
+    <div id="monthlyContent"><p class="muted" style="font-size:13px">Loading...</p></div>
+  </div>
+</div>
+
+<!-- Mobile bottom nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showTab('sheet')" id="nav-sheet">
+    <span class="nav-icon">&#x1F4CB;</span>Visit Sheet
+  </button>
+  <button class="nav-btn" onclick="showTab('history')" id="nav-history">
+    <span class="nav-icon">&#x1F4C5;</span>History
+  </button>
+  <button class="nav-btn" onclick="showTab('monthly')" id="nav-monthly">
+    <span class="nav-icon">&#x1F4CA;</span>Monthly
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc, query, orderBy }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCxlrEqi41cmnb5HzoFRnLsSi68Tno6eLk",
+  authDomain: "vendin-machine-routes.firebaseapp.com",
+  projectId: "vendin-machine-routes",
+  storageBucket: "vendin-machine-routes.firebasestorage.app",
+  messagingSenderId: "1040142766651",
+  appId: "1:1040142766651:web:900f3f10a729f59deac21e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+let loc='1', locNames={}, slots=[], allReports=[], prevRestockMap={};
+
+function showStatus(msg,type='info'){
+  const bar=document.getElementById('statusBar');
+  bar.textContent=msg; bar.className='status-bar '+type;
+  setTimeout(()=>{bar.className='status-bar';},4000);
+}
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
+
+async function loadLocNames(){
+  try{const s=await getDoc(doc(db,'settings','locNames'));if(s.exists())locNames=s.data();}catch(e){}
+}
+async function saveLocNamesToDB(){
+  try{await setDoc(doc(db,'settings','locNames'),locNames);}catch(e){}
+}
+async function loadAllReports(){
+  allReports=[];
+  try{
+    const snap=await getDocs(query(collection(db,'reports'),orderBy('timestamp','desc')));
+    snap.forEach(d=>allReports.push({id:d.id,...d.data()}));
+  }catch(e){console.error(e);}
+}
+async function loadSlots(){
+  slots=[];
+  try{const s=await getDoc(doc(db,'slots','loc'+loc));if(s.exists())slots=s.data().slots||[];}catch(e){}
+  if(!slots.length) slots=[
+    {slot:'A1',item:'',arrival:'',restock:'',price:'',cost:''},
+    {slot:'A2',item:'',arrival:'',restock:'',price:'',cost:''},
+    {slot:'B1',item:'',arrival:'',restock:'',price:'',cost:''},
+    {slot:'B2',item:'',arrival:'',restock:'',price:'',cost:''},
+  ];
+  slots=slots.map(s=>({...s,arrival:'',restock:''}));
+  document.getElementById('locName').value=locNames[loc]||'';
+  buildPrevRestockMap();
+  renderAll();
+  showPrevRestockNote();
+}
+async function saveSlotsDB(){
+  try{await setDoc(doc(db,'slots','loc'+loc),{slots});}catch(e){}
+}
+
+function buildPrevRestockMap(){
+  prevRestockMap={};
+  const locReports=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
+  if(!locReports.length) return;
+  (locReports[0].lineItems||[]).forEach(l=>{
+    if(l.item&&l.restock!==''&&l.restock!==null&&l.restock!==undefined){
+      prevRestockMap[itemKey(l.slot,l.item)]=parseFloat(l.restock);
+    }
+  });
+}
+function itemKey(slot,item){return(slot||'').trim().toLowerCase()+'|'+(item||'').trim().toLowerCase();}
+function getPrevRestock(slot,item){
+  const k=itemKey(slot,item);
+  return prevRestockMap.hasOwnProperty(k)?prevRestockMap[k]:null;
+}
+function calcSold(s){
+  const arrival=parseFloat(s.arrival);
+  if(isNaN(arrival)) return null;
+  const prev=getPrevRestock(s.slot,s.item);
+  if(prev===null) return null;
+  return Math.max(0,prev-arrival);
+}
+function calcRow(s){
+  const sold=calcSold(s);
+  const price=parseFloat(s.price)||0, cost=parseFloat(s.cost)||0;
+  return{sold, rev:sold!==null?sold*price:null, profit:sold!==null?sold*(price-cost):null};
+}
+
+function showPrevRestockNote(){
+  const note=document.getElementById('prevRestockNote');
+  const locReports=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
+  if(!locReports.length){
+    note.style.display='block';
+    note.innerHTML='&#x2139;&#xFE0F; <strong>First visit.</strong> Enter qty and restock — sold tracks automatically next visit.';
+  } else {
+    note.style.display='block';
+    note.innerHTML='&#x1F4CC; Sold = last restock minus today\'s arrival. Last visit: <strong>'+locReports[0].date+'</strong>';
+  }
+}
+
+// ── RENDER BOTH VIEWS ─────────────────────────────────────────
+function renderAll(){
+  renderMobileCards();
+  renderDesktopTable();
+  renderTotals();
+}
+
+function renderMobileCards(){
+  const container=document.getElementById('slotCardsMobile');
+  if(!container) return;
+  container.innerHTML=slots.map((s,i)=>{
+    const{sold,rev,profit}=calcRow(s);
+    const prev=getPrevRestock(s.slot,s.item);
+    const soldStr=sold!==null?sold:prev===null?'—*':'—';
+    const soldColor=sold!==null&&sold>0?'#1a6b2a':sold===0?'#888':'#888';
+    const revStr=rev!==null?'$'+rev.toFixed(2):'—';
+    const profStr=profit!==null?'$'+profit.toFixed(2):'—';
+    const profColor=profit===null?'#888':profit<0?'#a32d2d':'#1a6b2a';
+    return`<div class="slot-card" id="scard-${i}">
+      <div class="slot-card-header">
+        <span class="slot-label">Slot ${s.slot||i+1}</span>
+        <button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border-color:#e8b4b0;padding:3px 8px;font-size:12px">&#x2715; Remove</button>
+      </div>
+      <div class="slot-grid-2" style="margin-bottom:8px">
+        <div class="input-group">
+          <label>Slot label</label>
+          <input type="text" value="${esc(s.slot)}" placeholder="A1" data-idx="${i}" data-field="slot"/>
+        </div>
+        <div class="input-group">
+          <label>Item name</label>
+          <input type="text" value="${esc(s.item)}" placeholder="e.g. Coke" data-idx="${i}" data-field="item"/>
+        </div>
+      </div>
+      <div class="slot-grid-2" style="margin-bottom:8px">
+        <div class="input-group">
+          <label>&#x1F7E2; Arrival qty</label>
+          <input type="number" value="${esc(s.arrival)}" placeholder="0" min="0" inputmode="numeric" class="arrival-inp" data-idx="${i}" data-field="arrival"/>
+          ${prev!==null?`<span class="prev-tag">prev stocked: ${prev}</span>`:'<span class="prev-tag">no prior visit</span>'}
+        </div>
+        <div class="input-group">
+          <label>&#x1F535; Restock qty</label>
+          <input type="number" value="${esc(s.restock)}" placeholder="0" min="0" inputmode="numeric" class="restock-inp" data-idx="${i}" data-field="restock"/>
+        </div>
+      </div>
+      <div class="slot-grid-2" style="margin-bottom:8px">
+        <div class="input-group">
+          <label>Sell price ($)</label>
+          <input type="number" value="${esc(s.price)}" placeholder="1.50" step="0.25" min="0" inputmode="decimal" data-idx="${i}" data-field="price"/>
+        </div>
+        <div class="input-group">
+          <label>Item cost ($)</label>
+          <input type="number" value="${esc(s.cost)}" placeholder="0.50" step="0.05" min="0" inputmode="decimal" data-idx="${i}" data-field="cost"/>
+        </div>
+      </div>
+      <div class="calc-row">
+        <div class="calc-item">
+          <div class="calc-label">SOLD</div>
+          <div class="calc-val" style="color:${soldColor}" id="m-sold-${i}">${soldStr}</div>
+        </div>
+        <div class="calc-item">
+          <div class="calc-label">REVENUE</div>
+          <div class="calc-val" id="m-rev-${i}">${revStr}</div>
+        </div>
+        <div class="calc-item">
+          <div class="calc-label">PROFIT</div>
+          <div class="calc-val" style="color:${profColor}" id="m-prof-${i}">${profStr}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDesktopTable(){
+  const body=document.getElementById('slotBody');
+  if(!body) return;
+  body.innerHTML=slots.map((s,i)=>{
+    const{sold,rev,profit}=calcRow(s);
+    const prev=getPrevRestock(s.slot,s.item);
+    const soldStr=sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—';
+    return`<tr>
+      <td><input type="text" value="${esc(s.slot)}" placeholder="A1" data-idx="${i}" data-field="slot"/></td>
+      <td><input type="text" value="${esc(s.item)}" placeholder="Item" data-idx="${i}" data-field="item"/></td>
+      <td class="arrival-col"><input type="number" value="${esc(s.arrival)}" placeholder="0" min="0" style="text-align:center" data-idx="${i}" data-field="arrival"/>
+        ${prev!==null?`<span class="prev-tag">prev: ${prev}</span>`:''}
+      </td>
+      <td class="restock-col"><input type="number" value="${esc(s.restock)}" placeholder="0" min="0" style="text-align:center" data-idx="${i}" data-field="restock"/></td>
+      <td><input type="number" value="${esc(s.price)}" placeholder="1.50" step="0.25" min="0" style="text-align:right" data-idx="${i}" data-field="price"/></td>
+      <td><input type="number" value="${esc(s.cost)}" placeholder="0.50" step="0.05" min="0" style="text-align:right" data-idx="${i}" data-field="cost"/></td>
+      <td style="text-align:center" id="d-sold-${i}">${soldStr}</td>
+      <td style="text-align:right" id="d-rev-${i}">${rev!==null?'$'+rev.toFixed(2):'—'}</td>
+      <td style="text-align:right" id="d-prof-${i}">${profit!==null?`<span class="${profit<0?'red':'green'}">$${profit.toFixed(2)}</span>`:'—'}</td>
+      <td><button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border:1px solid #e8b4b0">&#x2715;</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateRowCalcs(i){
+  const s=slots[i];
+  const{sold,rev,profit}=calcRow(s);
+  const prev=getPrevRestock(s.slot,s.item);
+  // mobile
+  const mSold=document.getElementById('m-sold-'+i);
+  const mRev=document.getElementById('m-rev-'+i);
+  const mProf=document.getElementById('m-prof-'+i);
+  if(mSold){
+    mSold.textContent=sold!==null?sold:prev===null?'—*':'—';
+    mSold.style.color=sold!==null&&sold>0?'#1a6b2a':'#888';
+  }
+  if(mRev) mRev.textContent=rev!==null?'$'+rev.toFixed(2):'—';
+  if(mProf){mProf.textContent=profit!==null?'$'+profit.toFixed(2):'—';mProf.style.color=profit===null?'#888':profit<0?'#a32d2d':'#1a6b2a';}
+  // desktop
+  const dSold=document.getElementById('d-sold-'+i);
+  const dRev=document.getElementById('d-rev-'+i);
+  const dProf=document.getElementById('d-prof-'+i);
+  if(dSold) dSold.innerHTML=sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—';
+  if(dRev) dRev.textContent=rev!==null?'$'+rev.toFixed(2):'—';
+  if(dProf) dProf.innerHTML=profit!==null?`<span class="${profit<0?'red':'green'}">$${profit.toFixed(2)}</span>`:'—';
+}
+
+function renderTotals(){
+  let totSold=0,totRev=0,totProfit=0,has=false;
+  slots.forEach(s=>{const{sold,rev,profit}=calcRow(s);if(sold!==null){totSold+=sold;totRev+=rev;totProfit+=profit;has=true;}});
+  // desktop tfoot
+  const ts=document.getElementById('tot-sold');
+  const tr=document.getElementById('tot-rev');
+  const tp=document.getElementById('tot-profit');
+  if(ts) ts.textContent=has?totSold:'—';
+  if(tr) tr.textContent=has?'$'+totRev.toFixed(2):'—';
+  if(tp){tp.textContent=has?'$'+totProfit.toFixed(2):'—';tp.className=has&&totProfit<0?'red':'green';}
+}
+
+// Event delegation for all sheet inputs and buttons
+document.addEventListener('input',function(e){
+  const inp=e.target.closest('[data-field]');
+  if(!inp) return;
+  const i=parseInt(inp.dataset.idx);
+  const f=inp.dataset.field;
+  slots[i][f]=inp.value;
+  buildPrevRestockMap();
+  updateRowCalcs(i);
+  renderTotals();
+});
+
+document.addEventListener('click',function(e){
+  // Remove slot
+  const removeBtn=e.target.closest('[data-remove-idx]');
+  if(removeBtn){
+    const i=parseInt(removeBtn.dataset.removeIdx);
+    if(confirm('Remove this slot?')){slots.splice(i,1);renderAll();}
+    return;
+  }
+  // Delete report
+  const delBtn=e.target.closest('[data-delete-id]');
+  if(delBtn){
+    window.deleteReport(delBtn.getAttribute('data-delete-id'));
+    return;
+  }
+});
+
+window.switchLoc=async function(){
+  loc=document.getElementById('locSel').value;
+  await loadSlots();
+};
+window.saveLocName=async function(){
+  locNames[loc]=document.getElementById('locName').value.trim();
+  await saveLocNamesToDB(); toast('Location name saved!');
+};
+window.addSlot=function(){
+  slots.push({slot:'',item:'',arrival:'',restock:'',price:'',cost:''});
+  renderAll();
+  // scroll to new card on mobile
+  setTimeout(()=>{
+    const cards=document.querySelectorAll('.slot-card');
+    if(cards.length) cards[cards.length-1].scrollIntoView({behavior:'smooth',block:'center'});
+  },100);
+};
+window.saveSheet=async function(){
+  await saveSlotsDB(); toast('Sheet saved!');
+};
+window.submitReport=async function(){
+  const dateVal=document.getElementById('visitDate').value;
+  if(!dateVal){alert('Please select a visit date.');return;}
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent='Saving...';
+  try{
+    const d=new Date(dateVal+'T12:00:00');
+    const dateLabel=MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+    const monthKey=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    const name=locNames[loc]||'Location '+loc;
+    let totSold=0,totRev=0,totProfit=0;
+    const lineItems=slots.filter(s=>s.item).map(s=>{
+      const{sold,rev,profit}=calcRow(s);
+      const prev=getPrevRestock(s.slot,s.item);
+      if(sold!==null){totSold+=sold;totRev+=rev;totProfit+=profit;}
+      return{slot:s.slot,item:s.item,arrival:s.arrival,restock:s.restock,
+        prevRestock:prev!==null?prev:null,
+        price:parseFloat(s.price)||0,cost:parseFloat(s.cost)||0,sold,rev,profit};
+    });
+    await addDoc(collection(db,'reports'),{
+      date:dateLabel,dateVal,monthKey,loc,name,lineItems,
+      totSold,totRev,totProfit,timestamp:Date.now()
+    });
+    await saveSlotsDB();
+    showStatus('Report saved for '+name+' — '+dateLabel,'success');
+    await loadAllReports();
+    buildPrevRestockMap();
+    renderAll();
+    showPrevRestockNote();
+    showTab('history');
+  }catch(e){showStatus('Error: '+e.message,'error');}
+  btn.disabled=false; btn.innerHTML='&#x1F4C4; Submit Report';
+};
+
+window.deleteReport=async function(reportId){
+  if(!confirm('Delete this report? Cannot be undone.')) return;
+  try{
+    await deleteDoc(doc(db,'reports',reportId));
+    await loadAllReports();
+    buildPrevRestockMap();
+    renderAll();
+    showPrevRestockNote();
+    renderHistory();
+    toast('Report deleted.');
+  }catch(e){showStatus('Error deleting: '+e.message,'error');}
+};
+
+window.renderHistory=function(){
+  const filterLoc=document.getElementById('histLoc').value;
+  const filtered=filterLoc==='all'?allReports:allReports.filter(r=>r.loc===filterLoc);
+  const div=document.getElementById('historyList');
+  if(!filtered.length){div.innerHTML='<p class="muted" style="font-size:13px;padding:1rem 0">No visit reports yet.</p>';return;}
+  div.innerHTML=filtered.map(r=>`
+    <div class="history-card">
+      <div class="history-header">
+        <div>
+          <div style="font-weight:700;font-size:15px">${r.name}</div>
+          <div class="muted" style="font-size:12px;margin-top:2px">${r.date}</div>
+        </div>
+        <button class="danger-solid sm" data-delete-id="${r.id}">&#x1F5D1; Delete</button>
+      </div>
+      <div class="history-stats">
+        <span><strong>${r.totSold}</strong> units</span>
+        <span><strong>$${parseFloat(r.totRev||0).toFixed(2)}</strong> revenue</span>
+        <span class="${r.totProfit<0?'red':'green'}"><strong>$${parseFloat(r.totProfit||0).toFixed(2)}</strong> profit</span>
+      </div>
+      <div>
+        ${(r.lineItems||[]).map(l=>`
+          <div class="history-item-row">
+            <div>
+              <div style="font-weight:500">${l.item}</div>
+              <div class="muted" style="font-size:11px">Slot ${l.slot}</div>
+            </div>
+            <div class="item-qty-badges">
+              <span class="qty-badge qty-arr" title="Arrival">${l.arrival||'—'}</span>
+              <span style="color:#ccc;font-size:12px">→</span>
+              <span class="qty-badge qty-rst" title="Restocked to">${l.restock||'—'}</span>
+              <span style="color:#ccc;font-size:12px">·</span>
+              <span class="qty-badge qty-sold" title="Sold">${l.sold!==null?l.sold+'sold':'—'}</span>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+};
+
+function populateMonthSelector(){
+  const keys=new Set(allReports.map(r=>r.monthKey));
+  const today=new Date();
+  keys.add(today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0'));
+  const sorted=[...keys].sort().reverse();
+  const sel=document.getElementById('monthSel');
+  const cur=sel.value;
+  sel.innerHTML=sorted.map(k=>{
+    const[y,m]=k.split('-');
+    return`<option value="${k}"${k===cur?' selected':''}>${MONTHS[parseInt(m)-1]} ${y}</option>`;
+  }).join('');
+  if(!sel.value&&sorted.length) sel.value=sorted[0];
+}
+
+window.renderMonthly=function(){
+  const monthKey=document.getElementById('monthSel').value;
+  const filterLoc=document.getElementById('monthLoc').value;
+  if(!monthKey) return;
+  const[y,m]=monthKey.split('-');
+  const monthLabel=MONTHS[parseInt(m)-1]+' '+y;
+  const filtered=allReports.filter(r=>r.monthKey===monthKey&&(filterLoc==='all'||r.loc===filterLoc));
+  const itemMap={};
+  filtered.forEach(r=>{
+    (r.lineItems||[]).forEach(l=>{
+      if(!l.item||l.sold===null||l.sold===undefined) return;
+      const key=l.item.trim().toLowerCase();
+      if(!itemMap[key]) itemMap[key]={name:l.item.trim(),sold:0,rev:0,profit:0,visits:0};
+      itemMap[key].sold+=l.sold; itemMap[key].rev+=l.rev||0; itemMap[key].profit+=l.profit||0;
+      if(l.sold>0) itemMap[key].visits++;
+    });
+  });
+  const items=Object.values(itemMap).sort((a,b)=>b.sold-a.sold);
+  const totSold=items.reduce((s,i)=>s+i.sold,0);
+  const totRev=items.reduce((s,i)=>s+i.rev,0);
+  const totProfit=items.reduce((s,i)=>s+i.profit,0);
+  const maxSold=items.length?Math.max(items[0].sold,1):1;
+  const div=document.getElementById('monthlyContent');
+  if(!items.length){
+    div.innerHTML='<div class="card"><p class="muted" style="font-size:13px">No reports for '+monthLabel+'.</p></div>';
+    return;
+  }
+  const top3=items.slice(0,Math.min(3,items.length));
+  const bot3=items.length>3?items.slice(-Math.min(3,items.length)).reverse():[];
+  div.innerHTML=`
+    <div class="stat-grid four" style="margin-bottom:.75rem">
+      <div class="stat"><div class="stat-label">Units sold</div><div class="stat-value">${totSold}</div></div>
+      <div class="stat"><div class="stat-label">Revenue</div><div class="stat-value">$${totRev.toFixed(2)}</div></div>
+      <div class="stat"><div class="stat-label">Profit</div><div class="stat-value ${totProfit<0?'red':'green'}">$${totProfit.toFixed(2)}</div></div>
+      <div class="stat"><div class="stat-label">Visits</div><div class="stat-value">${filtered.length}</div></div>
+    </div>
+    <div class="top-bot-grid">
+      <div class="card" style="border-color:#2d7a2d">
+        <h3 style="color:#1a6b2a;margin-bottom:.5rem">&#x2B06; Top sellers</h3>
+        ${top3.map(it=>`<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span style="font-weight:600">${it.name}</span><span class="green">${it.sold}</span>
+          </div>
+          <div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#2d7a2d"></div></div>
+        </div>`).join('')}
+      </div>
+      ${bot3.length?`<div class="card" style="border-color:#c0392b">
+        <h3 style="color:#a32d2d;margin-bottom:.5rem">&#x2B07; Slowest</h3>
+        ${bot3.map(it=>`<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span style="font-weight:600">${it.name}</span><span class="red">${it.sold}</span>
+          </div>
+          <div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#c0392b"></div></div>
+        </div>`).join('')}
+      </div>`:''}
+    </div>
+    <div class="card">
+      <h2 style="margin-bottom:.75rem">All items — ${monthLabel}</h2>
+      ${items.map((it,i)=>{
+        const margin=it.rev>0?Math.round(it.profit/it.rev*100):null;
+        const marginColor=margin===null?'#888':margin>=50?'#1a6b2a':margin>=25?'#856404':margin>=0?'#555':'#a32d2d';
+        const marginBg=margin===null?'transparent':margin>=50?'#d4edda':margin>=25?'#fff3cd':margin>=0?'#f4f4f0':'#fde8e8';
+        return`<div class="monthly-item-row">
+          <div>
+            <div style="font-weight:${i<3?'700':'400'};font-size:14px">${it.name}${i===0?'<span class="badge badge-top">top</span>':i===items.length-1?'<span class="badge badge-low">low</span>':''}</div>
+            <div class="muted" style="font-size:11px">${it.visits} visit${it.visits!==1?'s':''} · ${it.sold} units</div>
+          </div>
+          <div class="monthly-item-right">
+            <div style="text-align:right">
+              <div style="font-size:13px;font-weight:600">$${it.rev.toFixed(2)}</div>
+              <div style="font-size:11px" class="${it.profit<0?'red':'green'}">$${it.profit.toFixed(2)} profit</div>
+            </div>
+            <span style="background:${marginBg};color:${marginColor};padding:3px 8px;border-radius:99px;font-size:12px;font-weight:700;min-width:44px;text-align:center">${margin!==null?margin+'%':'—'}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+};
+
+window.showTab=async function(t){
+  ['sheet','history','monthly'].forEach(n=>{
+    document.getElementById('pane-'+n).style.display=n===t?'':'none';
+    // mobile nav
+    const nb=document.getElementById('nav-'+n);
+    if(nb) nb.classList.toggle('active',n===t);
+    // desktop tabs
+    const db2=document.getElementById('dtab-'+n);
+    if(db2) db2.classList.toggle('active',n===t);
+  });
+  if(t==='history'){await loadAllReports();buildPrevRestockMap();renderHistory();}
+  if(t==='monthly'){await loadAllReports();populateMonthSelector();renderMonthly();}
+};
+
+async function init(){
+  document.getElementById('visitDate').value=new Date().toISOString().split('T')[0];
+  showStatus('Connecting...','info');
+  await loadLocNames();
+  await loadAllReports();
+  await loadSlots();
+  populateMonthSelector();
+  showStatus('Connected! Data saves automatically.','success');
+}
+
+init();
+</script>
+</body>
+</html>
