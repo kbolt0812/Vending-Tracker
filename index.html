@@ -13,38 +13,29 @@ h3{font-size:14px;font-weight:600;margin-bottom:.5rem}
 .container{max-width:700px;margin:0 auto;padding:1rem}
 .card{background:#fff;border:1px solid #e0ddd5;border-radius:14px;padding:1rem;margin-bottom:.75rem}
 label{font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:500}
-select,input[type="text"],input[type="number"],input[type="date"]{
-  padding:10px 12px;border-radius:10px;border:1.5px solid #ddd;background:#fff;
-  color:#1a1a1a;font-size:16px;font-family:inherit;width:100%;outline:none;
-  -webkit-appearance:none;appearance:none}
+select,input[type="text"],input[type="number"],input[type="date"]{padding:10px 12px;border-radius:10px;border:1.5px solid #ddd;background:#fff;color:#1a1a1a;font-size:16px;font-family:inherit;width:100%;outline:none;-webkit-appearance:none;appearance:none}
 select:focus,input:focus{border-color:#1a6fc4;box-shadow:0 0 0 3px rgba(26,111,196,.12)}
-button{padding:11px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;
-  cursor:pointer;font-size:15px;font-family:inherit;color:#1a1a1a;font-weight:500;
-  transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:44px}
+button{padding:11px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-size:15px;font-family:inherit;color:#1a1a1a;font-weight:500;transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:44px}
 button:active{opacity:.75;transform:scale(.97)}
 button.primary{background:#1a6fc4;color:#fff;border-color:#1a6fc4}
 button.success{background:#2d7a2d;color:#fff;border-color:#2d7a2d}
+button.orange{background:#d4680a;color:#fff;border-color:#d4680a}
 button.sm{padding:7px 12px;font-size:13px;min-height:36px}
 button.danger-solid{background:#c0392b;color:#fff;border-color:#c0392b;padding:7px 12px;font-size:13px;min-height:36px}
 button.full{width:100%;margin-bottom:8px}
 button:disabled{opacity:.5}
-/* Bottom nav */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0ddd5;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;border:none;background:transparent;cursor:pointer;color:#888;font-size:10px;font-weight:500;gap:3px;min-height:56px;-webkit-tap-highlight-color:transparent}
 .nav-btn.active{color:#1a6fc4}
-.nav-icon{font-size:22px;line-height:1}
-/* Stats */
+.nav-icon{font-size:20px;line-height:1}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem}
-.stat-grid.four{grid-template-columns:1fr 1fr}
 .stat{background:#f4f4f0;border-radius:10px;padding:.65rem .85rem}
 .stat-label{font-size:11px;color:#888;margin-bottom:2px}
 .stat-value{font-size:20px;font-weight:700}
-/* Slot cards on mobile */
-.slot-card{background:#f9f8f6;border:1.5px solid #e8e4de;border-radius:12px;padding:.85rem;margin-bottom:.65rem;position:relative}
+.slot-card{background:#f9f8f6;border:1.5px solid #e8e4de;border-radius:12px;padding:.85rem;margin-bottom:.65rem}
 .slot-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
 .slot-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px}
 .slot-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.slot-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
 .input-group label{font-size:11px;color:#666;margin-bottom:3px}
 .arrival-inp{background:#f0f7ee;border-color:#b8ddb0}
 .restock-inp{background:#e8f3ff;border-color:#a8cff0}
@@ -55,8 +46,8 @@ button:disabled{opacity:.5}
 .prev-tag{font-size:10px;color:#aaa;display:block;margin-top:2px;text-align:center}
 .green{color:#1a6b2a;font-weight:700}
 .red{color:#a32d2d;font-weight:700}
+.orange-text{color:#d4680a;font-weight:700}
 .muted{color:#888}
-/* History cards */
 .history-card{background:#fff;border:1px solid #e0ddd5;border-radius:14px;padding:1rem;margin-bottom:.75rem}
 .history-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;gap:8px}
 .history-stats{display:flex;gap:12px;font-size:13px;flex-wrap:wrap;margin-bottom:.75rem}
@@ -67,7 +58,6 @@ button:disabled{opacity:.5}
 .qty-arr{background:#f0f7ee;color:#2d6b20}
 .qty-rst{background:#e8f3ff;color:#1a5c9e}
 .qty-sold{background:#fff3cd;color:#7a5200}
-/* Monthly */
 .top-bot-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem}
 .bar-wrap{background:#e8e6e0;border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
 .bar{height:6px;border-radius:4px}
@@ -77,7 +67,21 @@ button:disabled{opacity:.5}
 .monthly-item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px;gap:8px}
 .monthly-item-row:last-child{border-bottom:none}
 .monthly-item-right{display:flex;gap:10px;align-items:center;flex-shrink:0}
-/* Status & toast */
+/* Inventory tab */
+.inv-item-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0ede8;gap:8px}
+.inv-item-row:last-child{border-bottom:none}
+.inv-name{font-weight:600;font-size:14px}
+.inv-meta{font-size:11px;color:#888;margin-top:2px}
+.inv-qty{font-size:22px;font-weight:700;text-align:right}
+.inv-qty-label{font-size:10px;color:#888;text-align:right}
+.stock-badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600}
+.stock-ok{background:#d4edda;color:#1a6b2a}
+.stock-low{background:#fff3cd;color:#856404}
+.stock-out{background:#fde8e8;color:#a32d2d}
+.log-entry{padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px}
+.log-entry:last-child{border-bottom:none}
+.log-type-buy{color:#1a6b2a;font-weight:600}
+.log-type-use{color:#1a6fc4;font-weight:600}
 .status-bar{border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem;display:none}
 .status-bar.error{background:#fde8e8;border:1px solid #c0392b;display:block}
 .status-bar.success{background:#d4edda;border:1px solid #2d7a2d;display:block}
@@ -85,15 +89,10 @@ button:disabled{opacity:.5}
 .toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 22px;border-radius:99px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1}
 .note-bar{background:#fff8e1;border:1px solid #f0c040;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem}
-/* Totals bar */
-.totals-bar{background:#1a1a1a;color:#fff;border-radius:12px;padding:.75rem 1rem;display:flex;justify-content:space-around;margin-bottom:.75rem}
-.total-item{text-align:center}
-.total-label{font-size:10px;opacity:.6;margin-bottom:2px}
-.total-val{font-size:16px;font-weight:700}
 .section-actions{display:flex;flex-direction:column;gap:8px}
 .flex-row{display:flex;gap:8px}
 .flex-row button{flex:1}
-/* Table fallback for desktop */
+.divider{border:none;border-top:1px solid #f0ede8;margin:.75rem 0}
 @media(min-width:650px){
   .slot-card-desktop{display:block}
   .slot-cards-mobile{display:none}
@@ -124,11 +123,11 @@ button:disabled{opacity:.5}
   <div id="statusBar" class="status-bar"></div>
   <h1>&#x1F3EA; Vending Tracker</h1>
 
-  <!-- Desktop tabs -->
   <div class="desktop-tabs" id="desktopTabs">
     <button class="desktop-tab active" onclick="showTab('sheet')" id="dtab-sheet">&#x1F4CB; Visit Sheet</button>
-    <button class="desktop-tab" onclick="showTab('history')" id="dtab-history">&#x1F4C5; Visit History</button>
-    <button class="desktop-tab" onclick="showTab('monthly')" id="dtab-monthly">&#x1F4CA; Monthly Sales</button>
+    <button class="desktop-tab" onclick="showTab('history')" id="dtab-history">&#x1F4C5; History</button>
+    <button class="desktop-tab" onclick="showTab('monthly')" id="dtab-monthly">&#x1F4CA; Monthly</button>
+    <button class="desktop-tab" onclick="showTab('inventory')" id="dtab-inventory">&#x1F4E6; Inventory</button>
   </div>
 
   <!-- VISIT SHEET -->
@@ -156,13 +155,8 @@ button:disabled{opacity:.5}
         </div>
       </div>
     </div>
-
     <div id="prevRestockNote" class="note-bar" style="display:none"></div>
-
-    <!-- MOBILE: slot cards -->
     <div class="slot-cards-mobile" id="slotCardsMobile"></div>
-
-    <!-- DESKTOP: table -->
     <div class="slot-card-desktop">
       <div class="card">
         <div class="overflow">
@@ -196,7 +190,6 @@ button:disabled{opacity:.5}
         </div>
       </div>
     </div>
-
     <div class="section-actions">
       <button onclick="addSlot()" style="border-style:dashed">+ Add Slot</button>
       <div class="flex-row">
@@ -223,10 +216,7 @@ button:disabled{opacity:.5}
   <!-- MONTHLY -->
   <div id="pane-monthly" style="display:none">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.75rem">
-      <div>
-        <label>Month</label>
-        <select id="monthSel" onchange="renderMonthly()"></select>
-      </div>
+      <div><label>Month</label><select id="monthSel" onchange="renderMonthly()"></select></div>
       <div>
         <label>Location</label>
         <select id="monthLoc" onchange="renderMonthly()">
@@ -239,12 +229,58 @@ button:disabled{opacity:.5}
     </div>
     <div id="monthlyContent"><p class="muted" style="font-size:13px">Loading...</p></div>
   </div>
+
+  <!-- INVENTORY -->
+  <div id="pane-inventory" style="display:none">
+    <!-- Add purchase -->
+    <div class="card">
+      <h3 style="margin-bottom:.75rem">&#x2795; Add purchased stock</h3>
+      <div class="slot-grid-2" style="margin-bottom:8px">
+        <div>
+          <label>Item name</label>
+          <input type="text" id="invItemName" placeholder="e.g. Coke Can" list="invItemSuggestions"/>
+          <datalist id="invItemSuggestions"></datalist>
+        </div>
+        <div>
+          <label>Qty purchased</label>
+          <input type="number" id="invQtyBuy" placeholder="24" min="1" inputmode="numeric"/>
+        </div>
+      </div>
+      <div class="slot-grid-2" style="margin-bottom:10px">
+        <div>
+          <label>Unit cost ($)</label>
+          <input type="number" id="invCostBuy" placeholder="0.50" step="0.05" min="0" inputmode="decimal"/>
+        </div>
+        <div>
+          <label>Reorder point</label>
+          <input type="number" id="invReorder" placeholder="12" min="0" inputmode="numeric"/>
+          <span style="font-size:10px;color:#aaa;margin-top:2px;display:block">Alert me when below this qty</span>
+        </div>
+      </div>
+      <button class="success full" onclick="addPurchase()">&#x2795; Add to Inventory</button>
+    </div>
+
+    <!-- Current inventory -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+        <h3 style="margin-bottom:0">&#x1F4E6; Current inventory</h3>
+        <span id="invLowCount" style="font-size:12px;color:#a32d2d;font-weight:600;display:none"></span>
+      </div>
+      <div id="invList"><p class="muted" style="font-size:13px">No inventory yet. Add purchased stock above.</p></div>
+    </div>
+
+    <!-- Log -->
+    <div class="card">
+      <h3 style="margin-bottom:.75rem">&#x1F4CB; Recent activity</h3>
+      <div id="invLog"><p class="muted" style="font-size:13px">No activity yet.</p></div>
+    </div>
+  </div>
 </div>
 
 <!-- Mobile bottom nav -->
 <nav class="bottom-nav">
   <button class="nav-btn active" onclick="showTab('sheet')" id="nav-sheet">
-    <span class="nav-icon">&#x1F4CB;</span>Visit Sheet
+    <span class="nav-icon">&#x1F4CB;</span>Sheet
   </button>
   <button class="nav-btn" onclick="showTab('history')" id="nav-history">
     <span class="nav-icon">&#x1F4C5;</span>History
@@ -252,13 +288,16 @@ button:disabled{opacity:.5}
   <button class="nav-btn" onclick="showTab('monthly')" id="nav-monthly">
     <span class="nav-icon">&#x1F4CA;</span>Monthly
   </button>
+  <button class="nav-btn" onclick="showTab('inventory')" id="nav-inventory">
+    <span class="nav-icon">&#x1F4E6;</span>Inventory
+  </button>
 </nav>
 
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc, query, orderBy }
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc, updateDoc, query, orderBy, limit }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -274,6 +313,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 let loc='1', locNames={}, slots=[], allReports=[], prevRestockMap={};
+let inventory={}, invLog=[];
 
 function showStatus(msg,type='info'){
   const bar=document.getElementById('statusBar');
@@ -286,19 +326,14 @@ function toast(msg){
   setTimeout(()=>el.classList.remove('show'),2500);
 }
 function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
+function fmtDate(ts){const d=new Date(ts);return(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
 
-async function loadLocNames(){
-  try{const s=await getDoc(doc(db,'settings','locNames'));if(s.exists())locNames=s.data();}catch(e){}
-}
-async function saveLocNamesToDB(){
-  try{await setDoc(doc(db,'settings','locNames'),locNames);}catch(e){}
-}
+// ── Firebase: visits ──────────────────────────────────────────
+async function loadLocNames(){try{const s=await getDoc(doc(db,'settings','locNames'));if(s.exists())locNames=s.data();}catch(e){}}
+async function saveLocNamesToDB(){try{await setDoc(doc(db,'settings','locNames'),locNames);}catch(e){}}
 async function loadAllReports(){
   allReports=[];
-  try{
-    const snap=await getDocs(query(collection(db,'reports'),orderBy('timestamp','desc')));
-    snap.forEach(d=>allReports.push({id:d.id,...d.data()}));
-  }catch(e){console.error(e);}
+  try{const snap=await getDocs(query(collection(db,'reports'),orderBy('timestamp','desc')));snap.forEach(d=>allReports.push({id:d.id,...d.data()}));}catch(e){console.error(e);}
 }
 async function loadSlots(){
   slots=[];
@@ -315,56 +350,174 @@ async function loadSlots(){
   renderAll();
   showPrevRestockNote();
 }
-async function saveSlotsDB(){
-  try{await setDoc(doc(db,'slots','loc'+loc),{slots});}catch(e){}
+async function saveSlotsDB(){try{await setDoc(doc(db,'slots','loc'+loc),{slots});}catch(e){}}
+
+// ── Firebase: inventory ───────────────────────────────────────
+async function loadInventory(){
+  inventory={};invLog=[];
+  try{
+    const snap=await getDocs(collection(db,'inventory'));
+    snap.forEach(d=>{inventory[d.id]={id:d.id,...d.data()};});
+  }catch(e){console.error(e);}
+  try{
+    const snap=await getDocs(query(collection(db,'invLog'),orderBy('timestamp','desc'),limit(50)));
+    snap.forEach(d=>invLog.push({id:d.id,...d.data()}));
+  }catch(e){console.error(e);}
+}
+async function saveInventoryItem(item){
+  await setDoc(doc(db,'inventory',item.id),item);
+}
+async function addInvLog(entry){
+  const ref=await addDoc(collection(db,'invLog'),entry);
+  invLog.unshift({id:ref.id,...entry});
+  if(invLog.length>50) invLog.pop();
 }
 
+// ── Inventory: add purchase ───────────────────────────────────
+window.addPurchase=async function(){
+  const name=document.getElementById('invItemName').value.trim();
+  const qty=parseInt(document.getElementById('invQtyBuy').value);
+  const cost=parseFloat(document.getElementById('invCostBuy').value)||0;
+  const reorder=parseInt(document.getElementById('invReorder').value)||0;
+  if(!name||!qty||qty<1){alert('Please enter an item name and quantity.');return;}
+  const id=name.toLowerCase().replace(/[^a-z0-9]/g,'_');
+  const existing=inventory[id]||{id,name,qty:0,cost,reorder};
+  existing.qty+=qty;
+  existing.cost=cost||existing.cost;
+  existing.reorder=reorder||existing.reorder;
+  existing.name=name;
+  inventory[id]=existing;
+  await saveInventoryItem(existing);
+  await addInvLog({type:'buy',item:name,qty,cost,timestamp:Date.now(),note:'Purchase: +'+qty+' units'});
+  document.getElementById('invItemName').value='';
+  document.getElementById('invQtyBuy').value='';
+  document.getElementById('invCostBuy').value='';
+  document.getElementById('invReorder').value='';
+  renderInventory();
+  updateInvSuggestions();
+  toast(qty+' '+name+' added to inventory!');
+};
+
+// ── Inventory: manual adjustment ─────────────────────────────
+window.adjustInv=async function(id,delta,note){
+  if(!inventory[id]) return;
+  inventory[id].qty=Math.max(0,inventory[id].qty+delta);
+  await saveInventoryItem(inventory[id]);
+  await addInvLog({type:delta>0?'buy':'use',item:inventory[id].name,qty:Math.abs(delta),timestamp:Date.now(),note});
+  renderInventory();
+};
+
+window.deleteInvItem=async function(id){
+  if(!confirm('Remove '+inventory[id].name+' from inventory?')) return;
+  try{await deleteDoc(doc(db,'inventory',id));}catch(e){}
+  delete inventory[id];
+  renderInventory();
+  toast('Item removed.');
+};
+
+// ── Deduct from inventory when report submitted ───────────────
+// Only deduct what was SOLD (prev restock - arrival qty) not what was refilled
+async function deductInventoryForReport(lineItems){
+  for(const l of lineItems){
+    if(!l.item) continue;
+    // sold = what customers actually bought = previous restock - arrival qty
+    const sold=l.sold;
+    if(sold===null||sold===undefined||isNaN(sold)||sold<=0) continue;
+    const id=l.item.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+    if(inventory[id]){
+      inventory[id].qty=Math.max(0,inventory[id].qty-sold);
+      await saveInventoryItem(inventory[id]);
+      await addInvLog({type:'use',item:l.item,qty:sold,timestamp:Date.now(),note:'Sold at machine: -'+sold+' units'});
+    }
+  }
+}
+
+// ── Render inventory tab ──────────────────────────────────────
+function renderInventory(){
+  const items=Object.values(inventory).sort((a,b)=>a.name.localeCompare(b.name));
+  const listDiv=document.getElementById('invList');
+  const lowCount=items.filter(i=>i.qty<=i.reorder&&i.reorder>0).length;
+  const lowEl=document.getElementById('invLowCount');
+  if(lowCount>0){lowEl.textContent='⚠️ '+lowCount+' item'+(lowCount>1?'s':'')+' low';lowEl.style.display='block';}
+  else lowEl.style.display='none';
+
+  if(!items.length){listDiv.innerHTML='<p class="muted" style="font-size:13px">No inventory yet.</p>';return;}
+  listDiv.innerHTML=items.map(it=>{
+    const isLow=it.reorder>0&&it.qty<=it.reorder;
+    const isOut=it.qty===0;
+    const badge=isOut?'<span class="stock-badge stock-out">Out of stock</span>':isLow?'<span class="stock-badge stock-low">Low stock</span>':'<span class="stock-badge stock-ok">In stock</span>';
+    return`<div class="inv-item-row">
+      <div style="flex:1">
+        <div class="inv-name">${it.name} ${badge}</div>
+        <div class="inv-meta">${it.reorder>0?'Reorder at: '+it.reorder+' units':'No reorder point set'}${it.cost?' · Cost: $'+parseFloat(it.cost).toFixed(2)+'/unit':''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div>
+          <div class="inv-qty ${isOut?'red':isLow?'orange-text':'green'}">${it.qty}</div>
+          <div class="inv-qty-label">units left</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <button class="sm primary" onclick="showAdjust('${it.id}')">&#x270F;</button>
+          <button class="sm danger-solid" onclick="deleteInvItem('${it.id}')">&#x2715;</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Log
+  const logDiv=document.getElementById('invLog');
+  if(!invLog.length){logDiv.innerHTML='<p class="muted" style="font-size:13px">No activity yet.</p>';return;}
+  logDiv.innerHTML=invLog.slice(0,20).map(l=>`
+    <div class="log-entry">
+      <div style="display:flex;justify-content:space-between">
+        <span class="${l.type==='buy'?'log-type-buy':'log-type-use'}">${l.type==='buy'?'&#x2795; Purchased':'&#x2796; Used'} ${l.qty} × ${l.item}</span>
+        <span class="muted" style="font-size:11px">${fmtDate(l.timestamp)}</span>
+      </div>
+      <div class="muted" style="font-size:11px;margin-top:2px">${l.note||''}</div>
+    </div>`).join('');
+}
+
+window.showAdjust=function(id){
+  const it=inventory[id];
+  const delta=prompt('Adjust qty for '+it.name+'\nCurrent: '+it.qty+'\n\nEnter + to add (e.g. +12) or - to subtract (e.g. -5):');
+  if(!delta) return;
+  const val=parseInt(delta);
+  if(isNaN(val)){alert('Please enter a number like +12 or -5.');return;}
+  adjustInv(id,val,val>0?'Manual add: +'+val+' units':'Manual remove: '+val+' units');
+};
+
+function updateInvSuggestions(){
+  const dl=document.getElementById('invItemSuggestions');
+  dl.innerHTML=Object.values(inventory).map(i=>`<option value="${esc(i.name)}">`).join('');
+}
+
+// ── Prev restock logic ────────────────────────────────────────
 function buildPrevRestockMap(){
   prevRestockMap={};
   const locReports=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
   if(!locReports.length) return;
   (locReports[0].lineItems||[]).forEach(l=>{
-    if(l.item&&l.restock!==''&&l.restock!==null&&l.restock!==undefined){
+    if(l.item&&l.restock!==''&&l.restock!==null&&l.restock!==undefined)
       prevRestockMap[itemKey(l.slot,l.item)]=parseFloat(l.restock);
-    }
   });
 }
 function itemKey(slot,item){return(slot||'').trim().toLowerCase()+'|'+(item||'').trim().toLowerCase();}
-function getPrevRestock(slot,item){
-  const k=itemKey(slot,item);
-  return prevRestockMap.hasOwnProperty(k)?prevRestockMap[k]:null;
-}
-function calcSold(s){
-  const arrival=parseFloat(s.arrival);
-  if(isNaN(arrival)) return null;
-  const prev=getPrevRestock(s.slot,s.item);
-  if(prev===null) return null;
-  return Math.max(0,prev-arrival);
-}
+function getPrevRestock(slot,item){const k=itemKey(slot,item);return prevRestockMap.hasOwnProperty(k)?prevRestockMap[k]:null;}
+function calcSold(s){const arrival=parseFloat(s.arrival);if(isNaN(arrival))return null;const prev=getPrevRestock(s.slot,s.item);if(prev===null)return null;return Math.max(0,prev-arrival);}
 function calcRow(s){
   const sold=calcSold(s);
-  const price=parseFloat(s.price)||0, cost=parseFloat(s.cost)||0;
-  return{sold, rev:sold!==null?sold*price:null, profit:sold!==null?sold*(price-cost):null};
+  const price=parseFloat(s.price)||0,cost=parseFloat(s.cost)||0;
+  return{sold,rev:sold!==null?sold*price:null,profit:sold!==null?sold*(price-cost):null};
 }
-
 function showPrevRestockNote(){
   const note=document.getElementById('prevRestockNote');
   const locReports=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
-  if(!locReports.length){
-    note.style.display='block';
-    note.innerHTML='&#x2139;&#xFE0F; <strong>First visit.</strong> Enter qty and restock — sold tracks automatically next visit.';
-  } else {
-    note.style.display='block';
-    note.innerHTML='&#x1F4CC; Sold = last restock minus today\'s arrival. Last visit: <strong>'+locReports[0].date+'</strong>';
-  }
+  if(!locReports.length){note.style.display='block';note.innerHTML='&#x2139;&#xFE0F; <strong>First visit.</strong> Enter qty and restock — sold tracks automatically next visit.';}
+  else{note.style.display='block';note.innerHTML='&#x1F4CC; Sold = last restock minus today\'s arrival. Last visit: <strong>'+locReports[0].date+'</strong>';}
 }
 
-// ── RENDER BOTH VIEWS ─────────────────────────────────────────
-function renderAll(){
-  renderMobileCards();
-  renderDesktopTable();
-  renderTotals();
-}
+// ── Render sheet ──────────────────────────────────────────────
+function renderAll(){renderMobileCards();renderDesktopTable();renderTotals();}
 
 function renderMobileCards(){
   const container=document.getElementById('slotCardsMobile');
@@ -373,24 +526,15 @@ function renderMobileCards(){
     const{sold,rev,profit}=calcRow(s);
     const prev=getPrevRestock(s.slot,s.item);
     const soldStr=sold!==null?sold:prev===null?'—*':'—';
-    const soldColor=sold!==null&&sold>0?'#1a6b2a':sold===0?'#888':'#888';
-    const revStr=rev!==null?'$'+rev.toFixed(2):'—';
-    const profStr=profit!==null?'$'+profit.toFixed(2):'—';
-    const profColor=profit===null?'#888':profit<0?'#a32d2d':'#1a6b2a';
+    const soldColor=sold!==null&&sold>0?'#1a6b2a':'#888';
     return`<div class="slot-card" id="scard-${i}">
       <div class="slot-card-header">
         <span class="slot-label">Slot ${s.slot||i+1}</span>
         <button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border-color:#e8b4b0;padding:3px 8px;font-size:12px">&#x2715; Remove</button>
       </div>
       <div class="slot-grid-2" style="margin-bottom:8px">
-        <div class="input-group">
-          <label>Slot label</label>
-          <input type="text" value="${esc(s.slot)}" placeholder="A1" data-idx="${i}" data-field="slot"/>
-        </div>
-        <div class="input-group">
-          <label>Item name</label>
-          <input type="text" value="${esc(s.item)}" placeholder="e.g. Coke" data-idx="${i}" data-field="item"/>
-        </div>
+        <div class="input-group"><label>Slot label</label><input type="text" value="${esc(s.slot)}" placeholder="A1" data-idx="${i}" data-field="slot"/></div>
+        <div class="input-group"><label>Item name</label><input type="text" value="${esc(s.item)}" placeholder="e.g. Coke" data-idx="${i}" data-field="item"/></div>
       </div>
       <div class="slot-grid-2" style="margin-bottom:8px">
         <div class="input-group">
@@ -404,28 +548,13 @@ function renderMobileCards(){
         </div>
       </div>
       <div class="slot-grid-2" style="margin-bottom:8px">
-        <div class="input-group">
-          <label>Sell price ($)</label>
-          <input type="number" value="${esc(s.price)}" placeholder="1.50" step="0.25" min="0" inputmode="decimal" data-idx="${i}" data-field="price"/>
-        </div>
-        <div class="input-group">
-          <label>Item cost ($)</label>
-          <input type="number" value="${esc(s.cost)}" placeholder="0.50" step="0.05" min="0" inputmode="decimal" data-idx="${i}" data-field="cost"/>
-        </div>
+        <div class="input-group"><label>Sell price ($)</label><input type="number" value="${esc(s.price)}" placeholder="1.50" step="0.25" min="0" inputmode="decimal" data-idx="${i}" data-field="price"/></div>
+        <div class="input-group"><label>Item cost ($)</label><input type="number" value="${esc(s.cost)}" placeholder="0.50" step="0.05" min="0" inputmode="decimal" data-idx="${i}" data-field="cost"/></div>
       </div>
       <div class="calc-row">
-        <div class="calc-item">
-          <div class="calc-label">SOLD</div>
-          <div class="calc-val" style="color:${soldColor}" id="m-sold-${i}">${soldStr}</div>
-        </div>
-        <div class="calc-item">
-          <div class="calc-label">REVENUE</div>
-          <div class="calc-val" id="m-rev-${i}">${revStr}</div>
-        </div>
-        <div class="calc-item">
-          <div class="calc-label">PROFIT</div>
-          <div class="calc-val" style="color:${profColor}" id="m-prof-${i}">${profStr}</div>
-        </div>
+        <div class="calc-item"><div class="calc-label">SOLD</div><div class="calc-val" style="color:${soldColor}" id="m-sold-${i}">${soldStr}</div></div>
+        <div class="calc-item"><div class="calc-label">REVENUE</div><div class="calc-val" id="m-rev-${i}">${rev!==null?'$'+rev.toFixed(2):'—'}</div></div>
+        <div class="calc-item"><div class="calc-label">PROFIT</div><div class="calc-val" style="color:${profit===null?'#888':profit<0?'#a32d2d':'#1a6b2a'}" id="m-prof-${i}">${profit!==null?'$'+profit.toFixed(2):'—'}</div></div>
       </div>
     </div>`;
   }).join('');
@@ -437,17 +566,14 @@ function renderDesktopTable(){
   body.innerHTML=slots.map((s,i)=>{
     const{sold,rev,profit}=calcRow(s);
     const prev=getPrevRestock(s.slot,s.item);
-    const soldStr=sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—';
     return`<tr>
       <td><input type="text" value="${esc(s.slot)}" placeholder="A1" data-idx="${i}" data-field="slot"/></td>
       <td><input type="text" value="${esc(s.item)}" placeholder="Item" data-idx="${i}" data-field="item"/></td>
-      <td class="arrival-col"><input type="number" value="${esc(s.arrival)}" placeholder="0" min="0" style="text-align:center" data-idx="${i}" data-field="arrival"/>
-        ${prev!==null?`<span class="prev-tag">prev: ${prev}</span>`:''}
-      </td>
+      <td class="arrival-col"><input type="number" value="${esc(s.arrival)}" placeholder="0" min="0" style="text-align:center" data-idx="${i}" data-field="arrival"/>${prev!==null?`<span class="prev-tag">prev: ${prev}</span>`:''}</td>
       <td class="restock-col"><input type="number" value="${esc(s.restock)}" placeholder="0" min="0" style="text-align:center" data-idx="${i}" data-field="restock"/></td>
       <td><input type="number" value="${esc(s.price)}" placeholder="1.50" step="0.25" min="0" style="text-align:right" data-idx="${i}" data-field="price"/></td>
       <td><input type="number" value="${esc(s.cost)}" placeholder="0.50" step="0.05" min="0" style="text-align:right" data-idx="${i}" data-field="cost"/></td>
-      <td style="text-align:center" id="d-sold-${i}">${soldStr}</td>
+      <td style="text-align:center" id="d-sold-${i}">${sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—'}</td>
       <td style="text-align:right" id="d-rev-${i}">${rev!==null?'$'+rev.toFixed(2):'—'}</td>
       <td style="text-align:right" id="d-prof-${i}">${profit!==null?`<span class="${profit<0?'red':'green'}">$${profit.toFixed(2)}</span>`:'—'}</td>
       <td><button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border:1px solid #e8b4b0">&#x2715;</button></td>
@@ -456,23 +582,12 @@ function renderDesktopTable(){
 }
 
 function updateRowCalcs(i){
-  const s=slots[i];
-  const{sold,rev,profit}=calcRow(s);
-  const prev=getPrevRestock(s.slot,s.item);
-  // mobile
-  const mSold=document.getElementById('m-sold-'+i);
-  const mRev=document.getElementById('m-rev-'+i);
-  const mProf=document.getElementById('m-prof-'+i);
-  if(mSold){
-    mSold.textContent=sold!==null?sold:prev===null?'—*':'—';
-    mSold.style.color=sold!==null&&sold>0?'#1a6b2a':'#888';
-  }
+  const s=slots[i];const{sold,rev,profit}=calcRow(s);const prev=getPrevRestock(s.slot,s.item);
+  const mSold=document.getElementById('m-sold-'+i);const mRev=document.getElementById('m-rev-'+i);const mProf=document.getElementById('m-prof-'+i);
+  if(mSold){mSold.textContent=sold!==null?sold:prev===null?'—*':'—';mSold.style.color=sold!==null&&sold>0?'#1a6b2a':'#888';}
   if(mRev) mRev.textContent=rev!==null?'$'+rev.toFixed(2):'—';
   if(mProf){mProf.textContent=profit!==null?'$'+profit.toFixed(2):'—';mProf.style.color=profit===null?'#888':profit<0?'#a32d2d':'#1a6b2a';}
-  // desktop
-  const dSold=document.getElementById('d-sold-'+i);
-  const dRev=document.getElementById('d-rev-'+i);
-  const dProf=document.getElementById('d-prof-'+i);
+  const dSold=document.getElementById('d-sold-'+i);const dRev=document.getElementById('d-rev-'+i);const dProf=document.getElementById('d-prof-'+i);
   if(dSold) dSold.innerHTML=sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—';
   if(dRev) dRev.textContent=rev!==null?'$'+rev.toFixed(2):'—';
   if(dProf) dProf.innerHTML=profit!==null?`<span class="${profit<0?'red':'green'}">$${profit.toFixed(2)}</span>`:'—';
@@ -481,68 +596,41 @@ function updateRowCalcs(i){
 function renderTotals(){
   let totSold=0,totRev=0,totProfit=0,has=false;
   slots.forEach(s=>{const{sold,rev,profit}=calcRow(s);if(sold!==null){totSold+=sold;totRev+=rev;totProfit+=profit;has=true;}});
-  // desktop tfoot
-  const ts=document.getElementById('tot-sold');
-  const tr=document.getElementById('tot-rev');
-  const tp=document.getElementById('tot-profit');
+  const ts=document.getElementById('tot-sold');const tr=document.getElementById('tot-rev');const tp=document.getElementById('tot-profit');
   if(ts) ts.textContent=has?totSold:'—';
   if(tr) tr.textContent=has?'$'+totRev.toFixed(2):'—';
   if(tp){tp.textContent=has?'$'+totProfit.toFixed(2):'—';tp.className=has&&totProfit<0?'red':'green';}
 }
 
-// Event delegation for all sheet inputs and buttons
+// ── Event delegation ──────────────────────────────────────────
 document.addEventListener('input',function(e){
   const inp=e.target.closest('[data-field]');
   if(!inp) return;
-  const i=parseInt(inp.dataset.idx);
-  const f=inp.dataset.field;
+  const i=parseInt(inp.dataset.idx);const f=inp.dataset.field;
   slots[i][f]=inp.value;
-  buildPrevRestockMap();
-  updateRowCalcs(i);
-  renderTotals();
+  buildPrevRestockMap();updateRowCalcs(i);renderTotals();
 });
-
 document.addEventListener('click',function(e){
-  // Remove slot
   const removeBtn=e.target.closest('[data-remove-idx]');
-  if(removeBtn){
-    const i=parseInt(removeBtn.dataset.removeIdx);
-    if(confirm('Remove this slot?')){slots.splice(i,1);renderAll();}
-    return;
-  }
-  // Delete report
+  if(removeBtn){const i=parseInt(removeBtn.dataset.removeIdx);if(confirm('Remove this slot?')){slots.splice(i,1);renderAll();}return;}
   const delBtn=e.target.closest('[data-delete-id]');
-  if(delBtn){
-    window.deleteReport(delBtn.getAttribute('data-delete-id'));
-    return;
-  }
+  if(delBtn){window.deleteReport(delBtn.getAttribute('data-delete-id'));return;}
 });
 
-window.switchLoc=async function(){
-  loc=document.getElementById('locSel').value;
-  await loadSlots();
-};
-window.saveLocName=async function(){
-  locNames[loc]=document.getElementById('locName').value.trim();
-  await saveLocNamesToDB(); toast('Location name saved!');
-};
+// ── Window functions ──────────────────────────────────────────
+window.switchLoc=async function(){loc=document.getElementById('locSel').value;await loadSlots();};
+window.saveLocName=async function(){locNames[loc]=document.getElementById('locName').value.trim();await saveLocNamesToDB();toast('Location name saved!');};
 window.addSlot=function(){
-  slots.push({slot:'',item:'',arrival:'',restock:'',price:'',cost:''});
-  renderAll();
-  // scroll to new card on mobile
-  setTimeout(()=>{
-    const cards=document.querySelectorAll('.slot-card');
-    if(cards.length) cards[cards.length-1].scrollIntoView({behavior:'smooth',block:'center'});
-  },100);
+  slots.push({slot:'',item:'',arrival:'',restock:'',price:'',cost:''});renderAll();
+  setTimeout(()=>{const cards=document.querySelectorAll('.slot-card');if(cards.length)cards[cards.length-1].scrollIntoView({behavior:'smooth',block:'center'});},100);
 };
-window.saveSheet=async function(){
-  await saveSlotsDB(); toast('Sheet saved!');
-};
+window.saveSheet=async function(){await saveSlotsDB();toast('Sheet saved!');};
+
 window.submitReport=async function(){
   const dateVal=document.getElementById('visitDate').value;
   if(!dateVal){alert('Please select a visit date.');return;}
   const btn=document.getElementById('submitBtn');
-  btn.disabled=true; btn.textContent='Saving...';
+  btn.disabled=true;btn.textContent='Saving...';
   try{
     const d=new Date(dateVal+'T12:00:00');
     const dateLabel=MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
@@ -553,34 +641,26 @@ window.submitReport=async function(){
       const{sold,rev,profit}=calcRow(s);
       const prev=getPrevRestock(s.slot,s.item);
       if(sold!==null){totSold+=sold;totRev+=rev;totProfit+=profit;}
-      return{slot:s.slot,item:s.item,arrival:s.arrival,restock:s.restock,
-        prevRestock:prev!==null?prev:null,
-        price:parseFloat(s.price)||0,cost:parseFloat(s.cost)||0,sold,rev,profit};
+      return{slot:s.slot,item:s.item,arrival:s.arrival,restock:s.restock,prevRestock:prev!==null?prev:null,price:parseFloat(s.price)||0,cost:parseFloat(s.cost)||0,sold,rev,profit};
     });
-    await addDoc(collection(db,'reports'),{
-      date:dateLabel,dateVal,monthKey,loc,name,lineItems,
-      totSold,totRev,totProfit,timestamp:Date.now()
-    });
+    await addDoc(collection(db,'reports'),{date:dateLabel,dateVal,monthKey,loc,name,lineItems,totSold,totRev,totProfit,timestamp:Date.now()});
     await saveSlotsDB();
-    showStatus('Report saved for '+name+' — '+dateLabel,'success');
+    // Deduct from inventory: what was physically added to the machine
+    await deductInventoryForReport(lineItems);
+    showStatus('Report saved for '+name+' — '+dateLabel+'. Inventory updated automatically.','success');
     await loadAllReports();
-    buildPrevRestockMap();
-    renderAll();
-    showPrevRestockNote();
+    buildPrevRestockMap();renderAll();showPrevRestockNote();
+    renderInventory();
     showTab('history');
   }catch(e){showStatus('Error: '+e.message,'error');}
-  btn.disabled=false; btn.innerHTML='&#x1F4C4; Submit Report';
+  btn.disabled=false;btn.innerHTML='&#x1F4C4; Submit Report';
 };
 
 window.deleteReport=async function(reportId){
   if(!confirm('Delete this report? Cannot be undone.')) return;
   try{
     await deleteDoc(doc(db,'reports',reportId));
-    await loadAllReports();
-    buildPrevRestockMap();
-    renderAll();
-    showPrevRestockNote();
-    renderHistory();
+    await loadAllReports();buildPrevRestockMap();renderAll();showPrevRestockNote();renderHistory();
     toast('Report deleted.');
   }catch(e){showStatus('Error deleting: '+e.message,'error');}
 };
@@ -593,10 +673,7 @@ window.renderHistory=function(){
   div.innerHTML=filtered.map(r=>`
     <div class="history-card">
       <div class="history-header">
-        <div>
-          <div style="font-weight:700;font-size:15px">${r.name}</div>
-          <div class="muted" style="font-size:12px;margin-top:2px">${r.date}</div>
-        </div>
+        <div><div style="font-weight:700;font-size:15px">${r.name}</div><div class="muted" style="font-size:12px;margin-top:2px">${r.date}</div></div>
         <button class="danger-solid sm" data-delete-id="${r.id}">&#x1F5D1; Delete</button>
       </div>
       <div class="history-stats">
@@ -604,21 +681,17 @@ window.renderHistory=function(){
         <span><strong>$${parseFloat(r.totRev||0).toFixed(2)}</strong> revenue</span>
         <span class="${r.totProfit<0?'red':'green'}"><strong>$${parseFloat(r.totProfit||0).toFixed(2)}</strong> profit</span>
       </div>
-      <div>
-        ${(r.lineItems||[]).map(l=>`
-          <div class="history-item-row">
-            <div>
-              <div style="font-weight:500">${l.item}</div>
-              <div class="muted" style="font-size:11px">Slot ${l.slot}</div>
-            </div>
-            <div class="item-qty-badges">
-              <span class="qty-badge qty-arr" title="Arrival">${l.arrival||'—'}</span>
-              <span style="color:#ccc;font-size:12px">→</span>
-              <span class="qty-badge qty-rst" title="Restocked to">${l.restock||'—'}</span>
-              <span style="color:#ccc;font-size:12px">·</span>
-              <span class="qty-badge qty-sold" title="Sold">${l.sold!==null?l.sold+'sold':'—'}</span>
-            </div>
-          </div>`).join('')}
+      <div>${(r.lineItems||[]).map(l=>`
+        <div class="history-item-row">
+          <div><div style="font-weight:500">${l.item}</div><div class="muted" style="font-size:11px">Slot ${l.slot}</div></div>
+          <div class="item-qty-badges">
+            <span class="qty-badge qty-arr" title="Arrival">${l.arrival||'—'}</span>
+            <span style="color:#ccc;font-size:12px">→</span>
+            <span class="qty-badge qty-rst" title="Restocked to">${l.restock||'—'}</span>
+            <span style="color:#ccc;font-size:12px">·</span>
+            <span class="qty-badge qty-sold" title="Sold">${l.sold!==null?l.sold+' sold':'—'}</span>
+          </div>
+        </div>`).join('')}
       </div>
     </div>`).join('');
 };
@@ -630,10 +703,7 @@ function populateMonthSelector(){
   const sorted=[...keys].sort().reverse();
   const sel=document.getElementById('monthSel');
   const cur=sel.value;
-  sel.innerHTML=sorted.map(k=>{
-    const[y,m]=k.split('-');
-    return`<option value="${k}"${k===cur?' selected':''}>${MONTHS[parseInt(m)-1]} ${y}</option>`;
-  }).join('');
+  sel.innerHTML=sorted.map(k=>{const[y,m]=k.split('-');return`<option value="${k}"${k===cur?' selected':''}>${MONTHS[parseInt(m)-1]} ${y}</option>`;}).join('');
   if(!sel.value&&sorted.length) sel.value=sorted[0];
 }
 
@@ -645,29 +715,18 @@ window.renderMonthly=function(){
   const monthLabel=MONTHS[parseInt(m)-1]+' '+y;
   const filtered=allReports.filter(r=>r.monthKey===monthKey&&(filterLoc==='all'||r.loc===filterLoc));
   const itemMap={};
-  filtered.forEach(r=>{
-    (r.lineItems||[]).forEach(l=>{
-      if(!l.item||l.sold===null||l.sold===undefined) return;
-      const key=l.item.trim().toLowerCase();
-      if(!itemMap[key]) itemMap[key]={name:l.item.trim(),sold:0,rev:0,profit:0,visits:0};
-      itemMap[key].sold+=l.sold; itemMap[key].rev+=l.rev||0; itemMap[key].profit+=l.profit||0;
-      if(l.sold>0) itemMap[key].visits++;
-    });
-  });
+  filtered.forEach(r=>{(r.lineItems||[]).forEach(l=>{if(!l.item||l.sold===null||l.sold===undefined)return;const key=l.item.trim().toLowerCase();if(!itemMap[key])itemMap[key]={name:l.item.trim(),sold:0,rev:0,profit:0,visits:0};itemMap[key].sold+=l.sold;itemMap[key].rev+=l.rev||0;itemMap[key].profit+=l.profit||0;if(l.sold>0)itemMap[key].visits++;});});
   const items=Object.values(itemMap).sort((a,b)=>b.sold-a.sold);
   const totSold=items.reduce((s,i)=>s+i.sold,0);
   const totRev=items.reduce((s,i)=>s+i.rev,0);
   const totProfit=items.reduce((s,i)=>s+i.profit,0);
   const maxSold=items.length?Math.max(items[0].sold,1):1;
   const div=document.getElementById('monthlyContent');
-  if(!items.length){
-    div.innerHTML='<div class="card"><p class="muted" style="font-size:13px">No reports for '+monthLabel+'.</p></div>';
-    return;
-  }
+  if(!items.length){div.innerHTML='<div class="card"><p class="muted" style="font-size:13px">No reports for '+monthLabel+'.</p></div>';return;}
   const top3=items.slice(0,Math.min(3,items.length));
   const bot3=items.length>3?items.slice(-Math.min(3,items.length)).reverse():[];
   div.innerHTML=`
-    <div class="stat-grid four" style="margin-bottom:.75rem">
+    <div class="stat-grid" style="margin-bottom:.75rem">
       <div class="stat"><div class="stat-label">Units sold</div><div class="stat-value">${totSold}</div></div>
       <div class="stat"><div class="stat-label">Revenue</div><div class="stat-value">$${totRev.toFixed(2)}</div></div>
       <div class="stat"><div class="stat-label">Profit</div><div class="stat-value ${totProfit<0?'red':'green'}">$${totProfit.toFixed(2)}</div></div>
@@ -676,39 +735,20 @@ window.renderMonthly=function(){
     <div class="top-bot-grid">
       <div class="card" style="border-color:#2d7a2d">
         <h3 style="color:#1a6b2a;margin-bottom:.5rem">&#x2B06; Top sellers</h3>
-        ${top3.map(it=>`<div style="margin-bottom:8px">
-          <div style="display:flex;justify-content:space-between;font-size:13px">
-            <span style="font-weight:600">${it.name}</span><span class="green">${it.sold}</span>
-          </div>
-          <div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#2d7a2d"></div></div>
-        </div>`).join('')}
+        ${top3.map(it=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${it.name}</span><span class="green">${it.sold}</span></div><div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#2d7a2d"></div></div></div>`).join('')}
       </div>
-      ${bot3.length?`<div class="card" style="border-color:#c0392b">
-        <h3 style="color:#a32d2d;margin-bottom:.5rem">&#x2B07; Slowest</h3>
-        ${bot3.map(it=>`<div style="margin-bottom:8px">
-          <div style="display:flex;justify-content:space-between;font-size:13px">
-            <span style="font-weight:600">${it.name}</span><span class="red">${it.sold}</span>
-          </div>
-          <div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#c0392b"></div></div>
-        </div>`).join('')}
-      </div>`:''}
+      ${bot3.length?`<div class="card" style="border-color:#c0392b"><h3 style="color:#a32d2d;margin-bottom:.5rem">&#x2B07; Slowest</h3>${bot3.map(it=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${it.name}</span><span class="red">${it.sold}</span></div><div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#c0392b"></div></div></div>`).join('')}</div>`:''}
     </div>
-    <div class="card">
-      <h2 style="margin-bottom:.75rem">All items — ${monthLabel}</h2>
+    <div class="card"><h2 style="margin-bottom:.75rem">All items — ${monthLabel}</h2>
       ${items.map((it,i)=>{
         const margin=it.rev>0?Math.round(it.profit/it.rev*100):null;
         const marginColor=margin===null?'#888':margin>=50?'#1a6b2a':margin>=25?'#856404':margin>=0?'#555':'#a32d2d';
         const marginBg=margin===null?'transparent':margin>=50?'#d4edda':margin>=25?'#fff3cd':margin>=0?'#f4f4f0':'#fde8e8';
         return`<div class="monthly-item-row">
-          <div>
-            <div style="font-weight:${i<3?'700':'400'};font-size:14px">${it.name}${i===0?'<span class="badge badge-top">top</span>':i===items.length-1?'<span class="badge badge-low">low</span>':''}</div>
-            <div class="muted" style="font-size:11px">${it.visits} visit${it.visits!==1?'s':''} · ${it.sold} units</div>
-          </div>
+          <div><div style="font-weight:${i<3?'700':'400'};font-size:14px">${it.name}${i===0?'<span class="badge badge-top">top</span>':i===items.length-1?'<span class="badge badge-low">low</span>':''}</div>
+          <div class="muted" style="font-size:11px">${it.visits} visit${it.visits!==1?'s':''} · ${it.sold} units</div></div>
           <div class="monthly-item-right">
-            <div style="text-align:right">
-              <div style="font-size:13px;font-weight:600">$${it.rev.toFixed(2)}</div>
-              <div style="font-size:11px" class="${it.profit<0?'red':'green'}">$${it.profit.toFixed(2)} profit</div>
-            </div>
+            <div style="text-align:right"><div style="font-size:13px;font-weight:600">$${it.rev.toFixed(2)}</div><div style="font-size:11px" class="${it.profit<0?'red':'green'}">$${it.profit.toFixed(2)} profit</div></div>
             <span style="background:${marginBg};color:${marginColor};padding:3px 8px;border-radius:99px;font-size:12px;font-weight:700;min-width:44px;text-align:center">${margin!==null?margin+'%':'—'}</span>
           </div>
         </div>`;
@@ -717,17 +757,14 @@ window.renderMonthly=function(){
 };
 
 window.showTab=async function(t){
-  ['sheet','history','monthly'].forEach(n=>{
+  ['sheet','history','monthly','inventory'].forEach(n=>{
     document.getElementById('pane-'+n).style.display=n===t?'':'none';
-    // mobile nav
-    const nb=document.getElementById('nav-'+n);
-    if(nb) nb.classList.toggle('active',n===t);
-    // desktop tabs
-    const db2=document.getElementById('dtab-'+n);
-    if(db2) db2.classList.toggle('active',n===t);
+    const nb=document.getElementById('nav-'+n);if(nb)nb.classList.toggle('active',n===t);
+    const db2=document.getElementById('dtab-'+n);if(db2)db2.classList.toggle('active',n===t);
   });
   if(t==='history'){await loadAllReports();buildPrevRestockMap();renderHistory();}
   if(t==='monthly'){await loadAllReports();populateMonthSelector();renderMonthly();}
+  if(t==='inventory'){await loadInventory();renderInventory();updateInvSuggestions();}
 };
 
 async function init(){
@@ -735,11 +772,12 @@ async function init(){
   showStatus('Connecting...','info');
   await loadLocNames();
   await loadAllReports();
+  await loadInventory();
   await loadSlots();
   populateMonthSelector();
+  updateInvSuggestions();
   showStatus('Connected! Data saves automatically.','success');
 }
-
 init();
 </script>
 </body>
