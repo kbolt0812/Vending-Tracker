@@ -15,73 +15,76 @@ h3{font-size:14px;font-weight:600;margin-bottom:.5rem}
 label{font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:500}
 select,input[type="text"],input[type="number"],input[type="date"]{padding:10px 12px;border-radius:10px;border:1.5px solid #ddd;background:#fff;color:#1a1a1a;font-size:16px;font-family:inherit;width:100%;outline:none;-webkit-appearance:none;appearance:none}
 select:focus,input:focus{border-color:#1a6fc4;box-shadow:0 0 0 3px rgba(26,111,196,.12)}
-button{padding:11px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-size:15px;font-family:inherit;color:#1a1a1a;font-weight:500;transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:44px}
+button{padding:11px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-size:15px;font-family:inherit;color:#1a1a1a;font-weight:500;transition:all .15s;min-height:44px}
 button:active{opacity:.75;transform:scale(.97)}
 button.primary{background:#1a6fc4;color:#fff;border-color:#1a6fc4}
 button.success{background:#2d7a2d;color:#fff;border-color:#2d7a2d}
-button.orange{background:#d4680a;color:#fff;border-color:#d4680a}
+button.warning{background:#d4680a;color:#fff;border-color:#d4680a}
 button.sm{padding:7px 12px;font-size:13px;min-height:36px}
 button.danger-solid{background:#c0392b;color:#fff;border-color:#c0392b;padding:7px 12px;font-size:13px;min-height:36px}
 button.full{width:100%;margin-bottom:8px}
 button:disabled{opacity:.5}
+/* Nav */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0ddd5;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;border:none;background:transparent;cursor:pointer;color:#888;font-size:10px;font-weight:500;gap:3px;min-height:56px;-webkit-tap-highlight-color:transparent}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px;border:none;background:transparent;cursor:pointer;color:#888;font-size:9px;font-weight:500;gap:2px;min-height:56px}
 .nav-btn.active{color:#1a6fc4}
-.nav-icon{font-size:20px;line-height:1}
+.nav-icon{font-size:18px;line-height:1}
+/* Stats */
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem}
 .stat{background:#f4f4f0;border-radius:10px;padding:.65rem .85rem}
 .stat-label{font-size:11px;color:#888;margin-bottom:2px}
 .stat-value{font-size:20px;font-weight:700}
+/* Slot cards */
 .slot-card{background:#f9f8f6;border:1.5px solid #e8e4de;border-radius:12px;padding:.85rem;margin-bottom:.65rem}
 .slot-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
-.slot-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px}
-.slot-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.slot-label-tag{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
 .input-group label{font-size:11px;color:#666;margin-bottom:3px}
-.arrival-inp{background:#f0f7ee;border-color:#b8ddb0}
-.restock-inp{background:#e8f3ff;border-color:#a8cff0}
-.calc-row{display:flex;gap:6px;margin-top:6px;background:#f4f4f0;border-radius:8px;padding:6px 8px;align-items:center}
+.arrival-inp{background:#f0f7ee!important;border-color:#b8ddb0!important}
+.restock-inp{background:#e8f3ff!important;border-color:#a8cff0!important}
+.calc-row{display:flex;gap:6px;margin-top:6px;background:#f4f4f0;border-radius:8px;padding:6px 8px}
 .calc-item{flex:1;text-align:center}
 .calc-label{font-size:10px;color:#888;margin-bottom:1px}
 .calc-val{font-size:14px;font-weight:700}
 .prev-tag{font-size:10px;color:#aaa;display:block;margin-top:2px;text-align:center}
+/* Colors */
 .green{color:#1a6b2a;font-weight:700}
 .red{color:#a32d2d;font-weight:700}
-.orange-text{color:#d4680a;font-weight:700}
+.orange{color:#d4680a;font-weight:700}
 .muted{color:#888}
+/* History */
 .history-card{background:#fff;border:1px solid #e0ddd5;border-radius:14px;padding:1rem;margin-bottom:.75rem}
-.history-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;gap:8px}
-.history-stats{display:flex;gap:12px;font-size:13px;flex-wrap:wrap;margin-bottom:.75rem}
 .history-item-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0ede8;font-size:13px}
 .history-item-row:last-child{border-bottom:none}
-.item-qty-badges{display:flex;gap:5px;align-items:center}
 .qty-badge{padding:2px 7px;border-radius:6px;font-size:12px;font-weight:600}
 .qty-arr{background:#f0f7ee;color:#2d6b20}
 .qty-rst{background:#e8f3ff;color:#1a5c9e}
 .qty-sold{background:#fff3cd;color:#7a5200}
-.top-bot-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem}
+/* Monthly */
 .bar-wrap{background:#e8e6e0;border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
 .bar{height:6px;border-radius:4px}
 .badge{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:600;margin-left:4px}
 .badge-top{background:#d4edda;color:#1a6b2a}
 .badge-low{background:#fde8e8;color:#a32d2d}
-.monthly-item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px;gap:8px}
-.monthly-item-row:last-child{border-bottom:none}
-.monthly-item-right{display:flex;gap:10px;align-items:center;flex-shrink:0}
-/* Inventory tab */
-.inv-item-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0ede8;gap:8px}
-.inv-item-row:last-child{border-bottom:none}
-.inv-name{font-weight:600;font-size:14px}
-.inv-meta{font-size:11px;color:#888;margin-top:2px}
-.inv-qty{font-size:22px;font-weight:700;text-align:right}
-.inv-qty-label{font-size:10px;color:#888;text-align:right}
-.stock-badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600}
+.monthly-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px;gap:8px}
+.monthly-row:last-child{border-bottom:none}
+/* Inventory */
+.inv-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0ede8;gap:8px}
+.inv-row:last-child{border-bottom:none}
+.stock-badge{display:inline-block;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:600}
 .stock-ok{background:#d4edda;color:#1a6b2a}
 .stock-low{background:#fff3cd;color:#856404}
 .stock-out{background:#fde8e8;color:#a32d2d}
-.log-entry{padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px}
-.log-entry:last-child{border-bottom:none}
-.log-type-buy{color:#1a6b2a;font-weight:600}
-.log-type-use{color:#1a6fc4;font-weight:600}
+.log-row{padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px}
+.log-row:last-child{border-bottom:none}
+/* Master items */
+.item-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0ede8;gap:8px}
+.item-row:last-child{border-bottom:none}
+.cat-pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.cat-drink{background:#e8f3ff;color:#1a5c9e}
+.cat-snack{background:#fff3cd;color:#7a5200}
+/* Status/toast */
 .status-bar{border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem;display:none}
 .status-bar.error{background:#fde8e8;border:1px solid #c0392b;display:block}
 .status-bar.success{background:#d4edda;border:1px solid #2d7a2d;display:block}
@@ -89,18 +92,24 @@ button:disabled{opacity:.5}
 .toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 22px;border-radius:99px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1}
 .note-bar{background:#fff8e1;border:1px solid #f0c040;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem}
-.section-actions{display:flex;flex-direction:column;gap:8px}
 .flex-row{display:flex;gap:8px}
 .flex-row button{flex:1}
+.section-gap{margin-bottom:.75rem}
 .divider{border:none;border-top:1px solid #f0ede8;margin:.75rem 0}
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1rem;width:100%;max-width:700px;max-height:85vh;overflow-y:auto}
+.modal h3{margin-bottom:1rem}
+.modal-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:#888;min-height:auto;padding:0}
+/* Desktop */
 @media(min-width:650px){
-  .slot-card-desktop{display:block}
-  .slot-cards-mobile{display:none}
+  .mobile-cards{display:none}
+  .desktop-table-wrap{display:block}
   table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
   thead th{font-weight:600;font-size:11px;color:#666;text-align:left;padding:6px 5px;border-bottom:1px solid #ddd;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
   tbody td{padding:5px;vertical-align:middle;border-bottom:1px solid #f0ede8}
   tbody tr:last-child td{border-bottom:none}
-  tfoot td{padding:6px 5px;border-top:1px solid #ddd;font-weight:600;font-size:13px}
+  tfoot td{padding:6px 5px;border-top:1px solid #ddd;font-weight:600}
   .arrival-col{background:#f0f7ee}
   .restock-col{background:#e8f3ff}
   .overflow{overflow-x:auto}
@@ -109,13 +118,13 @@ button:disabled{opacity:.5}
   body{padding-bottom:0}
 }
 @media(max-width:649px){
-  .slot-card-desktop{display:none}
-  .slot-cards-mobile{display:block}
+  .mobile-cards{display:block}
+  .desktop-table-wrap{display:none}
   .desktop-tabs{display:none!important}
 }
 .desktop-tabs{display:none;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
-.desktop-tab{padding:8px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-size:14px;color:#666;font-weight:500}
-.desktop-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.dtab{padding:8px 16px;border-radius:10px;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-size:13px;color:#666;font-weight:500}
+.dtab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
 </style>
 </head>
 <body>
@@ -123,60 +132,49 @@ button:disabled{opacity:.5}
   <div id="statusBar" class="status-bar"></div>
   <h1>&#x1F3EA; Vending Tracker</h1>
 
-  <div class="desktop-tabs" id="desktopTabs">
-    <button class="desktop-tab active" onclick="showTab('sheet')" id="dtab-sheet">&#x1F4CB; Visit Sheet</button>
-    <button class="desktop-tab" onclick="showTab('history')" id="dtab-history">&#x1F4C5; History</button>
-    <button class="desktop-tab" onclick="showTab('monthly')" id="dtab-monthly">&#x1F4CA; Monthly</button>
-    <button class="desktop-tab" onclick="showTab('inventory')" id="dtab-inventory">&#x1F4E6; Inventory</button>
+  <div class="desktop-tabs">
+    <button class="dtab active" onclick="showTab('sheet')" id="dtab-sheet">&#x1F4CB; Visit Sheet</button>
+    <button class="dtab" onclick="showTab('history')" id="dtab-history">&#x1F4C5; History</button>
+    <button class="dtab" onclick="showTab('monthly')" id="dtab-monthly">&#x1F4CA; Monthly</button>
+    <button class="dtab" onclick="showTab('inventory')" id="dtab-inventory">&#x1F4E6; Inventory</button>
+    <button class="dtab" onclick="showTab('items')" id="dtab-items">&#x1F4DD; Items</button>
   </div>
 
   <!-- VISIT SHEET -->
   <div id="pane-sheet">
     <div class="card">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div>
-          <label>Location</label>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div><label>Location</label>
           <select id="locSel" onchange="switchLoc()">
             <option value="1">Location 1</option><option value="2">Location 2</option>
             <option value="3">Location 3</option><option value="4">Location 4</option>
             <option value="5">Location 5</option>
           </select>
         </div>
-        <div>
-          <label>Visit date</label>
-          <input type="date" id="visitDate"/>
-        </div>
+        <div><label>Visit date</label><input type="date" id="visitDate"/></div>
       </div>
-      <div>
-        <label>Location name</label>
+      <div><label>Location name</label>
         <div style="display:flex;gap:8px">
           <input type="text" id="locName" placeholder="e.g. Main Street Office"/>
-          <button class="sm" onclick="saveLocName()" style="white-space:nowrap">&#x2713; Save</button>
+          <button class="sm" onclick="saveLocName()">&#x2713; Save</button>
         </div>
       </div>
     </div>
     <div id="prevRestockNote" class="note-bar" style="display:none"></div>
-    <div class="slot-cards-mobile" id="slotCardsMobile"></div>
-    <div class="slot-card-desktop">
+    <!-- Mobile cards -->
+    <div class="mobile-cards" id="slotCardsMobile"></div>
+    <!-- Desktop table -->
+    <div class="desktop-table-wrap">
       <div class="card">
         <div class="overflow">
           <table>
-            <colgroup>
-              <col style="width:50px"><col style="width:auto">
-              <col style="width:78px"><col style="width:78px">
-              <col style="width:68px"><col style="width:68px">
-              <col style="width:54px"><col style="width:76px"><col style="width:76px"><col style="width:34px">
-            </colgroup>
+            <colgroup><col style="width:48px"><col style="width:auto"><col style="width:76px"><col style="width:76px"><col style="width:68px"><col style="width:68px"><col style="width:52px"><col style="width:74px"><col style="width:74px"><col style="width:32px"></colgroup>
             <thead><tr>
               <th>Slot</th><th>Item</th>
               <th style="text-align:center;background:#f0f7ee">Arrival<br><span style="font-size:9px;font-weight:400">(left)</span></th>
               <th style="text-align:center;background:#e8f3ff">Restock<br><span style="font-size:9px;font-weight:400">(filled to)</span></th>
-              <th style="text-align:right">Price</th>
-              <th style="text-align:right">Cost</th>
-              <th style="text-align:center">Sold</th>
-              <th style="text-align:right">Revenue</th>
-              <th style="text-align:right">Profit</th>
-              <th></th>
+              <th style="text-align:right">Price</th><th style="text-align:right">Cost</th>
+              <th style="text-align:center">Sold</th><th style="text-align:right">Revenue</th><th style="text-align:right">Profit</th><th></th>
             </tr></thead>
             <tbody id="slotBody"></tbody>
             <tfoot><tr>
@@ -190,7 +188,7 @@ button:disabled{opacity:.5}
         </div>
       </div>
     </div>
-    <div class="section-actions">
+    <div style="display:flex;flex-direction:column;gap:8px">
       <button onclick="addSlot()" style="border-style:dashed">+ Add Slot</button>
       <div class="flex-row">
         <button class="primary" onclick="saveSheet()">&#x1F4BE; Save Sheet</button>
@@ -201,7 +199,7 @@ button:disabled{opacity:.5}
 
   <!-- HISTORY -->
   <div id="pane-history" style="display:none">
-    <div style="margin-bottom:.75rem">
+    <div class="section-gap">
       <label>Filter by location</label>
       <select id="histLoc" onchange="renderHistory()">
         <option value="all">All locations</option>
@@ -215,10 +213,9 @@ button:disabled{opacity:.5}
 
   <!-- MONTHLY -->
   <div id="pane-monthly" style="display:none">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.75rem">
+    <div class="grid-2" style="margin-bottom:.75rem">
       <div><label>Month</label><select id="monthSel" onchange="renderMonthly()"></select></div>
-      <div>
-        <label>Location</label>
+      <div><label>Location</label>
         <select id="monthLoc" onchange="renderMonthly()">
           <option value="all">All locations</option>
           <option value="1">Location 1</option><option value="2">Location 2</option>
@@ -227,77 +224,129 @@ button:disabled{opacity:.5}
         </select>
       </div>
     </div>
-    <div id="monthlyContent"><p class="muted" style="font-size:13px">Loading...</p></div>
+    <div id="monthlyContent"></div>
   </div>
 
   <!-- INVENTORY -->
   <div id="pane-inventory" style="display:none">
-    <!-- Add purchase -->
+    <!-- Add stock -->
     <div class="card">
-      <h3 style="margin-bottom:.75rem">&#x2795; Add purchased stock</h3>
-      <div class="slot-grid-2" style="margin-bottom:8px">
-        <div>
-          <label>Item name</label>
-          <input type="text" id="invItemName" placeholder="e.g. Coke Can" list="invItemSuggestions"/>
-          <datalist id="invItemSuggestions"></datalist>
+      <h3 style="margin-bottom:.75rem">&#x2795; Add purchased stock to warehouse</h3>
+      <div class="grid-2" style="margin-bottom:8px">
+        <div><label>Item</label>
+          <select id="invItemSel"><option value="">-- Select item --</option></select>
         </div>
-        <div>
-          <label>Qty purchased</label>
-          <input type="number" id="invQtyBuy" placeholder="24" min="1" inputmode="numeric"/>
+        <div><label>Qty purchased</label><input type="number" id="invQtyBuy" placeholder="24" min="1" inputmode="numeric"/></div>
+      </div>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div><label>Price paid per unit ($)</label><input type="number" id="invCostBuy" placeholder="0.50" step="0.01" min="0" inputmode="decimal"/></div>
+        <div><label>Reorder point</label><input type="number" id="invReorder" placeholder="12" min="0" inputmode="numeric"/>
+          <span style="font-size:10px;color:#aaa;margin-top:2px;display:block">Alert when below this qty</span>
         </div>
       </div>
-      <div class="slot-grid-2" style="margin-bottom:10px">
-        <div>
-          <label>Unit cost ($)</label>
-          <input type="number" id="invCostBuy" placeholder="0.50" step="0.05" min="0" inputmode="decimal"/>
-        </div>
-        <div>
-          <label>Reorder point</label>
-          <input type="number" id="invReorder" placeholder="12" min="0" inputmode="numeric"/>
-          <span style="font-size:10px;color:#aaa;margin-top:2px;display:block">Alert me when below this qty</span>
-        </div>
-      </div>
-      <button class="success full" onclick="addPurchase()">&#x2795; Add to Inventory</button>
+      <button class="success full" onclick="addPurchase()">&#x2795; Add to Warehouse</button>
     </div>
 
-    <!-- Current inventory -->
+    <!-- Move to machine -->
+    <div class="card">
+      <h3 style="margin-bottom:.75rem">&#x1F69A; Move stock: Warehouse → Machine</h3>
+      <div class="grid-3" style="margin-bottom:8px">
+        <div><label>Item</label><select id="moveItemSel"><option value="">-- Select --</option></select></div>
+        <div><label>Location</label>
+          <select id="moveLocSel">
+            <option value="1">Location 1</option><option value="2">Location 2</option>
+            <option value="3">Location 3</option><option value="4">Location 4</option>
+            <option value="5">Location 5</option>
+          </select>
+        </div>
+        <div><label>Qty to move</label><input type="number" id="moveQty" placeholder="10" min="1" inputmode="numeric"/></div>
+      </div>
+      <button class="warning full" onclick="moveToMachine()">&#x1F69A; Move to Machine</button>
+    </div>
+
+    <!-- Warehouse stock -->
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
-        <h3 style="margin-bottom:0">&#x1F4E6; Current inventory</h3>
-        <span id="invLowCount" style="font-size:12px;color:#a32d2d;font-weight:600;display:none"></span>
+        <h3 style="margin-bottom:0">&#x1F3E0; Warehouse stock</h3>
+        <span id="warehouseLowCount" style="font-size:12px;color:#a32d2d;font-weight:600;display:none"></span>
       </div>
-      <div id="invList"><p class="muted" style="font-size:13px">No inventory yet. Add purchased stock above.</p></div>
+      <div id="warehouseList"><p class="muted" style="font-size:13px">No warehouse stock yet.</p></div>
     </div>
 
-    <!-- Log -->
+    <!-- Machine stock per location -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+        <h3 style="margin-bottom:0">&#x1F3EA; Stock in machines</h3>
+        <select id="invLocFilter" onchange="renderInventory()" style="width:auto;font-size:13px;padding:5px 8px">
+          <option value="all">All locations</option>
+          <option value="1">Location 1</option><option value="2">Location 2</option>
+          <option value="3">Location 3</option><option value="4">Location 4</option>
+          <option value="5">Location 5</option>
+        </select>
+      </div>
+      <div id="machineList"><p class="muted" style="font-size:13px">No machine stock yet.</p></div>
+    </div>
+
+    <!-- Activity log -->
     <div class="card">
       <h3 style="margin-bottom:.75rem">&#x1F4CB; Recent activity</h3>
       <div id="invLog"><p class="muted" style="font-size:13px">No activity yet.</p></div>
     </div>
   </div>
+
+  <!-- MASTER ITEMS -->
+  <div id="pane-items" style="display:none">
+    <div class="card">
+      <h3 style="margin-bottom:.75rem" id="itemFormTitle">&#x2795; Add new item</h3>
+      <div class="grid-2" style="margin-bottom:8px">
+        <div><label>Item name</label><input type="text" id="masterName" placeholder="e.g. Coke Can 12oz"/></div>
+        <div><label>Category</label>
+          <select id="masterCat">
+            <option value="drink">Drink</option>
+            <option value="snack">Snack</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div><label>Default sell price ($)</label><input type="number" id="masterPrice" placeholder="2.00" step="0.25" min="0" inputmode="decimal"/></div>
+        <div><label>Default cost ($)</label><input type="number" id="masterCost" placeholder="0.50" step="0.01" min="0" inputmode="decimal"/></div>
+      </div>
+      <div class="flex-row">
+        <button class="success" onclick="saveMasterItem()" id="saveItemBtn">&#x2795; Add Item</button>
+        <button onclick="cancelItemEdit()" id="cancelItemBtn" style="display:none">Cancel</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:.75rem">&#x1F4CB; All items</h3>
+      <div class="grid-2" style="margin-bottom:.75rem">
+        <div><label>Filter</label>
+          <select id="itemCatFilter" onchange="renderMasterItems()">
+            <option value="all">All categories</option>
+            <option value="drink">Drinks only</option>
+            <option value="snack">Snacks only</option>
+          </select>
+        </div>
+      </div>
+      <div id="masterItemList"><p class="muted" style="font-size:13px">No items yet. Add one above.</p></div>
+    </div>
+  </div>
 </div>
 
-<!-- Mobile bottom nav -->
+<!-- Bottom nav -->
 <nav class="bottom-nav">
-  <button class="nav-btn active" onclick="showTab('sheet')" id="nav-sheet">
-    <span class="nav-icon">&#x1F4CB;</span>Sheet
-  </button>
-  <button class="nav-btn" onclick="showTab('history')" id="nav-history">
-    <span class="nav-icon">&#x1F4C5;</span>History
-  </button>
-  <button class="nav-btn" onclick="showTab('monthly')" id="nav-monthly">
-    <span class="nav-icon">&#x1F4CA;</span>Monthly
-  </button>
-  <button class="nav-btn" onclick="showTab('inventory')" id="nav-inventory">
-    <span class="nav-icon">&#x1F4E6;</span>Inventory
-  </button>
+  <button class="nav-btn active" onclick="showTab('sheet')" id="nav-sheet"><span class="nav-icon">&#x1F4CB;</span>Sheet</button>
+  <button class="nav-btn" onclick="showTab('history')" id="nav-history"><span class="nav-icon">&#x1F4C5;</span>History</button>
+  <button class="nav-btn" onclick="showTab('monthly')" id="nav-monthly"><span class="nav-icon">&#x1F4CA;</span>Monthly</button>
+  <button class="nav-btn" onclick="showTab('inventory')" id="nav-inventory"><span class="nav-icon">&#x1F4E6;</span>Inventory</button>
+  <button class="nav-btn" onclick="showTab('items')" id="nav-items"><span class="nav-icon">&#x1F4DD;</span>Items</button>
 </nav>
 
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc, updateDoc, query, orderBy, limit }
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc, query, orderBy, limit }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -309,201 +358,299 @@ const firebaseConfig = {
   appId: "1:1040142766651:web:900f3f10a729f59deac21e"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-let loc='1', locNames={}, slots=[], allReports=[], prevRestockMap={};
-let inventory={}, invLog=[];
 
+// State
+let loc='1', locNames={}, slots=[], allReports=[], prevRestockMap={};
+let masterItems={};   // id -> {id,name,category,price,cost}
+let warehouse={};     // itemId -> {itemId,qty,avgCost,reorder}
+let machines={};      // locId -> {itemId -> {itemId,qty}}
+let invLogEntries=[];
+let editingItemId=null;
+
+// ── Helpers ───────────────────────────────────────────────────
 function showStatus(msg,type='info'){
-  const bar=document.getElementById('statusBar');
-  bar.textContent=msg; bar.className='status-bar '+type;
-  setTimeout(()=>{bar.className='status-bar';},4000);
+  const b=document.getElementById('statusBar');b.textContent=msg;b.className='status-bar '+type;
+  setTimeout(()=>{b.className='status-bar';},4000);
 }
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2500);
-}
+function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2500);}
 function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
 function fmtDate(ts){const d=new Date(ts);return(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+function itemId(name){return name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');}
 
-// ── Firebase: visits ──────────────────────────────────────────
+// ── Firebase loaders ──────────────────────────────────────────
 async function loadLocNames(){try{const s=await getDoc(doc(db,'settings','locNames'));if(s.exists())locNames=s.data();}catch(e){}}
 async function saveLocNamesToDB(){try{await setDoc(doc(db,'settings','locNames'),locNames);}catch(e){}}
+
+async function loadMasterItems(){
+  masterItems={};
+  try{const snap=await getDocs(collection(db,'masterItems'));snap.forEach(d=>{masterItems[d.id]={id:d.id,...d.data()};});}catch(e){}
+}
+async function saveMasterItemDB(item){await setDoc(doc(db,'masterItems',item.id),item);}
+async function deleteMasterItemDB(id){await deleteDoc(doc(db,'masterItems',id));}
+
+async function loadWarehouse(){
+  warehouse={};
+  try{const snap=await getDocs(collection(db,'warehouse'));snap.forEach(d=>{warehouse[d.id]={id:d.id,...d.data()};});}catch(e){}
+}
+async function saveWarehouseItem(item){await setDoc(doc(db,'warehouse',item.id),item);}
+
+async function loadMachines(){
+  machines={};
+  try{const snap=await getDocs(collection(db,'machines'));snap.forEach(d=>{machines[d.id]={id:d.id,...d.data()};});}catch(e){}
+}
+async function saveMachineDoc(locId){
+  const data=machines[locId]||{id:locId};
+  await setDoc(doc(db,'machines',locId),data);
+}
+
+async function loadInvLog(){
+  invLogEntries=[];
+  try{const snap=await getDocs(query(collection(db,'invLog'),orderBy('timestamp','desc'),limit(60)));snap.forEach(d=>invLogEntries.push({id:d.id,...d.data()}));}catch(e){}
+}
+async function addInvLogEntry(entry){
+  try{const ref=await addDoc(collection(db,'invLog'),entry);invLogEntries.unshift({id:ref.id,...entry});if(invLogEntries.length>60)invLogEntries.pop();}catch(e){}
+}
+
 async function loadAllReports(){
   allReports=[];
-  try{const snap=await getDocs(query(collection(db,'reports'),orderBy('timestamp','desc')));snap.forEach(d=>allReports.push({id:d.id,...d.data()}));}catch(e){console.error(e);}
+  try{const snap=await getDocs(query(collection(db,'reports'),orderBy('timestamp','desc')));snap.forEach(d=>allReports.push({id:d.id,...d.data()}));}catch(e){}
 }
 async function loadSlots(){
   slots=[];
   try{const s=await getDoc(doc(db,'slots','loc'+loc));if(s.exists())slots=s.data().slots||[];}catch(e){}
   if(!slots.length) slots=[
-    {slot:'A1',item:'',arrival:'',restock:'',price:'',cost:''},
-    {slot:'A2',item:'',arrival:'',restock:'',price:'',cost:''},
-    {slot:'B1',item:'',arrival:'',restock:'',price:'',cost:''},
-    {slot:'B2',item:'',arrival:'',restock:'',price:'',cost:''},
+    {slot:'A1',itemId:'',arrival:'',restock:'',price:'',cost:''},
+    {slot:'A2',itemId:'',arrival:'',restock:'',price:'',cost:''},
+    {slot:'B1',itemId:'',arrival:'',restock:'',price:'',cost:''},
+    {slot:'B2',itemId:'',arrival:'',restock:'',price:'',cost:''},
   ];
   slots=slots.map(s=>({...s,arrival:'',restock:''}));
   document.getElementById('locName').value=locNames[loc]||'';
-  buildPrevRestockMap();
-  renderAll();
-  showPrevRestockNote();
+  buildPrevRestockMap();renderAll();showPrevRestockNote();
 }
 async function saveSlotsDB(){try{await setDoc(doc(db,'slots','loc'+loc),{slots});}catch(e){}}
 
-// ── Firebase: inventory ───────────────────────────────────────
-async function loadInventory(){
-  inventory={};invLog=[];
-  try{
-    const snap=await getDocs(collection(db,'inventory'));
-    snap.forEach(d=>{inventory[d.id]={id:d.id,...d.data()};});
-  }catch(e){console.error(e);}
-  try{
-    const snap=await getDocs(query(collection(db,'invLog'),orderBy('timestamp','desc'),limit(50)));
-    snap.forEach(d=>invLog.push({id:d.id,...d.data()}));
-  }catch(e){console.error(e);}
-}
-async function saveInventoryItem(item){
-  await setDoc(doc(db,'inventory',item.id),item);
-}
-async function addInvLog(entry){
-  const ref=await addDoc(collection(db,'invLog'),entry);
-  invLog.unshift({id:ref.id,...entry});
-  if(invLog.length>50) invLog.pop();
+// ── Master items ──────────────────────────────────────────────
+window.saveMasterItem=async function(){
+  const name=document.getElementById('masterName').value.trim();
+  const cat=document.getElementById('masterCat').value;
+  const price=parseFloat(document.getElementById('masterPrice').value)||0;
+  const cost=parseFloat(document.getElementById('masterCost').value)||0;
+  if(!name){alert('Please enter an item name.');return;}
+  const id=editingItemId||itemId(name);
+  const item={id,name,category:cat,price,cost};
+  masterItems[id]=item;
+  await saveMasterItemDB(item);
+  cancelItemEdit();
+  updateAllDropdowns();
+  renderMasterItems();
+  toast(editingItemId?'Item updated!':'Item added!');
+  editingItemId=null;
+};
+
+window.editMasterItem=function(id){
+  const it=masterItems[id];if(!it)return;
+  editingItemId=id;
+  document.getElementById('masterName').value=it.name;
+  document.getElementById('masterCat').value=it.category;
+  document.getElementById('masterPrice').value=it.price;
+  document.getElementById('masterCost').value=it.cost;
+  document.getElementById('itemFormTitle').textContent='✏️ Edit item';
+  document.getElementById('saveItemBtn').textContent='💾 Save changes';
+  document.getElementById('cancelItemBtn').style.display='';
+  document.getElementById('pane-items').scrollIntoView({behavior:'smooth'});
+};
+
+window.cancelItemEdit=function(){
+  editingItemId=null;
+  document.getElementById('masterName').value='';
+  document.getElementById('masterCat').value='drink';
+  document.getElementById('masterPrice').value='';
+  document.getElementById('masterCost').value='';
+  document.getElementById('itemFormTitle').textContent='➕ Add new item';
+  document.getElementById('saveItemBtn').textContent='➕ Add Item';
+  document.getElementById('cancelItemBtn').style.display='none';
+};
+
+window.deleteMasterItem=async function(id){
+  if(!confirm('Delete '+masterItems[id].name+'? This cannot be undone.'))return;
+  await deleteMasterItemDB(id);
+  delete masterItems[id];
+  updateAllDropdowns();
+  renderMasterItems();
+  toast('Item deleted.');
+};
+
+function renderMasterItems(){
+  const filter=document.getElementById('itemCatFilter').value;
+  const items=Object.values(masterItems).filter(i=>filter==='all'||i.category===filter).sort((a,b)=>a.name.localeCompare(b.name));
+  const div=document.getElementById('masterItemList');
+  if(!items.length){div.innerHTML='<p class="muted" style="font-size:13px">No items yet.</p>';return;}
+  div.innerHTML=items.map(it=>`
+    <div class="item-row">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:14px">${it.name} <span class="cat-pill ${it.category==='drink'?'cat-drink':'cat-snack'}">${it.category}</span></div>
+        <div class="muted" style="font-size:12px;margin-top:2px">Sell: $${it.price.toFixed(2)} · Cost: $${it.cost.toFixed(2)} · Margin: ${it.price>0?Math.round((it.price-it.cost)/it.price*100)+'%':'—'}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="sm primary" onclick="editMasterItem('${it.id}')">✏️</button>
+        <button class="sm danger-solid" onclick="deleteMasterItem('${it.id}')">✕</button>
+      </div>
+    </div>`).join('');
 }
 
-// ── Inventory: add purchase ───────────────────────────────────
+function updateAllDropdowns(){
+  const items=Object.values(masterItems).sort((a,b)=>a.name.localeCompare(b.name));
+  const opts='<option value="">-- Select item --</option>'+items.map(i=>`<option value="${i.id}">${i.name}</option>`).join('');
+  ['invItemSel','moveItemSel'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  // rebuild slot dropdowns
+  renderAll();
+}
+
+// ── Inventory: warehouse ──────────────────────────────────────
 window.addPurchase=async function(){
-  const name=document.getElementById('invItemName').value.trim();
+  const itemIdVal=document.getElementById('invItemSel').value;
   const qty=parseInt(document.getElementById('invQtyBuy').value);
-  const cost=parseFloat(document.getElementById('invCostBuy').value)||0;
+  const pricePaid=parseFloat(document.getElementById('invCostBuy').value);
   const reorder=parseInt(document.getElementById('invReorder').value)||0;
-  if(!name||!qty||qty<1){alert('Please enter an item name and quantity.');return;}
-  const id=name.toLowerCase().replace(/[^a-z0-9]/g,'_');
-  const existing=inventory[id]||{id,name,qty:0,cost,reorder};
-  existing.qty+=qty;
-  existing.cost=cost||existing.cost;
+  if(!itemIdVal||!qty||qty<1||isNaN(pricePaid)){alert('Please fill in item, quantity, and price paid.');return;}
+  const it=masterItems[itemIdVal];if(!it)return;
+  const existing=warehouse[itemIdVal]||{id:itemIdVal,qty:0,avgCost:0,reorder:0};
+  // Weighted average cost
+  const totalUnits=existing.qty+qty;
+  const newAvgCost=totalUnits>0?((existing.qty*existing.avgCost)+(qty*pricePaid))/totalUnits:pricePaid;
+  existing.qty=totalUnits;
+  existing.avgCost=Math.round(newAvgCost*1000)/1000;
   existing.reorder=reorder||existing.reorder;
-  existing.name=name;
-  inventory[id]=existing;
-  await saveInventoryItem(existing);
-  await addInvLog({type:'buy',item:name,qty,cost,timestamp:Date.now(),note:'Purchase: +'+qty+' units'});
-  document.getElementById('invItemName').value='';
+  warehouse[itemIdVal]=existing;
+  await saveWarehouseItem(existing);
+  await addInvLogEntry({type:'buy',itemId:itemIdVal,itemName:it.name,qty,cost:pricePaid,avgCost:existing.avgCost,timestamp:Date.now(),note:'Purchased '+qty+' @ $'+pricePaid.toFixed(2)+' ea. New avg cost: $'+existing.avgCost.toFixed(3)});
   document.getElementById('invQtyBuy').value='';
   document.getElementById('invCostBuy').value='';
   document.getElementById('invReorder').value='';
   renderInventory();
-  updateInvSuggestions();
-  toast(qty+' '+name+' added to inventory!');
+  toast(qty+' '+it.name+' added to warehouse! Avg cost: $'+existing.avgCost.toFixed(3));
 };
 
-// ── Inventory: manual adjustment ─────────────────────────────
-window.adjustInv=async function(id,delta,note){
-  if(!inventory[id]) return;
-  inventory[id].qty=Math.max(0,inventory[id].qty+delta);
-  await saveInventoryItem(inventory[id]);
-  await addInvLog({type:delta>0?'buy':'use',item:inventory[id].name,qty:Math.abs(delta),timestamp:Date.now(),note});
+// ── Inventory: move warehouse → machine ───────────────────────
+window.moveToMachine=async function(){
+  const itemIdVal=document.getElementById('moveItemSel').value;
+  const moveLoc=document.getElementById('moveLocSel').value;
+  const qty=parseInt(document.getElementById('moveQty').value);
+  if(!itemIdVal||!qty||qty<1){alert('Please select an item and enter a quantity.');return;}
+  const it=masterItems[itemIdVal];if(!it)return;
+  const wh=warehouse[itemIdVal];
+  if(!wh||wh.qty<qty){alert('Not enough stock in warehouse. Available: '+(wh?wh.qty:0));return;}
+  // Deduct from warehouse
+  wh.qty-=qty;
+  await saveWarehouseItem(wh);
+  // Add to machine
+  if(!machines[moveLoc]) machines[moveLoc]={id:moveLoc};
+  if(!machines[moveLoc][itemIdVal]) machines[moveLoc][itemIdVal]={itemId:itemIdVal,qty:0};
+  machines[moveLoc][itemIdVal].qty+=qty;
+  await saveMachineDoc(moveLoc);
+  const locName=locNames[moveLoc]||'Location '+moveLoc;
+  await addInvLogEntry({type:'move',itemId:itemIdVal,itemName:it.name,qty,loc:moveLoc,locName,timestamp:Date.now(),note:'Moved '+qty+' to '+locName});
+  document.getElementById('moveQty').value='';
   renderInventory();
+  toast(qty+' '+it.name+' moved to '+locName+'!');
 };
 
-window.deleteInvItem=async function(id){
-  if(!confirm('Remove '+inventory[id].name+' from inventory?')) return;
-  try{await deleteDoc(doc(db,'inventory',id));}catch(e){}
-  delete inventory[id];
-  renderInventory();
-  toast('Item removed.');
-};
-
-// ── Deduct from inventory when report submitted ───────────────
-// Only deduct what was SOLD (prev restock - arrival qty) not what was refilled
-async function deductInventoryForReport(lineItems){
+// ── Inventory: deduct sold from machine ───────────────────────
+async function deductSoldFromMachine(lineItems,reportLoc){
   for(const l of lineItems){
-    if(!l.item) continue;
-    // sold = what customers actually bought = previous restock - arrival qty
-    const sold=l.sold;
-    if(sold===null||sold===undefined||isNaN(sold)||sold<=0) continue;
-    const id=l.item.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
-    if(inventory[id]){
-      inventory[id].qty=Math.max(0,inventory[id].qty-sold);
-      await saveInventoryItem(inventory[id]);
-      await addInvLog({type:'use',item:l.item,qty:sold,timestamp:Date.now(),note:'Sold at machine: -'+sold+' units'});
-    }
+    if(!l.itemId||l.sold===null||l.sold===undefined||l.sold<=0) continue;
+    if(!machines[reportLoc]) continue;
+    if(!machines[reportLoc][l.itemId]) continue;
+    machines[reportLoc][l.itemId].qty=Math.max(0,machines[reportLoc][l.itemId].qty-l.sold);
+    await saveMachineDoc(reportLoc);
+    const it=masterItems[l.itemId];
+    await addInvLogEntry({type:'sold',itemId:l.itemId,itemName:it?it.name:l.itemId,qty:l.sold,loc:reportLoc,locName:locNames[reportLoc]||'Location '+reportLoc,timestamp:Date.now(),note:'Sold '+l.sold+' at '+(locNames[reportLoc]||'Location '+reportLoc)});
   }
 }
 
-// ── Render inventory tab ──────────────────────────────────────
+// ── Render inventory ──────────────────────────────────────────
 function renderInventory(){
-  const items=Object.values(inventory).sort((a,b)=>a.name.localeCompare(b.name));
-  const listDiv=document.getElementById('invList');
-  const lowCount=items.filter(i=>i.qty<=i.reorder&&i.reorder>0).length;
-  const lowEl=document.getElementById('invLowCount');
-  if(lowCount>0){lowEl.textContent='⚠️ '+lowCount+' item'+(lowCount>1?'s':'')+' low';lowEl.style.display='block';}
-  else lowEl.style.display='none';
-
-  if(!items.length){listDiv.innerHTML='<p class="muted" style="font-size:13px">No inventory yet.</p>';return;}
-  listDiv.innerHTML=items.map(it=>{
-    const isLow=it.reorder>0&&it.qty<=it.reorder;
-    const isOut=it.qty===0;
-    const badge=isOut?'<span class="stock-badge stock-out">Out of stock</span>':isLow?'<span class="stock-badge stock-low">Low stock</span>':'<span class="stock-badge stock-ok">In stock</span>';
-    return`<div class="inv-item-row">
+  // Warehouse
+  const whItems=Object.values(warehouse).map(w=>({...w,item:masterItems[w.id]})).filter(w=>w.item).sort((a,b)=>a.item.name.localeCompare(b.item.name));
+  const wLow=whItems.filter(w=>w.reorder>0&&w.qty<=w.reorder).length;
+  const wLowEl=document.getElementById('warehouseLowCount');
+  wLowEl.textContent=wLow>0?'⚠️ '+wLow+' low':'';
+  wLowEl.style.display=wLow>0?'block':'none';
+  const whDiv=document.getElementById('warehouseList');
+  if(!whItems.length){whDiv.innerHTML='<p class="muted" style="font-size:13px">No warehouse stock yet.</p>';}
+  else whDiv.innerHTML=whItems.map(w=>{
+    const isLow=w.reorder>0&&w.qty<=w.reorder,isOut=w.qty===0;
+    const badge=isOut?'<span class="stock-badge stock-out">Out</span>':isLow?'<span class="stock-badge stock-low">Low</span>':'<span class="stock-badge stock-ok">OK</span>';
+    return`<div class="inv-row">
       <div style="flex:1">
-        <div class="inv-name">${it.name} ${badge}</div>
-        <div class="inv-meta">${it.reorder>0?'Reorder at: '+it.reorder+' units':'No reorder point set'}${it.cost?' · Cost: $'+parseFloat(it.cost).toFixed(2)+'/unit':''}</div>
+        <div style="font-weight:600;font-size:14px">${w.item.name} ${badge}</div>
+        <div class="muted" style="font-size:12px;margin-top:2px">Avg cost: $${w.avgCost.toFixed(3)}/unit${w.reorder?' · Reorder at: '+w.reorder:''}</div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div>
-          <div class="inv-qty ${isOut?'red':isLow?'orange-text':'green'}">${it.qty}</div>
-          <div class="inv-qty-label">units left</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <button class="sm primary" onclick="showAdjust('${it.id}')">&#x270F;</button>
-          <button class="sm danger-solid" onclick="deleteInvItem('${it.id}')">&#x2715;</button>
-        </div>
+      <div style="text-align:right">
+        <div style="font-size:22px;font-weight:700" class="${isOut?'red':isLow?'orange':'green'}">${w.qty}</div>
+        <div class="muted" style="font-size:10px">units</div>
       </div>
     </div>`;
   }).join('');
 
+  // Machine stock
+  const filterLoc=document.getElementById('invLocFilter').value;
+  const locKeys=filterLoc==='all'?['1','2','3','4','5']:[filterLoc];
+  const mDiv=document.getElementById('machineList');
+  let machineHTML='';
+  locKeys.forEach(lk=>{
+    const mData=machines[lk];
+    const lName=locNames[lk]||'Location '+lk;
+    const mItems=mData?Object.values(mData).filter(m=>m.itemId&&masterItems[m.itemId]).sort((a,b)=>masterItems[a.itemId].name.localeCompare(masterItems[b.itemId].name)):[];
+    if(!mItems.length&&filterLoc!=='all') return;
+    machineHTML+=`<div style="font-weight:600;font-size:13px;color:#1a6fc4;margin:8px 0 4px">${lName}</div>`;
+    if(!mItems.length){machineHTML+='<p class="muted" style="font-size:13px;margin-bottom:8px">No stock loaded.</p>';return;}
+    machineHTML+=mItems.map(m=>{
+      const it=masterItems[m.itemId];
+      return`<div class="inv-row">
+        <div style="flex:1"><div style="font-weight:500;font-size:14px">${it.name}</div></div>
+        <div style="text-align:right">
+          <div style="font-size:20px;font-weight:700" class="${m.qty===0?'red':m.qty<=5?'orange':'green'}">${m.qty}</div>
+          <div class="muted" style="font-size:10px">in machine</div>
+        </div>
+      </div>`;
+    }).join('');
+  });
+  mDiv.innerHTML=machineHTML||'<p class="muted" style="font-size:13px">No machine stock yet.</p>';
+
   // Log
   const logDiv=document.getElementById('invLog');
-  if(!invLog.length){logDiv.innerHTML='<p class="muted" style="font-size:13px">No activity yet.</p>';return;}
-  logDiv.innerHTML=invLog.slice(0,20).map(l=>`
-    <div class="log-entry">
+  if(!invLogEntries.length){logDiv.innerHTML='<p class="muted" style="font-size:13px">No activity yet.</p>';return;}
+  const icons={buy:'🟢',move:'🔵',sold:'🟡'};
+  logDiv.innerHTML=invLogEntries.slice(0,25).map(l=>`
+    <div class="log-row">
       <div style="display:flex;justify-content:space-between">
-        <span class="${l.type==='buy'?'log-type-buy':'log-type-use'}">${l.type==='buy'?'&#x2795; Purchased':'&#x2796; Used'} ${l.qty} × ${l.item}</span>
+        <span style="font-weight:500">${icons[l.type]||'⚪'} ${l.note}</span>
         <span class="muted" style="font-size:11px">${fmtDate(l.timestamp)}</span>
       </div>
-      <div class="muted" style="font-size:11px;margin-top:2px">${l.note||''}</div>
     </div>`).join('');
 }
 
-window.showAdjust=function(id){
-  const it=inventory[id];
-  const delta=prompt('Adjust qty for '+it.name+'\nCurrent: '+it.qty+'\n\nEnter + to add (e.g. +12) or - to subtract (e.g. -5):');
-  if(!delta) return;
-  const val=parseInt(delta);
-  if(isNaN(val)){alert('Please enter a number like +12 or -5.');return;}
-  adjustInv(id,val,val>0?'Manual add: +'+val+' units':'Manual remove: '+val+' units');
-};
-
-function updateInvSuggestions(){
-  const dl=document.getElementById('invItemSuggestions');
-  dl.innerHTML=Object.values(inventory).map(i=>`<option value="${esc(i.name)}">`).join('');
-}
-
-// ── Prev restock logic ────────────────────────────────────────
+// ── Visit sheet logic ─────────────────────────────────────────
 function buildPrevRestockMap(){
   prevRestockMap={};
-  const locReports=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
-  if(!locReports.length) return;
-  (locReports[0].lineItems||[]).forEach(l=>{
-    if(l.item&&l.restock!==''&&l.restock!==null&&l.restock!==undefined)
-      prevRestockMap[itemKey(l.slot,l.item)]=parseFloat(l.restock);
+  const locReps=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
+  if(!locReps.length)return;
+  (locReps[0].lineItems||[]).forEach(l=>{
+    if(l.itemId&&l.restock!==''&&l.restock!==null&&l.restock!==undefined)
+      prevRestockMap[l.itemId]=parseFloat(l.restock);
   });
 }
-function itemKey(slot,item){return(slot||'').trim().toLowerCase()+'|'+(item||'').trim().toLowerCase();}
-function getPrevRestock(slot,item){const k=itemKey(slot,item);return prevRestockMap.hasOwnProperty(k)?prevRestockMap[k]:null;}
-function calcSold(s){const arrival=parseFloat(s.arrival);if(isNaN(arrival))return null;const prev=getPrevRestock(s.slot,s.item);if(prev===null)return null;return Math.max(0,prev-arrival);}
+function getPrevRestock(iId){return prevRestockMap.hasOwnProperty(iId)?prevRestockMap[iId]:null;}
+function calcSold(s){
+  const arrival=parseFloat(s.arrival);if(isNaN(arrival))return null;
+  const prev=getPrevRestock(s.itemId);if(prev===null)return null;
+  return Math.max(0,prev-arrival);
+}
 function calcRow(s){
   const sold=calcSold(s);
   const price=parseFloat(s.price)||0,cost=parseFloat(s.cost)||0;
@@ -511,45 +658,49 @@ function calcRow(s){
 }
 function showPrevRestockNote(){
   const note=document.getElementById('prevRestockNote');
-  const locReports=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
-  if(!locReports.length){note.style.display='block';note.innerHTML='&#x2139;&#xFE0F; <strong>First visit.</strong> Enter qty and restock — sold tracks automatically next visit.';}
-  else{note.style.display='block';note.innerHTML='&#x1F4CC; Sold = last restock minus today\'s arrival. Last visit: <strong>'+locReports[0].date+'</strong>';}
+  const locReps=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
+  if(!locReps.length){note.style.display='block';note.innerHTML='ℹ️ <strong>First visit.</strong> Enter qty & restock — sold tracks automatically next visit.';}
+  else{note.style.display='block';note.innerHTML='📌 Sold = last restock − today\'s arrival. Last visit: <strong>'+locReps[0].date+'</strong>';}
 }
 
-// ── Render sheet ──────────────────────────────────────────────
+function itemOptions(selectedId){
+  const items=Object.values(masterItems).sort((a,b)=>a.name.localeCompare(b.name));
+  return'<option value="">-- Select --</option>'+items.map(i=>`<option value="${i.id}"${i.id===selectedId?' selected':''}>${i.name}</option>`).join('');
+}
+
 function renderAll(){renderMobileCards();renderDesktopTable();renderTotals();}
 
 function renderMobileCards(){
-  const container=document.getElementById('slotCardsMobile');
-  if(!container) return;
+  const container=document.getElementById('slotCardsMobile');if(!container)return;
   container.innerHTML=slots.map((s,i)=>{
     const{sold,rev,profit}=calcRow(s);
-    const prev=getPrevRestock(s.slot,s.item);
+    const prev=getPrevRestock(s.itemId);
     const soldStr=sold!==null?sold:prev===null?'—*':'—';
     const soldColor=sold!==null&&sold>0?'#1a6b2a':'#888';
+    const it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
     return`<div class="slot-card" id="scard-${i}">
       <div class="slot-card-header">
-        <span class="slot-label">Slot ${s.slot||i+1}</span>
-        <button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border-color:#e8b4b0;padding:3px 8px;font-size:12px">&#x2715; Remove</button>
+        <span class="slot-label-tag">Slot ${s.slot||i+1}</span>
+        <button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border-color:#e8b4b0;padding:3px 8px;font-size:12px">✕ Remove</button>
       </div>
-      <div class="slot-grid-2" style="margin-bottom:8px">
+      <div class="grid-2" style="margin-bottom:8px">
         <div class="input-group"><label>Slot label</label><input type="text" value="${esc(s.slot)}" placeholder="A1" data-idx="${i}" data-field="slot"/></div>
-        <div class="input-group"><label>Item name</label><input type="text" value="${esc(s.item)}" placeholder="e.g. Coke" data-idx="${i}" data-field="item"/></div>
+        <div class="input-group"><label>Item</label>
+          <select data-idx="${i}" data-field="itemId" onchange="onItemSelect(${i},this.value)">${itemOptions(s.itemId)}</select>
+        </div>
       </div>
-      <div class="slot-grid-2" style="margin-bottom:8px">
-        <div class="input-group">
-          <label>&#x1F7E2; Arrival qty</label>
+      <div class="grid-2" style="margin-bottom:8px">
+        <div class="input-group"><label>🟢 Arrival qty</label>
           <input type="number" value="${esc(s.arrival)}" placeholder="0" min="0" inputmode="numeric" class="arrival-inp" data-idx="${i}" data-field="arrival"/>
           ${prev!==null?`<span class="prev-tag">prev stocked: ${prev}</span>`:'<span class="prev-tag">no prior visit</span>'}
         </div>
-        <div class="input-group">
-          <label>&#x1F535; Restock qty</label>
+        <div class="input-group"><label>🔵 Restock qty</label>
           <input type="number" value="${esc(s.restock)}" placeholder="0" min="0" inputmode="numeric" class="restock-inp" data-idx="${i}" data-field="restock"/>
         </div>
       </div>
-      <div class="slot-grid-2" style="margin-bottom:8px">
-        <div class="input-group"><label>Sell price ($)</label><input type="number" value="${esc(s.price)}" placeholder="1.50" step="0.25" min="0" inputmode="decimal" data-idx="${i}" data-field="price"/></div>
-        <div class="input-group"><label>Item cost ($)</label><input type="number" value="${esc(s.cost)}" placeholder="0.50" step="0.05" min="0" inputmode="decimal" data-idx="${i}" data-field="cost"/></div>
+      <div class="grid-2" style="margin-bottom:8px">
+        <div class="input-group"><label>Sell price ($)</label><input type="number" value="${esc(s.price)}" placeholder="${it?it.price.toFixed(2):'1.50'}" step="0.25" min="0" inputmode="decimal" data-idx="${i}" data-field="price"/></div>
+        <div class="input-group"><label>Avg cost ($)</label><input type="number" value="${esc(s.cost)}" placeholder="${it?it.cost.toFixed(2):'0.50'}" step="0.01" min="0" inputmode="decimal" data-idx="${i}" data-field="cost"/></div>
       </div>
       <div class="calc-row">
         <div class="calc-item"><div class="calc-label">SOLD</div><div class="calc-val" style="color:${soldColor}" id="m-sold-${i}">${soldStr}</div></div>
@@ -561,135 +712,142 @@ function renderMobileCards(){
 }
 
 function renderDesktopTable(){
-  const body=document.getElementById('slotBody');
-  if(!body) return;
+  const body=document.getElementById('slotBody');if(!body)return;
   body.innerHTML=slots.map((s,i)=>{
-    const{sold,rev,profit}=calcRow(s);
-    const prev=getPrevRestock(s.slot,s.item);
+    const{sold,rev,profit}=calcRow(s);const prev=getPrevRestock(s.itemId);
+    const it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
     return`<tr>
       <td><input type="text" value="${esc(s.slot)}" placeholder="A1" data-idx="${i}" data-field="slot"/></td>
-      <td><input type="text" value="${esc(s.item)}" placeholder="Item" data-idx="${i}" data-field="item"/></td>
+      <td><select data-idx="${i}" data-field="itemId" onchange="onItemSelect(${i},this.value)">${itemOptions(s.itemId)}</select></td>
       <td class="arrival-col"><input type="number" value="${esc(s.arrival)}" placeholder="0" min="0" style="text-align:center" data-idx="${i}" data-field="arrival"/>${prev!==null?`<span class="prev-tag">prev: ${prev}</span>`:''}</td>
       <td class="restock-col"><input type="number" value="${esc(s.restock)}" placeholder="0" min="0" style="text-align:center" data-idx="${i}" data-field="restock"/></td>
-      <td><input type="number" value="${esc(s.price)}" placeholder="1.50" step="0.25" min="0" style="text-align:right" data-idx="${i}" data-field="price"/></td>
-      <td><input type="number" value="${esc(s.cost)}" placeholder="0.50" step="0.05" min="0" style="text-align:right" data-idx="${i}" data-field="cost"/></td>
+      <td><input type="number" value="${esc(s.price)}" placeholder="${it?it.price.toFixed(2):'1.50'}" step="0.25" min="0" style="text-align:right" data-idx="${i}" data-field="price"/></td>
+      <td><input type="number" value="${esc(s.cost)}" placeholder="${it?it.cost.toFixed(2):'0.50'}" step="0.01" min="0" style="text-align:right" data-idx="${i}" data-field="cost"/></td>
       <td style="text-align:center" id="d-sold-${i}">${sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—'}</td>
       <td style="text-align:right" id="d-rev-${i}">${rev!==null?'$'+rev.toFixed(2):'—'}</td>
       <td style="text-align:right" id="d-prof-${i}">${profit!==null?`<span class="${profit<0?'red':'green'}">$${profit.toFixed(2)}</span>`:'—'}</td>
-      <td><button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border:1px solid #e8b4b0">&#x2715;</button></td>
+      <td><button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border:1px solid #e8b4b0">✕</button></td>
     </tr>`;
   }).join('');
 }
 
 function updateRowCalcs(i){
-  const s=slots[i];const{sold,rev,profit}=calcRow(s);const prev=getPrevRestock(s.slot,s.item);
+  const s=slots[i];const{sold,rev,profit}=calcRow(s);const prev=getPrevRestock(s.itemId);
   const mSold=document.getElementById('m-sold-'+i);const mRev=document.getElementById('m-rev-'+i);const mProf=document.getElementById('m-prof-'+i);
   if(mSold){mSold.textContent=sold!==null?sold:prev===null?'—*':'—';mSold.style.color=sold!==null&&sold>0?'#1a6b2a':'#888';}
-  if(mRev) mRev.textContent=rev!==null?'$'+rev.toFixed(2):'—';
+  if(mRev)mRev.textContent=rev!==null?'$'+rev.toFixed(2):'—';
   if(mProf){mProf.textContent=profit!==null?'$'+profit.toFixed(2):'—';mProf.style.color=profit===null?'#888':profit<0?'#a32d2d':'#1a6b2a';}
   const dSold=document.getElementById('d-sold-'+i);const dRev=document.getElementById('d-rev-'+i);const dProf=document.getElementById('d-prof-'+i);
-  if(dSold) dSold.innerHTML=sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—';
-  if(dRev) dRev.textContent=rev!==null?'$'+rev.toFixed(2):'—';
-  if(dProf) dProf.innerHTML=profit!==null?`<span class="${profit<0?'red':'green'}">$${profit.toFixed(2)}</span>`:'—';
+  if(dSold)dSold.innerHTML=sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—';
+  if(dRev)dRev.textContent=rev!==null?'$'+rev.toFixed(2):'—';
+  if(dProf)dProf.innerHTML=profit!==null?`<span class="${profit<0?'red':'green'}">$${profit.toFixed(2)}</span>`:'—';
 }
 
 function renderTotals(){
   let totSold=0,totRev=0,totProfit=0,has=false;
   slots.forEach(s=>{const{sold,rev,profit}=calcRow(s);if(sold!==null){totSold+=sold;totRev+=rev;totProfit+=profit;has=true;}});
   const ts=document.getElementById('tot-sold');const tr=document.getElementById('tot-rev');const tp=document.getElementById('tot-profit');
-  if(ts) ts.textContent=has?totSold:'—';
-  if(tr) tr.textContent=has?'$'+totRev.toFixed(2):'—';
+  if(ts)ts.textContent=has?totSold:'—';
+  if(tr)tr.textContent=has?'$'+totRev.toFixed(2):'—';
   if(tp){tp.textContent=has?'$'+totProfit.toFixed(2):'—';tp.className=has&&totProfit<0?'red':'green';}
 }
+
+// When item selected in dropdown, auto-fill price/cost from master
+window.onItemSelect=function(i,iId){
+  slots[i].itemId=iId;
+  if(iId&&masterItems[iId]){
+    const it=masterItems[iId];
+    // Only auto-fill if blank
+    if(!slots[i].price) slots[i].price=it.price;
+    // Use avg cost from warehouse if available
+    if(warehouse[iId]&&warehouse[iId].avgCost) slots[i].cost=warehouse[iId].avgCost;
+    else if(!slots[i].cost) slots[i].cost=it.cost;
+  }
+  buildPrevRestockMap();
+  renderAll();
+};
 
 // ── Event delegation ──────────────────────────────────────────
 document.addEventListener('input',function(e){
   const inp=e.target.closest('[data-field]');
-  if(!inp) return;
+  if(!inp||inp.tagName==='SELECT') return;
   const i=parseInt(inp.dataset.idx);const f=inp.dataset.field;
   slots[i][f]=inp.value;
   buildPrevRestockMap();updateRowCalcs(i);renderTotals();
 });
 document.addEventListener('click',function(e){
-  const removeBtn=e.target.closest('[data-remove-idx]');
-  if(removeBtn){const i=parseInt(removeBtn.dataset.removeIdx);if(confirm('Remove this slot?')){slots.splice(i,1);renderAll();}return;}
-  const delBtn=e.target.closest('[data-delete-id]');
-  if(delBtn){window.deleteReport(delBtn.getAttribute('data-delete-id'));return;}
+  const rb=e.target.closest('[data-remove-idx]');
+  if(rb){const i=parseInt(rb.dataset.removeIdx);if(confirm('Remove slot?')){slots.splice(i,1);renderAll();}return;}
+  const db2=e.target.closest('[data-delete-id]');
+  if(db2){window.deleteReport(db2.getAttribute('data-delete-id'));return;}
 });
 
 // ── Window functions ──────────────────────────────────────────
 window.switchLoc=async function(){loc=document.getElementById('locSel').value;await loadSlots();};
-window.saveLocName=async function(){locNames[loc]=document.getElementById('locName').value.trim();await saveLocNamesToDB();toast('Location name saved!');};
-window.addSlot=function(){
-  slots.push({slot:'',item:'',arrival:'',restock:'',price:'',cost:''});renderAll();
-  setTimeout(()=>{const cards=document.querySelectorAll('.slot-card');if(cards.length)cards[cards.length-1].scrollIntoView({behavior:'smooth',block:'center'});},100);
-};
+window.saveLocName=async function(){locNames[loc]=document.getElementById('locName').value.trim();await saveLocNamesToDB();toast('Saved!');};
+window.addSlot=function(){slots.push({slot:'',itemId:'',arrival:'',restock:'',price:'',cost:''});renderAll();setTimeout(()=>{const c=document.querySelectorAll('.slot-card');if(c.length)c[c.length-1].scrollIntoView({behavior:'smooth',block:'center'});},100);};
 window.saveSheet=async function(){await saveSlotsDB();toast('Sheet saved!');};
 
 window.submitReport=async function(){
   const dateVal=document.getElementById('visitDate').value;
   if(!dateVal){alert('Please select a visit date.');return;}
-  const btn=document.getElementById('submitBtn');
-  btn.disabled=true;btn.textContent='Saving...';
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='Saving...';
   try{
     const d=new Date(dateVal+'T12:00:00');
     const dateLabel=MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
     const monthKey=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
     const name=locNames[loc]||'Location '+loc;
     let totSold=0,totRev=0,totProfit=0;
-    const lineItems=slots.filter(s=>s.item).map(s=>{
+    const lineItems=slots.filter(s=>s.itemId||s.slot).map(s=>{
       const{sold,rev,profit}=calcRow(s);
-      const prev=getPrevRestock(s.slot,s.item);
+      const prev=getPrevRestock(s.itemId);
+      const it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
       if(sold!==null){totSold+=sold;totRev+=rev;totProfit+=profit;}
-      return{slot:s.slot,item:s.item,arrival:s.arrival,restock:s.restock,prevRestock:prev!==null?prev:null,price:parseFloat(s.price)||0,cost:parseFloat(s.cost)||0,sold,rev,profit};
+      return{slot:s.slot,itemId:s.itemId,item:it?it.name:s.itemId,arrival:s.arrival,restock:s.restock,prevRestock:prev!==null?prev:null,price:parseFloat(s.price)||0,cost:parseFloat(s.cost)||0,sold,rev,profit};
     });
     await addDoc(collection(db,'reports'),{date:dateLabel,dateVal,monthKey,loc,name,lineItems,totSold,totRev,totProfit,timestamp:Date.now()});
     await saveSlotsDB();
-    // Deduct from inventory: what was physically added to the machine
-    await deductInventoryForReport(lineItems);
-    showStatus('Report saved for '+name+' — '+dateLabel+'. Inventory updated automatically.','success');
+    // Deduct sold from machine stock
+    await deductSoldFromMachine(lineItems,loc);
+    showStatus('Report saved! Machine inventory updated.','success');
     await loadAllReports();
     buildPrevRestockMap();renderAll();showPrevRestockNote();
     renderInventory();
     showTab('history');
   }catch(e){showStatus('Error: '+e.message,'error');}
-  btn.disabled=false;btn.innerHTML='&#x1F4C4; Submit Report';
+  btn.disabled=false;btn.innerHTML='📄 Submit Report';
 };
 
 window.deleteReport=async function(reportId){
-  if(!confirm('Delete this report? Cannot be undone.')) return;
-  try{
-    await deleteDoc(doc(db,'reports',reportId));
-    await loadAllReports();buildPrevRestockMap();renderAll();showPrevRestockNote();renderHistory();
-    toast('Report deleted.');
-  }catch(e){showStatus('Error deleting: '+e.message,'error');}
+  if(!confirm('Delete this report? Cannot be undone.'))return;
+  try{await deleteDoc(doc(db,'reports',reportId));await loadAllReports();buildPrevRestockMap();renderAll();showPrevRestockNote();renderHistory();toast('Report deleted.');}catch(e){showStatus('Error: '+e.message,'error');}
 };
 
 window.renderHistory=function(){
   const filterLoc=document.getElementById('histLoc').value;
   const filtered=filterLoc==='all'?allReports:allReports.filter(r=>r.loc===filterLoc);
   const div=document.getElementById('historyList');
-  if(!filtered.length){div.innerHTML='<p class="muted" style="font-size:13px;padding:1rem 0">No visit reports yet.</p>';return;}
+  if(!filtered.length){div.innerHTML='<p class="muted" style="font-size:13px;padding:1rem 0">No reports yet.</p>';return;}
   div.innerHTML=filtered.map(r=>`
     <div class="history-card">
-      <div class="history-header">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;gap:8px">
         <div><div style="font-weight:700;font-size:15px">${r.name}</div><div class="muted" style="font-size:12px;margin-top:2px">${r.date}</div></div>
-        <button class="danger-solid sm" data-delete-id="${r.id}">&#x1F5D1; Delete</button>
+        <button class="danger-solid sm" data-delete-id="${r.id}">🗑 Delete</button>
       </div>
-      <div class="history-stats">
+      <div style="display:flex;gap:12px;font-size:13px;flex-wrap:wrap;margin-bottom:.75rem">
         <span><strong>${r.totSold}</strong> units</span>
         <span><strong>$${parseFloat(r.totRev||0).toFixed(2)}</strong> revenue</span>
         <span class="${r.totProfit<0?'red':'green'}"><strong>$${parseFloat(r.totProfit||0).toFixed(2)}</strong> profit</span>
       </div>
       <div>${(r.lineItems||[]).map(l=>`
         <div class="history-item-row">
-          <div><div style="font-weight:500">${l.item}</div><div class="muted" style="font-size:11px">Slot ${l.slot}</div></div>
-          <div class="item-qty-badges">
-            <span class="qty-badge qty-arr" title="Arrival">${l.arrival||'—'}</span>
-            <span style="color:#ccc;font-size:12px">→</span>
-            <span class="qty-badge qty-rst" title="Restocked to">${l.restock||'—'}</span>
-            <span style="color:#ccc;font-size:12px">·</span>
-            <span class="qty-badge qty-sold" title="Sold">${l.sold!==null?l.sold+' sold':'—'}</span>
+          <div><div style="font-weight:500">${l.item||l.itemId}</div><div class="muted" style="font-size:11px">Slot ${l.slot}</div></div>
+          <div style="display:flex;gap:5px;align-items:center">
+            <span class="qty-badge qty-arr">${l.arrival||'—'}</span>
+            <span class="muted" style="font-size:11px">→</span>
+            <span class="qty-badge qty-rst">${l.restock||'—'}</span>
+            <span class="muted" style="font-size:11px">·</span>
+            <span class="qty-badge qty-sold">${l.sold!==null?l.sold+' sold':'—'}</span>
           </div>
         </div>`).join('')}
       </div>
@@ -698,33 +856,27 @@ window.renderHistory=function(){
 
 function populateMonthSelector(){
   const keys=new Set(allReports.map(r=>r.monthKey));
-  const today=new Date();
-  keys.add(today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0'));
+  const today=new Date();keys.add(today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0'));
   const sorted=[...keys].sort().reverse();
-  const sel=document.getElementById('monthSel');
-  const cur=sel.value;
+  const sel=document.getElementById('monthSel');const cur=sel.value;
   sel.innerHTML=sorted.map(k=>{const[y,m]=k.split('-');return`<option value="${k}"${k===cur?' selected':''}>${MONTHS[parseInt(m)-1]} ${y}</option>`;}).join('');
-  if(!sel.value&&sorted.length) sel.value=sorted[0];
+  if(!sel.value&&sorted.length)sel.value=sorted[0];
 }
 
 window.renderMonthly=function(){
   const monthKey=document.getElementById('monthSel').value;
   const filterLoc=document.getElementById('monthLoc').value;
-  if(!monthKey) return;
-  const[y,m]=monthKey.split('-');
-  const monthLabel=MONTHS[parseInt(m)-1]+' '+y;
+  if(!monthKey)return;
+  const[y,m]=monthKey.split('-');const monthLabel=MONTHS[parseInt(m)-1]+' '+y;
   const filtered=allReports.filter(r=>r.monthKey===monthKey&&(filterLoc==='all'||r.loc===filterLoc));
   const itemMap={};
-  filtered.forEach(r=>{(r.lineItems||[]).forEach(l=>{if(!l.item||l.sold===null||l.sold===undefined)return;const key=l.item.trim().toLowerCase();if(!itemMap[key])itemMap[key]={name:l.item.trim(),sold:0,rev:0,profit:0,visits:0};itemMap[key].sold+=l.sold;itemMap[key].rev+=l.rev||0;itemMap[key].profit+=l.profit||0;if(l.sold>0)itemMap[key].visits++;});});
+  filtered.forEach(r=>{(r.lineItems||[]).forEach(l=>{if((!l.item&&!l.itemId)||l.sold===null||l.sold===undefined)return;const key=(l.itemId||l.item).toLowerCase();if(!itemMap[key])itemMap[key]={name:l.item||l.itemId,sold:0,rev:0,profit:0,visits:0};itemMap[key].sold+=l.sold;itemMap[key].rev+=l.rev||0;itemMap[key].profit+=l.profit||0;if(l.sold>0)itemMap[key].visits++;});});
   const items=Object.values(itemMap).sort((a,b)=>b.sold-a.sold);
-  const totSold=items.reduce((s,i)=>s+i.sold,0);
-  const totRev=items.reduce((s,i)=>s+i.rev,0);
-  const totProfit=items.reduce((s,i)=>s+i.profit,0);
+  const totSold=items.reduce((s,i)=>s+i.sold,0),totRev=items.reduce((s,i)=>s+i.rev,0),totProfit=items.reduce((s,i)=>s+i.profit,0);
   const maxSold=items.length?Math.max(items[0].sold,1):1;
   const div=document.getElementById('monthlyContent');
   if(!items.length){div.innerHTML='<div class="card"><p class="muted" style="font-size:13px">No reports for '+monthLabel+'.</p></div>';return;}
-  const top3=items.slice(0,Math.min(3,items.length));
-  const bot3=items.length>3?items.slice(-Math.min(3,items.length)).reverse():[];
+  const top3=items.slice(0,Math.min(3,items.length));const bot3=items.length>3?items.slice(-Math.min(3,items.length)).reverse():[];
   div.innerHTML=`
     <div class="stat-grid" style="margin-bottom:.75rem">
       <div class="stat"><div class="stat-label">Units sold</div><div class="stat-value">${totSold}</div></div>
@@ -732,24 +884,23 @@ window.renderMonthly=function(){
       <div class="stat"><div class="stat-label">Profit</div><div class="stat-value ${totProfit<0?'red':'green'}">$${totProfit.toFixed(2)}</div></div>
       <div class="stat"><div class="stat-label">Visits</div><div class="stat-value">${filtered.length}</div></div>
     </div>
-    <div class="top-bot-grid">
-      <div class="card" style="border-color:#2d7a2d">
-        <h3 style="color:#1a6b2a;margin-bottom:.5rem">&#x2B06; Top sellers</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem">
+      <div class="card" style="border-color:#2d7a2d"><h3 style="color:#1a6b2a;margin-bottom:.5rem">⬆ Top sellers</h3>
         ${top3.map(it=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${it.name}</span><span class="green">${it.sold}</span></div><div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#2d7a2d"></div></div></div>`).join('')}
       </div>
-      ${bot3.length?`<div class="card" style="border-color:#c0392b"><h3 style="color:#a32d2d;margin-bottom:.5rem">&#x2B07; Slowest</h3>${bot3.map(it=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${it.name}</span><span class="red">${it.sold}</span></div><div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#c0392b"></div></div></div>`).join('')}</div>`:''}
+      ${bot3.length?`<div class="card" style="border-color:#c0392b"><h3 style="color:#a32d2d;margin-bottom:.5rem">⬇ Slowest</h3>${bot3.map(it=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${it.name}</span><span class="red">${it.sold}</span></div><div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#c0392b"></div></div></div>`).join('')}</div>`:''}
     </div>
     <div class="card"><h2 style="margin-bottom:.75rem">All items — ${monthLabel}</h2>
       ${items.map((it,i)=>{
         const margin=it.rev>0?Math.round(it.profit/it.rev*100):null;
-        const marginColor=margin===null?'#888':margin>=50?'#1a6b2a':margin>=25?'#856404':margin>=0?'#555':'#a32d2d';
-        const marginBg=margin===null?'transparent':margin>=50?'#d4edda':margin>=25?'#fff3cd':margin>=0?'#f4f4f0':'#fde8e8';
-        return`<div class="monthly-item-row">
+        const mColor=margin===null?'#888':margin>=50?'#1a6b2a':margin>=25?'#856404':margin>=0?'#555':'#a32d2d';
+        const mBg=margin===null?'transparent':margin>=50?'#d4edda':margin>=25?'#fff3cd':margin>=0?'#f4f4f0':'#fde8e8';
+        return`<div class="monthly-row">
           <div><div style="font-weight:${i<3?'700':'400'};font-size:14px">${it.name}${i===0?'<span class="badge badge-top">top</span>':i===items.length-1?'<span class="badge badge-low">low</span>':''}</div>
           <div class="muted" style="font-size:11px">${it.visits} visit${it.visits!==1?'s':''} · ${it.sold} units</div></div>
-          <div class="monthly-item-right">
+          <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
             <div style="text-align:right"><div style="font-size:13px;font-weight:600">$${it.rev.toFixed(2)}</div><div style="font-size:11px" class="${it.profit<0?'red':'green'}">$${it.profit.toFixed(2)} profit</div></div>
-            <span style="background:${marginBg};color:${marginColor};padding:3px 8px;border-radius:99px;font-size:12px;font-weight:700;min-width:44px;text-align:center">${margin!==null?margin+'%':'—'}</span>
+            <span style="background:${mBg};color:${mColor};padding:3px 8px;border-radius:99px;font-size:12px;font-weight:700;min-width:44px;text-align:center">${margin!==null?margin+'%':'—'}</span>
           </div>
         </div>`;
       }).join('')}
@@ -757,25 +908,28 @@ window.renderMonthly=function(){
 };
 
 window.showTab=async function(t){
-  ['sheet','history','monthly','inventory'].forEach(n=>{
+  ['sheet','history','monthly','inventory','items'].forEach(n=>{
     document.getElementById('pane-'+n).style.display=n===t?'':'none';
     const nb=document.getElementById('nav-'+n);if(nb)nb.classList.toggle('active',n===t);
-    const db2=document.getElementById('dtab-'+n);if(db2)db2.classList.toggle('active',n===t);
+    const db3=document.getElementById('dtab-'+n);if(db3)db3.classList.toggle('active',n===t);
   });
   if(t==='history'){await loadAllReports();buildPrevRestockMap();renderHistory();}
   if(t==='monthly'){await loadAllReports();populateMonthSelector();renderMonthly();}
-  if(t==='inventory'){await loadInventory();renderInventory();updateInvSuggestions();}
+  if(t==='inventory'){await loadWarehouse();await loadMachines();await loadInvLog();renderInventory();}
+  if(t==='items')renderMasterItems();
 };
 
 async function init(){
   document.getElementById('visitDate').value=new Date().toISOString().split('T')[0];
   showStatus('Connecting...','info');
   await loadLocNames();
+  await loadMasterItems();
+  await loadWarehouse();
+  await loadMachines();
   await loadAllReports();
-  await loadInventory();
   await loadSlots();
   populateMonthSelector();
-  updateInvSuggestions();
+  updateAllDropdowns();
   showStatus('Connected! Data saves automatically.','success');
 }
 init();
