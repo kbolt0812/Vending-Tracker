@@ -229,6 +229,18 @@ button:disabled{opacity:.5}
       <div id="totalStockList"><p class="muted" style="font-size:13px">No inventory yet.</p></div>
     </div>
 
+    <!-- Purchase line items -->
+    <div class="card">
+      <div class="section-hdr">
+        <h3 style="margin-bottom:0">&#x1F9FE; Purchase history</h3>
+        <select id="purchaseItemFilter" onchange="renderPurchaseHistory()" style="width:auto;font-size:13px;padding:5px 8px">
+          <option value="all">All items</option>
+        </select>
+      </div>
+      <p style="font-size:12px;color:#888;margin-bottom:.75rem">Every purchase entry that makes up your average cost. Edit or delete individual entries — average cost recalculates automatically.</p>
+      <div id="purchaseHistoryList"><p class="muted" style="font-size:13px">No purchases yet.</p></div>
+    </div>
+
     <!-- Activity log -->
     <div class="card">
       <h3 style="margin-bottom:.75rem">&#x1F4CB; Recent activity</h3>
@@ -293,7 +305,7 @@ button:disabled{opacity:.5}
         <h3 style="margin-bottom:0">&#x1F5C2; Slot template — <span id="templateLocName"></span></h3>
         <button class="sm" onclick="closeSlotTemplate()">✕ Close</button>
       </div>
-      <p style="font-size:13px;color:#666;margin-bottom:.75rem">Set your default slot layout for this location. Arrival and restock qty will always be blank — only slot label, item, price and cost are saved as the template.</p>
+      <p style="font-size:13px;color:#666;margin-bottom:.75rem">Set your default slot layout for this location. Arrival and restock qty will always be blank — only slot label, item, and sell price are saved as the template. Cost is calculated automatically from your inventory purchases.</p>
       <div id="templateImportBar" style="background:#e8f3ff;border:1px solid #a8cff0;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem;display:none">
         &#x1F4CB; <strong>History found!</strong> <span id="templateImportDesc"></span>
         <button class="sm primary" onclick="importFromHistory()" style="margin-left:8px;padding:4px 12px;font-size:12px">&#x2B07; Import</button>
@@ -337,7 +349,7 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-let loc='', locations={}, masterItems={}, warehouse={}, machines={}, invLogEntries=[], allReports=[], slots=[], prevRestockMap={}, slotTemplates={}, editingTemplateLocId=null;
+let loc='', locations={}, masterItems={}, warehouse={}, machines={}, invLogEntries=[], allReports=[], slots=[], prevRestockMap={}, slotTemplates={}, editingTemplateLocId=null, purchaseLedger=[];
 let editingItemId=null, editingLocId=null;
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -374,6 +386,30 @@ async function saveMachineDoc(locId){const data=machines[locId]||{id:locId};awai
 async function deleteMachineItem(locId,itemId){if(machines[locId]&&machines[locId][itemId]){delete machines[locId][itemId];await saveMachineDoc(locId);}}
 
 async function loadInvLog(){invLogEntries=[];try{const snap=await getDocs(query(collection(db,'invLog'),orderBy('timestamp','desc'),limit(60)));snap.forEach(d=>invLogEntries.push({id:d.id,...d.data()}));}catch(e){}}
+
+async function loadPurchaseLedger(){
+  purchaseLedger=[];
+  try{const snap=await getDocs(query(collection(db,'purchaseLedger'),orderBy('timestamp','desc')));snap.forEach(d=>purchaseLedger.push({id:d.id,...d.data()}));}catch(e){}
+}
+async function savePurchaseLedgerEntry(entry){
+  if(entry.id){await setDoc(doc(db,'purchaseLedger',entry.id),entry);}
+  else{const ref=await addDoc(collection(db,'purchaseLedger'),entry);entry.id=ref.id;}
+  return entry;
+}
+async function deletePurchaseLedgerEntry(id){await deleteDoc(doc(db,'purchaseLedger',id));}
+
+// Recalculate warehouse avgCost from all ledger entries for an item
+async function recalcAvgCost(itemId){
+  const entries=purchaseLedger.filter(e=>e.itemId===itemId&&!e.deleted);
+  if(!entries.length){
+    if(warehouse[itemId]){warehouse[itemId].avgCost=0;await saveWarehouseItem(warehouse[itemId]);}
+    return;
+  }
+  const totalQty=entries.reduce((s,e)=>s+e.qty,0);
+  const totalCost=entries.reduce((s,e)=>s+(e.qty*e.pricePaid),0);
+  const avg=totalQty>0?Math.round(totalCost/totalQty*1000)/1000:0;
+  if(warehouse[itemId]){warehouse[itemId].avgCost=avg;await saveWarehouseItem(warehouse[itemId]);}
+}
 async function addInvLogEntry(entry){try{const ref=await addDoc(collection(db,'invLog'),entry);invLogEntries.unshift({id:ref.id,...entry});if(invLogEntries.length>60)invLogEntries.pop();}catch(e){}}
 
 async function loadAllReports(){allReports=[];try{const snap=await getDocs(query(collection(db,'reports'),orderBy('timestamp','desc')));snap.forEach(d=>allReports.push({id:d.id,...d.data()}));}catch(e){}}
@@ -597,10 +633,15 @@ window.addPurchase=async function(){
   warehouse[itemIdVal]=existing;
   await saveWarehouseItem(existing);
   await addInvLogEntry({type:'buy',itemId:itemIdVal,itemName:it.name,qty,cost:pricePaid,avgCost:existing.avgCost,timestamp:Date.now(),note:'Purchased '+qty+' @ $'+pricePaid.toFixed(2)+' ea. Avg cost: $'+existing.avgCost.toFixed(3)});
+  // Also write to purchase ledger for line-item editing
+  const ledgerEntry={itemId:itemIdVal,itemName:it.name,qty,pricePaid,timestamp:Date.now()};
+  const saved=await savePurchaseLedgerEntry(ledgerEntry);
+  purchaseLedger.unshift(saved);
   document.getElementById('invQtyBuy').value='';
   document.getElementById('invCostBuy').value='';
   document.getElementById('invReorderBuy').value='';
   renderInventory();
+  renderPurchaseHistory();
   toast(qty+' '+it.name+' added! Avg cost: $'+existing.avgCost.toFixed(3));
 };
 
@@ -652,6 +693,80 @@ window.deleteMachineEntry=async function(locId,itemId){
   await deleteMachineItem(locId,itemId);
   renderInventory();
   toast('Machine entry removed.');
+};
+
+function renderPurchaseHistory(){
+  // Populate filter dropdown
+  const filterEl=document.getElementById('purchaseItemFilter');
+  if(filterEl){
+    const uniqueItems=[...new Set(purchaseLedger.map(e=>e.itemId))].map(id=>({id,name:masterItems[id]?masterItems[id].name:id})).sort((a,b)=>a.name.localeCompare(b.name));
+    const cur=filterEl.value;
+    filterEl.innerHTML='<option value="all">All items</option>'+uniqueItems.map(i=>`<option value="${i.id}"${i.id===cur?' selected':''}>${i.name}</option>`).join('');
+  }
+  const filterItem=filterEl?filterEl.value:'all';
+  const entries=purchaseLedger.filter(e=>filterItem==='all'||e.itemId===filterItem);
+  const div=document.getElementById('purchaseHistoryList');
+  if(!div)return;
+  if(!entries.length){div.innerHTML='<p class="muted" style="font-size:13px">No purchases yet.</p>';return;}
+  div.innerHTML=entries.map(e=>{
+    const it=masterItems[e.itemId];
+    const total=(e.qty*(e.pricePaid||0)).toFixed(2);
+    return`<div class="inv-row">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px">${it?it.name:e.itemName||e.itemId}</div>
+        <div class="muted" style="font-size:12px;margin-top:2px">${fmtDate(e.timestamp)} · ${e.qty} units @ $${parseFloat(e.pricePaid||0).toFixed(3)}/unit · Total: $${total}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="sm primary" onclick="editPurchaseEntry('${e.id}')">✏️</button>
+        <button class="sm danger-solid" onclick="deletePurchaseEntry('${e.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.editPurchaseEntry=async function(id){
+  const entry=purchaseLedger.find(e=>e.id===id);if(!entry)return;
+  const it=masterItems[entry.itemId];
+  const newQty=prompt('Edit purchase entry for '+(it?it.name:entry.itemId)+'
+Current qty: '+entry.qty+'
+
+New qty:',entry.qty);
+  if(newQty===null)return;
+  const newPrice=prompt('New price paid per unit ($):',parseFloat(entry.pricePaid||0).toFixed(3));
+  if(newPrice===null)return;
+  const qty=parseInt(newQty);const pricePaid=parseFloat(newPrice);
+  if(isNaN(qty)||qty<1||isNaN(pricePaid)){alert('Invalid values.');return;}
+  // Update entry
+  entry.qty=qty;entry.pricePaid=pricePaid;
+  await savePurchaseLedgerEntry(entry);
+  // Also update warehouse qty delta
+  if(warehouse[entry.itemId]){
+    // Recalculate avg cost from all ledger entries
+    await recalcAvgCost(entry.itemId);
+  }
+  renderPurchaseHistory();
+  renderInventory();
+  toast('Purchase entry updated. Avg cost recalculated.');
+};
+
+window.deletePurchaseEntry=async function(id){
+  const entry=purchaseLedger.find(e=>e.id===id);if(!entry)return;
+  const it=masterItems[entry.itemId];
+  if(!confirm('Delete this purchase entry?
+'+(it?it.name:entry.itemId)+' · '+entry.qty+' units @ $'+parseFloat(entry.pricePaid||0).toFixed(3)+'
+
+Average cost will be recalculated from remaining entries.'))return;
+  await deletePurchaseLedgerEntry(id);
+  purchaseLedger=purchaseLedger.filter(e=>e.id!==id);
+  // Update warehouse qty
+  if(warehouse[entry.itemId]){
+    warehouse[entry.itemId].qty=Math.max(0,warehouse[entry.itemId].qty-entry.qty);
+    await saveWarehouseItem(warehouse[entry.itemId]);
+    await recalcAvgCost(entry.itemId);
+  }
+  renderPurchaseHistory();
+  renderInventory();
+  toast('Purchase entry deleted. Avg cost recalculated.');
 };
 
 function renderInventory(){
@@ -1022,7 +1137,7 @@ window.openSlotTemplate=function(locId){
   // Load existing template or start fresh
   templateSlots=slotTemplates[locId]&&slotTemplates[locId].slots.length
     ?JSON.parse(JSON.stringify(slotTemplates[locId].slots))
-    :[{slot:'A1',itemId:'',price:'',cost:''},{slot:'A2',itemId:'',price:'',cost:''},{slot:'B1',itemId:'',price:'',cost:''},{slot:'B2',itemId:'',price:'',cost:''}];
+    :[{slot:'A1',itemId:'',price:''},{slot:'A2',itemId:'',price:''},{slot:'B1',itemId:'',price:''},{slot:'B2',itemId:'',price:''}];
   // Check if there's history to import from
   const importBar=document.getElementById('templateImportBar');
   const importDesc=document.getElementById('templateImportDesc');
@@ -1056,8 +1171,7 @@ window.importFromHistory=function(){
     return{
       slot:l.slot||'',
       itemId:resolvedItemId,
-      price:parseFloat(l.price)||( it?it.price:0),
-      cost:parseFloat(l.cost)||(warehouse[resolvedItemId]?warehouse[resolvedItemId].avgCost:it?it.cost:0)
+      price:parseFloat(l.price)||(it?it.price:0)
     };
   });
   document.getElementById('templateImportBar').style.display='none';
@@ -1072,7 +1186,7 @@ window.closeSlotTemplate=function(){
 };
 
 window.addTemplateSlot=function(){
-  templateSlots.push({slot:'',itemId:'',price:'',cost:''});
+  templateSlots.push({slot:'',itemId:'',price:''});
   renderTemplateSlots();
 };
 
@@ -1082,12 +1196,10 @@ window.removeTemplateSlot=function(i){
 
 window.updTemplate=function(i,f,v){
   templateSlots[i][f]=v;
-  // Auto-fill price/cost from master item
+  // Auto-fill sell price from master item when item selected
   if(f==='itemId'&&v&&masterItems[v]){
     const it=masterItems[v];
     if(!templateSlots[i].price) templateSlots[i].price=it.price;
-    if(warehouse[v]&&warehouse[v].avgCost) templateSlots[i].cost=warehouse[v].avgCost;
-    else if(!templateSlots[i].cost) templateSlots[i].cost=it.cost;
     renderTemplateSlots();
   }
 };
@@ -1101,7 +1213,7 @@ function renderTemplateSlots(){
         <span style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase">Slot ${i+1}</span>
         <button class="sm danger-solid" onclick="removeTemplateSlot(${i})" style="background:transparent;color:#c0392b;border-color:#e8b4b0;padding:3px 8px;font-size:12px">✕</button>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
         <div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Slot label</label>
           <input type="text" value="${esc(s.slot)}" placeholder="A1" style="padding:8px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%" onchange="updTemplate(${i},'slot',this.value)"/>
         </div>
@@ -1110,13 +1222,8 @@ function renderTemplateSlots(){
             ${itemOptions(s.itemId)}
           </select>
         </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Sell price ($)</label>
           <input type="number" value="${esc(s.price)}" placeholder="2.00" step="0.25" min="0" inputmode="decimal" style="padding:8px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%" onchange="updTemplate(${i},'price',this.value)"/>
-        </div>
-        <div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Cost ($)</label>
-          <input type="number" value="${esc(s.cost)}" placeholder="0.50" step="0.01" min="0" inputmode="decimal" style="padding:8px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%" onchange="updTemplate(${i},'cost',this.value)"/>
         </div>
       </div>
     </div>`).join('');
@@ -1146,7 +1253,7 @@ window.showTab=async function(t){
   });
   if(t==='history'){await loadAllReports();buildPrevRestockMap();renderHistory();}
   if(t==='monthly'){await loadAllReports();populateMonthSelector();renderMonthly();}
-  if(t==='inventory'){await loadWarehouse();await loadMachines();await loadInvLog();renderInventory();}
+  if(t==='inventory'){await loadWarehouse();await loadMachines();await loadInvLog();await loadPurchaseLedger();renderInventory();renderPurchaseHistory();}
   if(t==='items')renderMasterItems();
   if(t==='locations'){await loadSlotTemplates();renderLocationList();}
 };
@@ -1156,6 +1263,7 @@ async function init(){
   showStatus('Connecting...','info');
   await loadLocations();
   await loadSlotTemplates();
+  await loadPurchaseLedger();
   await loadMasterItems();
   await loadWarehouse();
   await loadMachines();
