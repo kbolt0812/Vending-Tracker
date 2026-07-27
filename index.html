@@ -249,22 +249,7 @@ button:disabled{opacity:.5}
       <button class="success full" onclick="addPurchase()">&#x2795; Add to Warehouse</button>
     </div>
 
-    <!-- Move to machine -->
-    <div class="card">
-      <h3 style="margin-bottom:.75rem">&#x1F69A; Move stock: Warehouse → Machine</h3>
-      <div class="grid-3" style="margin-bottom:8px">
-        <div><label>Item</label><select id="moveItemSel"><option value="">-- Select --</option></select></div>
-        <div><label>Location</label>
-          <select id="moveLocSel">
-            <option value="1">Location 1</option><option value="2">Location 2</option>
-            <option value="3">Location 3</option><option value="4">Location 4</option>
-            <option value="5">Location 5</option>
-          </select>
-        </div>
-        <div><label>Qty to move</label><input type="number" id="moveQty" placeholder="10" min="1" inputmode="numeric"/></div>
-      </div>
-      <button class="warning full" onclick="moveToMachine()">&#x1F69A; Move to Machine</button>
-    </div>
+
 
     <!-- Warehouse stock -->
     <div class="card">
@@ -507,7 +492,7 @@ function renderMasterItems(){
 function updateAllDropdowns(){
   const items=Object.values(masterItems).sort((a,b)=>a.name.localeCompare(b.name));
   const opts='<option value="">-- Select item --</option>'+items.map(i=>`<option value="${i.id}">${i.name}</option>`).join('');
-  ['invItemSel','moveItemSel'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  const invSel=document.getElementById('invItemSel');if(invSel)invSel.innerHTML=opts;
   // rebuild slot dropdowns
   renderAll();
 }
@@ -537,40 +522,40 @@ window.addPurchase=async function(){
   toast(qty+' '+it.name+' added to warehouse! Avg cost: $'+existing.avgCost.toFixed(3));
 };
 
-// ── Inventory: move warehouse → machine ───────────────────────
-window.moveToMachine=async function(){
-  const itemIdVal=document.getElementById('moveItemSel').value;
-  const moveLoc=document.getElementById('moveLocSel').value;
-  const qty=parseInt(document.getElementById('moveQty').value);
-  if(!itemIdVal||!qty||qty<1){alert('Please select an item and enter a quantity.');return;}
-  const it=masterItems[itemIdVal];if(!it)return;
-  const wh=warehouse[itemIdVal];
-  if(!wh||wh.qty<qty){alert('Not enough stock in warehouse. Available: '+(wh?wh.qty:0));return;}
-  // Deduct from warehouse
-  wh.qty-=qty;
-  await saveWarehouseItem(wh);
-  // Add to machine
-  if(!machines[moveLoc]) machines[moveLoc]={id:moveLoc};
-  if(!machines[moveLoc][itemIdVal]) machines[moveLoc][itemIdVal]={itemId:itemIdVal,qty:0};
-  machines[moveLoc][itemIdVal].qty+=qty;
-  await saveMachineDoc(moveLoc);
-  const locName=locNames[moveLoc]||'Location '+moveLoc;
-  await addInvLogEntry({type:'move',itemId:itemIdVal,itemName:it.name,qty,loc:moveLoc,locName,timestamp:Date.now(),note:'Moved '+qty+' to '+locName});
-  document.getElementById('moveQty').value='';
-  renderInventory();
-  toast(qty+' '+it.name+' moved to '+locName+'!');
-};
-
-// ── Inventory: deduct sold from machine ───────────────────────
-async function deductSoldFromMachine(lineItems,reportLoc){
+// ── Inventory: auto-update on report submit ───────────────────
+// arrival qty = what was left in machine when you arrived
+// restock qty = what you filled it back up to
+// loaded = restock - arrival = what you physically took from warehouse and put in
+// machine stock is set to restock qty (what's now sitting in the machine)
+// warehouse decreases by what you loaded in
+async function updateInventoryFromReport(lineItems, reportLoc){
   for(const l of lineItems){
-    if(!l.itemId||l.sold===null||l.sold===undefined||l.sold<=0) continue;
-    if(!machines[reportLoc]) continue;
-    if(!machines[reportLoc][l.itemId]) continue;
-    machines[reportLoc][l.itemId].qty=Math.max(0,machines[reportLoc][l.itemId].qty-l.sold);
-    await saveMachineDoc(reportLoc);
+    if(!l.itemId) continue;
+    const arrival=parseFloat(l.arrival);
+    const restock=parseFloat(l.restock);
     const it=masterItems[l.itemId];
-    await addInvLogEntry({type:'sold',itemId:l.itemId,itemName:it?it.name:l.itemId,qty:l.sold,loc:reportLoc,locName:locNames[reportLoc]||'Location '+reportLoc,timestamp:Date.now(),note:'Sold '+l.sold+' at '+(locNames[reportLoc]||'Location '+reportLoc)});
+    const locName=locNames[reportLoc]||'Location '+reportLoc;
+    // What you physically loaded from your warehouse into the machine
+    const loaded=(!isNaN(restock)&&!isNaN(arrival))?Math.max(0,restock-arrival):0;
+    // Set machine stock to restock qty (what is now in the machine)
+    if(!isNaN(restock)&&restock>=0){
+      if(!machines[reportLoc]) machines[reportLoc]={id:reportLoc};
+      if(!machines[reportLoc][l.itemId]) machines[reportLoc][l.itemId]={itemId:l.itemId,qty:0};
+      machines[reportLoc][l.itemId].qty=restock;
+      await saveMachineDoc(reportLoc);
+    }
+    // Deduct what you loaded from warehouse
+    if(loaded>0&&warehouse[l.itemId]){
+      warehouse[l.itemId].qty=Math.max(0,warehouse[l.itemId].qty-loaded);
+      await saveWarehouseItem(warehouse[l.itemId]);
+      await addInvLogEntry({type:'move',itemId:l.itemId,itemName:it?it.name:l.itemId,qty:loaded,loc:reportLoc,locName,timestamp:Date.now(),
+        note:'Loaded '+loaded+' into machine at '+locName+' (warehouse → machine)'});
+    }
+    // Log what sold
+    if(l.sold!==null&&l.sold!==undefined&&l.sold>0){
+      await addInvLogEntry({type:'sold',itemId:l.itemId,itemName:it?it.name:l.itemId,qty:l.sold,loc:reportLoc,locName,timestamp:Date.now(),
+        note:'Sold '+l.sold+' at '+locName});
+    }
   }
 }
 
@@ -809,8 +794,8 @@ window.submitReport=async function(){
     });
     await addDoc(collection(db,'reports'),{date:dateLabel,dateVal,monthKey,loc,name,lineItems,totSold,totRev,totProfit,timestamp:Date.now()});
     await saveSlotsDB();
-    // Deduct sold from machine stock
-    await deductSoldFromMachine(lineItems,loc);
+    // Auto-update inventory: machine stock + warehouse deduction
+    await updateInventoryFromReport(lineItems,loc);
     showStatus('Report saved! Machine inventory updated.','success');
     await loadAllReports();
     buildPrevRestockMap();renderAll();showPrevRestockNote();
