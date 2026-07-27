@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Vending Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a1a1a;background:#f0ede8;min-height:100vh;padding-bottom:80px}
+h1{font-size:20px;font-weight:700;margin-bottom:1rem}
+h2{font-size:16px;font-weight:600;margin-bottom:.75rem}
+h3{font-size:14px;font-weight:600;margin-bottom:.5rem}
+.container{max-width:700px;margin:0 auto;padding:1rem}
+.card{background:#fff;border:1px solid #e0ddd5;border-radius:14px;padding:1rem;margin-bottom:.75rem}
+label{font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:500}
+select,input[type="text"],input[type="number"],input[type="date"]{padding:10px 12px;border-radius:10px;border:1.5px solid #ddd;background:#fff;color:#1a1a1a;font-size:16px;font-family:inherit;width:100%;outline:none;-webkit-appearance:none;appearance:none}
+select:focus,input:focus{border-color:#1a6fc4;box-shadow:0 0 0 3px rgba(26,111,196,.12)}
+button{padding:11px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-size:15px;font-family:inherit;color:#1a1a1a;font-weight:500;transition:all .15s;min-height:44px}
+button:active{opacity:.75;transform:scale(.97)}
+button.primary{background:#1a6fc4;color:#fff;border-color:#1a6fc4}
+button.success{background:#2d7a2d;color:#fff;border-color:#2d7a2d}
+button.warning{background:#d4680a;color:#fff;border-color:#d4680a}
+button.sm{padding:7px 12px;font-size:13px;min-height:36px}
+button.danger-solid{background:#c0392b;color:#fff;border-color:#c0392b;padding:7px 12px;font-size:13px;min-height:36px}
+button.full{width:100%;margin-bottom:8px}
+button:disabled{opacity:.5}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0ddd5;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px;border:none;background:transparent;cursor:pointer;color:#888;font-size:9px;font-weight:500;gap:2px;min-height:56px}
+.nav-btn.active{color:#1a6fc4}
+.nav-icon{font-size:18px;line-height:1}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem}
+.stat{background:#f4f4f0;border-radius:10px;padding:.65rem .85rem}
+.stat-label{font-size:11px;color:#888;margin-bottom:2px}
+.stat-value{font-size:20px;font-weight:700}
+.slot-card{background:#f9f8f6;border:1.5px solid #e8e4de;border-radius:12px;padding:.85rem;margin-bottom:.65rem}
+.slot-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+.slot-label-tag{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.input-group label{font-size:11px;color:#666;margin-bottom:3px}
+.arrival-inp{background:#f0f7ee!important;border-color:#b8ddb0!important}
+.restock-inp{background:#e8f3ff!important;border-color:#a8cff0!important}
+.calc-row{display:flex;gap:6px;margin-top:6px;background:#f4f4f0;border-radius:8px;padding:6px 8px}
+.calc-item{flex:1;text-align:center}
+.calc-label{font-size:10px;color:#888;margin-bottom:1px}
+.calc-val{font-size:14px;font-weight:700}
+.prev-tag{font-size:10px;color:#aaa;display:block;margin-top:2px;text-align:center}
+.green{color:#1a6b2a;font-weight:700}
+.red{color:#a32d2d;font-weight:700}
+.orange{color:#d4680a;font-weight:700}
+.muted{color:#888}
+.history-card{background:#fff;border:1px solid #e0ddd5;border-radius:14px;padding:1rem;margin-bottom:.75rem}
+.history-item-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0ede8;font-size:13px}
+.history-item-row:last-child{border-bottom:none}
+.qty-badge{padding:2px 7px;border-radius:6px;font-size:12px;font-weight:600}
+.qty-arr{background:#f0f7ee;color:#2d6b20}
+.qty-rst{background:#e8f3ff;color:#1a5c9e}
+.qty-sold{background:#fff3cd;color:#7a5200}
+.bar-wrap{background:#e8e6e0;border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
+.bar{height:6px;border-radius:4px}
+.badge{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:600;margin-left:4px}
+.badge-top{background:#d4edda;color:#1a6b2a}
+.badge-low{background:#fde8e8;color:#a32d2d}
+.monthly-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px;gap:8px}
+.monthly-row:last-child{border-bottom:none}
+.inv-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0ede8;gap:8px}
+.inv-row:last-child{border-bottom:none}
+.stock-badge{display:inline-block;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.stock-ok{background:#d4edda;color:#1a6b2a}
+.stock-low{background:#fff3cd;color:#856404}
+.stock-out{background:#fde8e8;color:#a32d2d}
+.log-row{padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px}
+.log-row:last-child{border-bottom:none}
+.item-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0ede8;gap:8px}
+.item-row:last-child{border-bottom:none}
+.cat-pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.cat-drink{background:#e8f3ff;color:#1a5c9e}
+.cat-snack{background:#fff3cd;color:#7a5200}
+.status-bar{border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem;display:none}
+.status-bar.error{background:#fde8e8;border:1px solid #c0392b;display:block}
+.status-bar.success{background:#d4edda;border:1px solid #2d7a2d;display:block}
+.status-bar.info{background:#e8f3ff;border:1px solid #1a6fc4;display:block}
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 22px;border-radius:99px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1}
+.note-bar{background:#fff8e1;border:1px solid #f0c040;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem}
+.flex-row{display:flex;gap:8px}
+.flex-row button{flex:1}
+.section-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0ede8;font-size:13px;gap:8px}
+.total-row:last-child{border-bottom:none}
+@media(min-width:650px){
+  .mobile-cards{display:none}
+  .desktop-table-wrap{display:block}
+  table{width:100%;border-collapse:collapse;font-size:13px;table-layout:auto;min-width:700px}
+  thead th{font-weight:600;font-size:11px;color:#666;text-align:left;padding:6px 5px;border-bottom:1px solid #ddd;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
+  tbody td{padding:5px;vertical-align:middle;border-bottom:1px solid #f0ede8}
+  tbody tr:last-child td{border-bottom:none}
+  tfoot td{padding:6px 5px;border-top:1px solid #ddd;font-weight:600}
+  .arrival-col{background:#f0f7ee}
+  .restock-col{background:#e8f3ff}
+  .overflow{overflow-x:auto}
+  .desktop-table-wrap table select{min-width:140px;font-size:12px}
+  .desktop-table-wrap table input{font-size:12px}
+  .bottom-nav{display:none}
+  .desktop-tabs{display:flex!important}
+  body{padding-bottom:0}
+}
+@media(max-width:649px){
+  .mobile-cards{display:block}
+  .desktop-table-wrap{display:none}
+  .desktop-tabs{display:none!important}
+}
+.desktop-tabs{display:none;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.dtab{padding:8px 16px;border-radius:10px;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-size:13px;color:#666;font-weight:500}
+.dtab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="statusBar" class="status-bar"></div>
+  <h1>&#x1F3EA; Vending Tracker</h1>
+
+  <div class="desktop-tabs">
+    <button class="dtab active" onclick="showTab('sheet')" id="dtab-sheet">&#x1F4CB; Visit Sheet</button>
+    <button class="dtab" onclick="showTab('history')" id="dtab-history">&#x1F4C5; History</button>
+    <button class="dtab" onclick="showTab('monthly')" id="dtab-monthly">&#x1F4CA; Monthly</button>
+    <button class="dtab" onclick="showTab('inventory')" id="dtab-inventory">&#x1F4E6; Inventory</button>
+    <button class="dtab" onclick="showTab('items')" id="dtab-items">&#x1F4DD; Items</button>
+    <button class="dtab" onclick="showTab('locations')" id="dtab-locations">&#x1F4CD; Locations</button>
+  </div>
+
+  <!-- VISIT SHEET -->
+  <div id="pane-sheet">
+    <div class="card">
+      <div class="grid-2" style="margin-bottom:10px">
+        <div><label>Location</label><select id="locSel" onchange="switchLoc()"></select></div>
+        <div><label>Visit date</label><input type="date" id="visitDate"/></div>
+      </div>
+    </div>
+    <div id="prevRestockNote" class="note-bar" style="display:none"></div>
+    <div class="mobile-cards" id="slotCardsMobile"></div>
+    <div class="desktop-table-wrap">
+      <div class="card">
+        <div class="overflow">
+          <table>
+            <colgroup><col style="width:70px"><col style="min-width:160px"><col style="width:72px"><col style="width:72px"><col style="width:64px"><col style="width:64px"><col style="width:50px"><col style="width:72px"><col style="width:72px"><col style="width:32px"></colgroup>
+            <thead><tr>
+              <th>Slot</th><th>Item</th>
+              <th style="text-align:center;background:#f0f7ee">Arrival<br><span style="font-size:9px;font-weight:400">(left)</span></th>
+              <th style="text-align:center;background:#e8f3ff">Restock<br><span style="font-size:9px;font-weight:400">(filled to)</span></th>
+              <th style="text-align:right">Price</th><th style="text-align:right">Cost</th>
+              <th style="text-align:center">Sold</th><th style="text-align:right">Revenue</th><th style="text-align:right">Profit</th><th></th>
+            </tr></thead>
+            <tbody id="slotBody"></tbody>
+            <tfoot><tr>
+              <td colspan="6" class="muted" style="font-size:12px">Totals</td>
+              <td id="tot-sold" style="text-align:center"></td>
+              <td id="tot-rev" style="text-align:right"></td>
+              <td id="tot-profit" style="text-align:right"></td>
+              <td></td>
+            </tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button onclick="addSlot()" style="border-style:dashed">+ Add Slot</button>
+      <div class="flex-row">
+        <button class="primary" onclick="saveSheet()">&#x1F4BE; Save Sheet</button>
+        <button class="success" onclick="submitReport()" id="submitBtn">&#x1F4C4; Submit Report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="pane-history" style="display:none">
+    <div style="margin-bottom:.75rem"><label>Filter by location</label><select id="histLoc" onchange="renderHistory()"></select></div>
+    <div id="historyList"><p class="muted" style="font-size:13px">Loading...</p></div>
+  </div>
+
+  <!-- MONTHLY -->
+  <div id="pane-monthly" style="display:none">
+    <div class="grid-2" style="margin-bottom:.75rem">
+      <div><label>Month</label><select id="monthSel" onchange="renderMonthly()"></select></div>
+      <div><label>Location</label><select id="monthLoc" onchange="renderMonthly()"></select></div>
+    </div>
+    <div id="monthlyContent"></div>
+  </div>
+
+  <!-- INVENTORY -->
+  <div id="pane-inventory" style="display:none">
+    <!-- Add stock -->
+    <div class="card">
+      <h3 style="margin-bottom:.75rem">&#x2795; Add purchased stock</h3>
+      <div class="grid-2" style="margin-bottom:8px">
+        <div><label>Item</label><select id="invItemSel"><option value="">-- Select item --</option></select></div>
+        <div><label>Qty purchased</label><input type="number" id="invQtyBuy" placeholder="24" min="1" inputmode="numeric"/></div>
+      </div>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div><label>Price paid per unit ($)</label><input type="number" id="invCostBuy" placeholder="0.50" step="0.01" min="0" inputmode="decimal"/></div>
+        <div><label>Reorder point</label><input type="number" id="invReorderBuy" placeholder="auto" min="0" inputmode="numeric"/>
+          <span style="font-size:10px;color:#aaa;margin-top:2px;display:block">Leave blank to use item default</span>
+        </div>
+      </div>
+      <button class="success full" onclick="addPurchase()">&#x2795; Add to Warehouse</button>
+    </div>
+
+    <!-- Warehouse stock -->
+    <div class="card">
+      <div class="section-hdr">
+        <h3 style="margin-bottom:0">&#x1F3E0; Warehouse stock</h3>
+        <span id="warehouseLowCount" style="font-size:12px;color:#a32d2d;font-weight:600;display:none"></span>
+      </div>
+      <div id="warehouseList"><p class="muted" style="font-size:13px">No warehouse stock yet.</p></div>
+    </div>
+
+    <!-- Machine stock -->
+    <div class="card">
+      <div class="section-hdr">
+        <h3 style="margin-bottom:0">&#x1F3EA; Machine stock</h3>
+        <select id="invLocFilter" onchange="renderInventory()" style="width:auto;font-size:13px;padding:5px 8px"></select>
+      </div>
+      <div id="machineList"><p class="muted" style="font-size:13px">No machine stock yet.</p></div>
+    </div>
+
+    <!-- Total stock -->
+    <div class="card">
+      <h3 style="margin-bottom:.75rem">&#x1F4CA; Total inventory (warehouse + all machines)</h3>
+      <div id="totalStockList"><p class="muted" style="font-size:13px">No inventory yet.</p></div>
+    </div>
+
+    <!-- Purchase line items -->
+    <div class="card">
+      <div class="section-hdr">
+        <h3 style="margin-bottom:0">&#x1F9FE; Purchase history</h3>
+        <select id="purchaseItemFilter" onchange="renderPurchaseHistory()" style="width:auto;font-size:13px;padding:5px 8px">
+          <option value="all">All items</option>
+        </select>
+      </div>
+      <p style="font-size:12px;color:#888;margin-bottom:.75rem">Every purchase entry that makes up your average cost. Edit or delete individual entries — average cost recalculates automatically.</p>
+      <div id="purchaseHistoryList"><p class="muted" style="font-size:13px">No purchases yet.</p></div>
+    </div>
+
+    <!-- Activity log -->
+    <div class="card">
+      <h3 style="margin-bottom:.75rem">&#x1F4CB; Recent activity</h3>
+      <div id="invLog"><p class="muted" style="font-size:13px">No activity yet.</p></div>
+    </div>
+  </div>
+
+  <!-- MASTER ITEMS -->
+  <div id="pane-items" style="display:none">
+    <div class="card">
+      <h3 style="margin-bottom:.75rem" id="itemFormTitle">&#x2795; Add new item</h3>
+      <div class="grid-2" style="margin-bottom:8px">
+        <div><label>Item name</label><input type="text" id="masterName" placeholder="e.g. Coke Can 12oz"/></div>
+        <div><label>Category</label><select id="masterCat"><option value="drink">Drink</option><option value="snack">Snack</option></select></div>
+      </div>
+      <div class="grid-3" style="margin-bottom:10px">
+        <div><label>Default sell price ($)</label><input type="number" id="masterPrice" placeholder="2.00" step="0.25" min="0" inputmode="decimal"/></div>
+        <div><label>Default cost ($)</label><input type="number" id="masterCost" placeholder="0.50" step="0.01" min="0" inputmode="decimal"/></div>
+        <div><label>Reorder point</label><input type="number" id="masterReorder" placeholder="12" min="0" inputmode="numeric"/>
+          <span style="font-size:10px;color:#aaa;margin-top:2px;display:block">Alert when below this qty</span>
+        </div>
+      </div>
+      <div class="flex-row">
+        <button class="success" onclick="saveMasterItem()" id="saveItemBtn">&#x2795; Add Item</button>
+        <button onclick="cancelItemEdit()" id="cancelItemBtn" style="display:none">Cancel</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-hdr">
+        <h3 style="margin-bottom:0">&#x1F4CB; All items</h3>
+        <select id="itemCatFilter" onchange="renderMasterItems()" style="width:auto;font-size:13px;padding:5px 8px">
+          <option value="all">All categories</option>
+          <option value="drink">Drinks</option>
+          <option value="snack">Snacks</option>
+        </select>
+      </div>
+      <div id="masterItemList"><p class="muted" style="font-size:13px">No items yet.</p></div>
+    </div>
+  </div>
+
+  <!-- LOCATIONS -->
+  <div id="pane-locations" style="display:none">
+    <div class="card">
+      <h3 style="margin-bottom:.75rem" id="locFormTitle">&#x2795; Add new location</h3>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div><label>Location name</label><input type="text" id="locNameInput" placeholder="e.g. Main Street Office"/></div>
+        <div><label>Address / notes (optional)</label><input type="text" id="locAddress" placeholder="e.g. 123 Main St"/></div>
+      </div>
+      <div class="flex-row">
+        <button class="success" onclick="saveLocation()" id="saveLocBtn">&#x2795; Add Location</button>
+        <button onclick="cancelLocEdit()" id="cancelLocBtn" style="display:none">Cancel</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:.75rem">&#x1F4CD; All locations</h3>
+      <div id="locationList"><p class="muted" style="font-size:13px">No locations yet. Add one above.</p></div>
+    </div>
+
+    <!-- Slot template editor -->
+    <div class="card" id="slotTemplateCard" style="display:none">
+      <div class="section-hdr">
+        <h3 style="margin-bottom:0">&#x1F5C2; Slot template — <span id="templateLocName"></span></h3>
+        <button class="sm" onclick="closeSlotTemplate()">✕ Close</button>
+      </div>
+      <p style="font-size:13px;color:#666;margin-bottom:.75rem">Set your default slot layout for this location. Arrival and restock qty will always be blank — only slot label, item, and sell price are saved as the template. Cost is calculated automatically from your inventory purchases.</p>
+      <div id="templateImportBar" style="background:#e8f3ff;border:1px solid #a8cff0;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:.75rem;display:none">
+        &#x1F4CB; <strong>History found!</strong> <span id="templateImportDesc"></span>
+        <button class="sm primary" onclick="importFromHistory()" style="margin-left:8px;padding:4px 12px;font-size:12px">&#x2B07; Import</button>
+      </div>
+      <div id="templateSlotList"></div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+        <button onclick="addTemplateSlot()" style="border-style:dashed">+ Add Slot</button>
+        <button class="success" onclick="saveSlotTemplate()">&#x1F4BE; Save Template</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile bottom nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showTab('sheet')" id="nav-sheet"><span class="nav-icon">&#x1F4CB;</span>Sheet</button>
+  <button class="nav-btn" onclick="showTab('history')" id="nav-history"><span class="nav-icon">&#x1F4C5;</span>History</button>
+  <button class="nav-btn" onclick="showTab('monthly')" id="nav-monthly"><span class="nav-icon">&#x1F4CA;</span>Monthly</button>
+  <button class="nav-btn" onclick="showTab('inventory')" id="nav-inventory"><span class="nav-icon">&#x1F4E6;</span>Inventory</button>
+  <button class="nav-btn" onclick="showTab('items')" id="nav-items"><span class="nav-icon">&#x1F4DD;</span>Items</button>
+  <button class="nav-btn" onclick="showTab('locations')" id="nav-locations"><span class="nav-icon">&#x1F4CD;</span>Locations</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc, query, orderBy, limit }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCxlrEqi41cmnb5HzoFRnLsSi68Tno6eLk",
+  authDomain: "vendin-machine-routes.firebaseapp.com",
+  projectId: "vendin-machine-routes",
+  storageBucket: "vendin-machine-routes.firebasestorage.app",
+  messagingSenderId: "1040142766651",
+  appId: "1:1040142766651:web:900f3f10a729f59deac21e"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+let loc='', locations={}, masterItems={}, warehouse={}, machines={}, invLogEntries=[], allReports=[], slots=[], prevRestockMap={}, slotTemplates={}, editingTemplateLocId=null, purchaseLedger=[];
+let editingItemId=null, editingLocId=null;
+
+// ── Helpers ───────────────────────────────────────────────────
+function showStatus(msg,type='info'){const b=document.getElementById('statusBar');b.textContent=msg;b.className='status-bar '+type;setTimeout(()=>{b.className='status-bar';},4000);}
+function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2500);}
+function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
+function fmtDate(ts){const d=new Date(ts);return(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+function slugId(name){return name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_');}
+
+// ── Firebase ──────────────────────────────────────────────────
+async function loadLocations(){
+  locations={};
+  try{const snap=await getDocs(collection(db,'locations'));snap.forEach(d=>{locations[d.id]={id:d.id,...d.data()};});}catch(e){}
+  // If no locations exist yet, seed defaults
+  if(!Object.keys(locations).length){
+    const defaults=[{id:'loc_1',name:'Location 1',address:''},{id:'loc_2',name:'Location 2',address:''},{id:'loc_3',name:'Location 3',address:''},{id:'loc_4',name:'Location 4',address:''},{id:'loc_5',name:'Location 5',address:''}];
+    for(const l of defaults){await setDoc(doc(db,'locations',l.id),l);locations[l.id]=l;}
+  }
+  if(!loc||!locations[loc]) loc=Object.keys(locations).sort()[0]||'';
+}
+async function saveLocationDB(l){await setDoc(doc(db,'locations',l.id),l);}
+async function deleteLocationDB(id){await deleteDoc(doc(db,'locations',id));}
+
+async function loadMasterItems(){masterItems={};try{const snap=await getDocs(collection(db,'masterItems'));snap.forEach(d=>{masterItems[d.id]={id:d.id,...d.data()};});}catch(e){}}
+async function saveMasterItemDB(item){await setDoc(doc(db,'masterItems',item.id),item);}
+async function deleteMasterItemDB(id){await deleteDoc(doc(db,'masterItems',id));}
+
+async function loadWarehouse(){warehouse={};try{const snap=await getDocs(collection(db,'warehouse'));snap.forEach(d=>{warehouse[d.id]={id:d.id,...d.data()};});}catch(e){}}
+async function saveWarehouseItem(item){await setDoc(doc(db,'warehouse',item.id),item);}
+async function deleteWarehouseItem(id){await deleteDoc(doc(db,'warehouse',id));delete warehouse[id];}
+
+async function loadMachines(){machines={};try{const snap=await getDocs(collection(db,'machines'));snap.forEach(d=>{machines[d.id]={id:d.id,...d.data()};});}catch(e){}}
+async function saveMachineDoc(locId){const data=machines[locId]||{id:locId};await setDoc(doc(db,'machines',locId),data);}
+async function deleteMachineItem(locId,itemId){if(machines[locId]&&machines[locId][itemId]){delete machines[locId][itemId];await saveMachineDoc(locId);}}
+
+async function loadInvLog(){invLogEntries=[];try{const snap=await getDocs(query(collection(db,'invLog'),orderBy('timestamp','desc'),limit(60)));snap.forEach(d=>invLogEntries.push({id:d.id,...d.data()}));}catch(e){}}
+
+async function loadPurchaseLedger(){
+  purchaseLedger=[];
+  try{const snap=await getDocs(query(collection(db,'purchaseLedger'),orderBy('timestamp','desc')));snap.forEach(d=>purchaseLedger.push({id:d.id,...d.data()}));}catch(e){}
+}
+async function savePurchaseLedgerEntry(entry){
+  if(entry.id){await setDoc(doc(db,'purchaseLedger',entry.id),entry);}
+  else{const ref=await addDoc(collection(db,'purchaseLedger'),entry);entry.id=ref.id;}
+  return entry;
+}
+async function deletePurchaseLedgerEntry(id){await deleteDoc(doc(db,'purchaseLedger',id));}
+
+// Recalculate warehouse avgCost from all ledger entries for an item
+async function recalcAvgCost(itemId){
+  const entries=purchaseLedger.filter(e=>e.itemId===itemId&&!e.deleted);
+  if(!entries.length){
+    if(warehouse[itemId]){warehouse[itemId].avgCost=0;await saveWarehouseItem(warehouse[itemId]);}
+    return;
+  }
+  const totalQty=entries.reduce((s,e)=>s+e.qty,0);
+  const totalCost=entries.reduce((s,e)=>s+(e.qty*e.pricePaid),0);
+  const avg=totalQty>0?Math.round(totalCost/totalQty*1000)/1000:0;
+  if(warehouse[itemId]){warehouse[itemId].avgCost=avg;await saveWarehouseItem(warehouse[itemId]);}
+}
+async function addInvLogEntry(entry){try{const ref=await addDoc(collection(db,'invLog'),entry);invLogEntries.unshift({id:ref.id,...entry});if(invLogEntries.length>60)invLogEntries.pop();}catch(e){}}
+
+async function loadAllReports(){allReports=[];try{const snap=await getDocs(query(collection(db,'reports'),orderBy('timestamp','desc')));snap.forEach(d=>allReports.push({id:d.id,...d.data()}));}catch(e){}}
+async function loadSlots(){
+  slots=[];
+  try{const s=await getDoc(doc(db,'slots',loc));if(s.exists())slots=s.data().slots||[];}catch(e){}
+  // If no saved slots, use slot template for this location
+  if(!slots.length&&slotTemplates[loc]&&slotTemplates[loc].slots.length){
+    slots=slotTemplates[loc].slots.map(s=>({...s,arrival:'',restock:''}));
+  } else if(!slots.length){
+    // Fallback default
+    slots=[{slot:'A1',itemId:'',arrival:'',restock:'',price:'',cost:''},{slot:'A2',itemId:'',arrival:'',restock:'',price:'',cost:''},{slot:'B1',itemId:'',arrival:'',restock:'',price:'',cost:''},{slot:'B2',itemId:'',arrival:'',restock:'',price:'',cost:''}];
+  } else {
+    slots=slots.map(s=>({...s,arrival:'',restock:''}));
+  }
+  buildPrevRestockMap();renderAll();showPrevRestockNote();
+}
+async function saveSlotsDB(){try{await setDoc(doc(db,'slots',loc),{slots});}catch(e){}}
+
+async function loadSlotTemplates(){
+  slotTemplates={};
+  try{const snap=await getDocs(collection(db,'slotTemplates'));snap.forEach(d=>{slotTemplates[d.id]={id:d.id,...d.data()};});}catch(e){}
+}
+async function saveSlotTemplateDB(locId,templateSlots){
+  await setDoc(doc(db,'slotTemplates',locId),{locId,slots:templateSlots});
+  slotTemplates[locId]={id:locId,locId,slots:templateSlots};
+}
+
+// ── Locations ─────────────────────────────────────────────────
+function buildLocationOptions(selectedId, includeAll=false){
+  const locs=Object.values(locations).sort((a,b)=>a.name.localeCompare(b.name));
+  let opts=includeAll?'<option value="all">All locations</option>':'';
+  opts+=locs.map(l=>`<option value="${l.id}"${l.id===selectedId?' selected':''}>${l.name}</option>`).join('');
+  return opts;
+}
+
+function updateAllLocationDropdowns(){
+  ['locSel','histLoc','monthLoc','invLocFilter'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const includeAll=['histLoc','monthLoc','invLocFilter'].includes(id);
+    el.innerHTML=buildLocationOptions(id==='locSel'?loc:(el.value||'all'),includeAll);
+  });
+}
+
+window.saveLocation=async function(){
+  const name=document.getElementById('locNameInput').value.trim();
+  const address=document.getElementById('locAddress').value.trim();
+  if(!name){alert('Please enter a location name.');return;}
+  const id=editingLocId||'loc_'+slugId(name)+'_'+Date.now();
+  const locObj={id,name,address};
+  locations[id]=locObj;
+  await saveLocationDB(locObj);
+  if(!loc) loc=id;
+  cancelLocEdit();
+  updateAllLocationDropdowns();
+  renderLocationList();
+  toast(editingLocId?'Location updated!':'Location added!');
+  editingLocId=null;
+};
+
+window.editLocation=function(id){
+  const l=locations[id];if(!l)return;
+  editingLocId=id;
+  document.getElementById('locNameInput').value=l.name;
+  document.getElementById('locAddress').value=l.address||'';
+  document.getElementById('locFormTitle').textContent='✏️ Edit location';
+  document.getElementById('saveLocBtn').textContent='💾 Save changes';
+  document.getElementById('cancelLocBtn').style.display='';
+};
+
+window.cancelLocEdit=function(){
+  editingLocId=null;
+  document.getElementById('locNameInput').value='';
+  document.getElementById('locAddress').value='';
+  document.getElementById('locFormTitle').textContent='➕ Add new location';
+  document.getElementById('saveLocBtn').textContent='➕ Add Location';
+  document.getElementById('cancelLocBtn').style.display='none';
+};
+
+window.deleteLocation=async function(id){
+  const l=locations[id];
+  // Check if there's any machine stock or reports for this location
+  const hasMachine=machines[id]&&Object.keys(machines[id]).filter(k=>k!=='id').length>0;
+  const hasReports=allReports.some(r=>r.loc===id);
+  let warn='Delete location "'+l.name+'"?';
+  if(hasMachine||hasReports){
+    warn+=' Warning: this location has '+(hasMachine?'machine stock ':' ')+(hasReports?'and visit reports ':'')+'. Those records will remain in history but the location will be removed from dropdowns.';
+  }
+  if(!confirm(warn))return;
+  await deleteLocationDB(id);
+  delete locations[id];
+  if(loc===id) loc=Object.keys(locations).sort()[0]||'';
+  updateAllLocationDropdowns();
+  renderLocationList();
+  toast('Location deleted.');
+};
+
+function renderLocationList(){
+  const locs=Object.values(locations).sort((a,b)=>a.name.localeCompare(b.name));
+  const div=document.getElementById('locationList');
+  if(!locs.length){div.innerHTML='<p class="muted" style="font-size:13px">No locations yet.</p>';return;}
+  div.innerHTML=locs.map(l=>`
+    <div class="item-row">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:14px">${l.name}</div>
+        ${l.address?`<div class="muted" style="font-size:12px;margin-top:2px">${l.address}</div>`:''}
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="sm" onclick="openSlotTemplate('${l.id}')" style="background:#f4f4f0;border-color:#ddd">🗂 Slots</button>
+        <button class="sm primary" onclick="editLocation('${l.id}')">✏️</button>
+        <button class="sm danger-solid" onclick="deleteLocation('${l.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── Master items ──────────────────────────────────────────────
+window.saveMasterItem=async function(){
+  const name=document.getElementById('masterName').value.trim();
+  const cat=document.getElementById('masterCat').value;
+  const price=parseFloat(document.getElementById('masterPrice').value)||0;
+  const cost=parseFloat(document.getElementById('masterCost').value)||0;
+  const reorder=parseInt(document.getElementById('masterReorder').value)||0;
+  if(!name){alert('Please enter an item name.');return;}
+  const id=editingItemId||slugId(name);
+  const item={id,name,category:cat,price,cost,reorder};
+  masterItems[id]=item;
+  await saveMasterItemDB(item);
+  // Update reorder point in warehouse if exists
+  if(warehouse[id]){warehouse[id].reorder=reorder;await saveWarehouseItem(warehouse[id]);}
+  cancelItemEdit();
+  updateAllItemDropdowns();
+  renderMasterItems();
+  toast(editingItemId?'Item updated!':'Item added!');
+  editingItemId=null;
+};
+
+window.editMasterItem=function(id){
+  const it=masterItems[id];if(!it)return;
+  editingItemId=id;
+  document.getElementById('masterName').value=it.name;
+  document.getElementById('masterCat').value=it.category;
+  document.getElementById('masterPrice').value=it.price;
+  document.getElementById('masterCost').value=it.cost;
+  document.getElementById('masterReorder').value=it.reorder||0;
+  document.getElementById('itemFormTitle').textContent='✏️ Edit item';
+  document.getElementById('saveItemBtn').textContent='💾 Save changes';
+  document.getElementById('cancelItemBtn').style.display='';
+  document.getElementById('pane-items').scrollIntoView({behavior:'smooth'});
+};
+
+window.cancelItemEdit=function(){
+  editingItemId=null;
+  ['masterName','masterPrice','masterCost','masterReorder'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('masterCat').value='drink';
+  document.getElementById('itemFormTitle').textContent='➕ Add new item';
+  document.getElementById('saveItemBtn').textContent='➕ Add Item';
+  document.getElementById('cancelItemBtn').style.display='none';
+};
+
+window.deleteMasterItem=async function(id){
+  const it=masterItems[id];
+  const inWarehouse=warehouse[id]&&warehouse[id].qty>0;
+  const inMachine=Object.values(machines).some(m=>m[id]&&m[id].qty>0);
+  if(inWarehouse||inMachine){
+    const msg='⚠️ Warning: "'+it.name+'" still has stock in '+(inWarehouse?'your warehouse ':'')+(inMachine?'one or more machines ':'')+'. Deleting this item will remove it from all inventory too. Continue?';
+    if(!confirm(msg))return;
+    // Remove from warehouse
+    if(warehouse[id]){await deleteWarehouseItem(id);}
+    // Remove from all machines
+    for(const locId of Object.keys(machines)){
+      if(machines[locId][id]){await deleteMachineItem(locId,id);}
+    }
+  } else {
+    if(!confirm('Delete "'+it.name+'"? This cannot be undone.'))return;
+  }
+  await deleteMasterItemDB(id);
+  delete masterItems[id];
+  updateAllItemDropdowns();
+  renderMasterItems();
+  toast('Item deleted.');
+};
+
+function updateAllItemDropdowns(){
+  const items=Object.values(masterItems).sort((a,b)=>a.name.localeCompare(b.name));
+  const opts='<option value="">-- Select item --</option>'+items.map(i=>`<option value="${i.id}">${i.name}</option>`).join('');
+  ['invItemSel'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  renderAll();
+}
+
+function renderMasterItems(){
+  const filter=document.getElementById('itemCatFilter').value;
+  const items=Object.values(masterItems).filter(i=>filter==='all'||i.category===filter).sort((a,b)=>a.name.localeCompare(b.name));
+  const div=document.getElementById('masterItemList');
+  if(!items.length){div.innerHTML='<p class="muted" style="font-size:13px">No items yet.</p>';return;}
+  div.innerHTML=items.map(it=>`
+    <div class="item-row">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:14px">${it.name} <span class="cat-pill ${it.category==='drink'?'cat-drink':'cat-snack'}">${it.category}</span></div>
+        <div class="muted" style="font-size:12px;margin-top:2px">Sell: $${it.price.toFixed(2)} · Cost: $${it.cost.toFixed(2)} · Margin: ${it.price>0?Math.round((it.price-it.cost)/it.price*100)+'%':'—'} · Reorder at: ${it.reorder||'not set'}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="sm primary" onclick="editMasterItem('${it.id}')">✏️</button>
+        <button class="sm danger-solid" onclick="deleteMasterItem('${it.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── Inventory ─────────────────────────────────────────────────
+window.addPurchase=async function(){
+  const itemIdVal=document.getElementById('invItemSel').value;
+  const qty=parseInt(document.getElementById('invQtyBuy').value);
+  const pricePaid=parseFloat(document.getElementById('invCostBuy').value);
+  const reorderOverride=parseInt(document.getElementById('invReorderBuy').value);
+  if(!itemIdVal||!qty||qty<1||isNaN(pricePaid)){alert('Please fill in item, quantity, and price paid.');return;}
+  const it=masterItems[itemIdVal];if(!it)return;
+  const existing=warehouse[itemIdVal]||{id:itemIdVal,qty:0,avgCost:0,reorder:it.reorder||0};
+  const totalUnits=existing.qty+qty;
+  existing.avgCost=totalUnits>0?Math.round(((existing.qty*existing.avgCost)+(qty*pricePaid))/totalUnits*1000)/1000:pricePaid;
+  existing.qty=totalUnits;
+  existing.reorder=!isNaN(reorderOverride)?reorderOverride:existing.reorder;
+  warehouse[itemIdVal]=existing;
+  await saveWarehouseItem(existing);
+  await addInvLogEntry({type:'buy',itemId:itemIdVal,itemName:it.name,qty,cost:pricePaid,avgCost:existing.avgCost,timestamp:Date.now(),note:'Purchased '+qty+' @ $'+pricePaid.toFixed(2)+' ea. Avg cost: $'+existing.avgCost.toFixed(3)});
+  // Also write to purchase ledger for line-item editing
+  const ledgerEntry={itemId:itemIdVal,itemName:it.name,qty,pricePaid,timestamp:Date.now()};
+  const saved=await savePurchaseLedgerEntry(ledgerEntry);
+  purchaseLedger.unshift(saved);
+  document.getElementById('invQtyBuy').value='';
+  document.getElementById('invCostBuy').value='';
+  document.getElementById('invReorderBuy').value='';
+  renderInventory();
+  renderPurchaseHistory();
+  toast(qty+' '+it.name+' added! Avg cost: $'+existing.avgCost.toFixed(3));
+};
+
+window.editWarehouseQty=async function(id){
+  const w=warehouse[id];if(!w)return;
+  const it=masterItems[id];
+  const val=prompt('Edit warehouse qty for '+(it?it.name:id)+'\nCurrent: '+w.qty+'\n\nEnter new quantity OR use +/- to adjust (e.g. +10 or -5):');
+  if(val===null)return;
+  let newQty;
+  if(val.startsWith('+')||val.startsWith('-')){newQty=Math.max(0,w.qty+parseInt(val));}
+  else{newQty=Math.max(0,parseInt(val));}
+  if(isNaN(newQty)){alert('Invalid number.');return;}
+  const diff=newQty-w.qty;
+  w.qty=newQty;
+  await saveWarehouseItem(w);
+  await addInvLogEntry({type:'adjust',itemId:id,itemName:it?it.name:id,qty:Math.abs(diff),timestamp:Date.now(),note:'Manual warehouse adjustment: '+(diff>=0?'+':'')+diff+' units (now '+newQty+')'});
+  renderInventory();
+  toast('Warehouse qty updated.');
+};
+
+window.deleteWarehouseEntry=async function(id){
+  const it=masterItems[id];
+  if(!confirm('Remove '+(it?it.name:id)+' from warehouse? This will clear all warehouse stock for this item.'))return;
+  await deleteWarehouseItem(id);
+  renderInventory();
+  toast('Warehouse entry removed.');
+};
+
+window.editMachineQty=async function(locId,itemId){
+  const m=machines[locId];if(!m||!m[itemId])return;
+  const it=masterItems[itemId];const lName=locations[locId]?locations[locId].name:'Location';
+  const val=prompt('Edit machine qty for '+(it?it.name:itemId)+' at '+lName+'\nCurrent: '+m[itemId].qty+'\n\nEnter new quantity OR +/- to adjust:');
+  if(val===null)return;
+  let newQty;
+  if(val.startsWith('+')||val.startsWith('-')){newQty=Math.max(0,m[itemId].qty+parseInt(val));}
+  else{newQty=Math.max(0,parseInt(val));}
+  if(isNaN(newQty)){alert('Invalid number.');return;}
+  const diff=newQty-m[itemId].qty;
+  machines[locId][itemId].qty=newQty;
+  await saveMachineDoc(locId);
+  await addInvLogEntry({type:'adjust',itemId,itemName:it?it.name:itemId,qty:Math.abs(diff),loc:locId,locName:lName,timestamp:Date.now(),note:'Manual machine adjustment at '+lName+': '+(diff>=0?'+':'')+diff+' (now '+newQty+')'});
+  renderInventory();
+  toast('Machine qty updated.');
+};
+
+window.deleteMachineEntry=async function(locId,itemId){
+  const it=masterItems[itemId];const lName=locations[locId]?locations[locId].name:'Location';
+  if(!confirm('Remove '+(it?it.name:itemId)+' from '+lName+'? This clears machine stock for this item at this location.'))return;
+  await deleteMachineItem(locId,itemId);
+  renderInventory();
+  toast('Machine entry removed.');
+};
+
+function renderPurchaseHistory(){
+  // Populate filter dropdown
+  const filterEl=document.getElementById('purchaseItemFilter');
+  if(filterEl){
+    const uniqueItems=[...new Set(purchaseLedger.map(e=>e.itemId))].map(id=>({id,name:masterItems[id]?masterItems[id].name:id})).sort((a,b)=>a.name.localeCompare(b.name));
+    const cur=filterEl.value;
+    filterEl.innerHTML='<option value="all">All items</option>'+uniqueItems.map(i=>`<option value="${i.id}"${i.id===cur?' selected':''}>${i.name}</option>`).join('');
+  }
+  const filterItem=filterEl?filterEl.value:'all';
+  const entries=purchaseLedger.filter(e=>filterItem==='all'||e.itemId===filterItem);
+  const div=document.getElementById('purchaseHistoryList');
+  if(!div)return;
+  if(!entries.length){div.innerHTML='<p class="muted" style="font-size:13px">No purchases yet.</p>';return;}
+  div.innerHTML=entries.map(e=>{
+    const it=masterItems[e.itemId];
+    const total=(e.qty*(e.pricePaid||0)).toFixed(2);
+    return`<div class="inv-row">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px">${it?it.name:e.itemName||e.itemId}</div>
+        <div class="muted" style="font-size:12px;margin-top:2px">${fmtDate(e.timestamp)} · ${e.qty} units @ $${parseFloat(e.pricePaid||0).toFixed(3)}/unit · Total: $${total}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="sm primary" onclick="editPurchaseEntry('${e.id}')">✏️</button>
+        <button class="sm danger-solid" onclick="deletePurchaseEntry('${e.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.editPurchaseEntry=async function(id){
+  const entry=purchaseLedger.find(e=>e.id===id);if(!entry)return;
+  const it=masterItems[entry.itemId];
+  const newQty=prompt('Edit purchase entry for '+(it?it.name:entry.itemId)+'
+Current qty: '+entry.qty+'
+
+New qty:',entry.qty);
+  if(newQty===null)return;
+  const newPrice=prompt('New price paid per unit ($):',parseFloat(entry.pricePaid||0).toFixed(3));
+  if(newPrice===null)return;
+  const qty=parseInt(newQty);const pricePaid=parseFloat(newPrice);
+  if(isNaN(qty)||qty<1||isNaN(pricePaid)){alert('Invalid values.');return;}
+  // Update entry
+  entry.qty=qty;entry.pricePaid=pricePaid;
+  await savePurchaseLedgerEntry(entry);
+  // Also update warehouse qty delta
+  if(warehouse[entry.itemId]){
+    // Recalculate avg cost from all ledger entries
+    await recalcAvgCost(entry.itemId);
+  }
+  renderPurchaseHistory();
+  renderInventory();
+  toast('Purchase entry updated. Avg cost recalculated.');
+};
+
+window.deletePurchaseEntry=async function(id){
+  const entry=purchaseLedger.find(e=>e.id===id);if(!entry)return;
+  const it=masterItems[entry.itemId];
+  if(!confirm('Delete this purchase entry?
+'+(it?it.name:entry.itemId)+' · '+entry.qty+' units @ $'+parseFloat(entry.pricePaid||0).toFixed(3)+'
+
+Average cost will be recalculated from remaining entries.'))return;
+  await deletePurchaseLedgerEntry(id);
+  purchaseLedger=purchaseLedger.filter(e=>e.id!==id);
+  // Update warehouse qty
+  if(warehouse[entry.itemId]){
+    warehouse[entry.itemId].qty=Math.max(0,warehouse[entry.itemId].qty-entry.qty);
+    await saveWarehouseItem(warehouse[entry.itemId]);
+    await recalcAvgCost(entry.itemId);
+  }
+  renderPurchaseHistory();
+  renderInventory();
+  toast('Purchase entry deleted. Avg cost recalculated.');
+};
+
+function renderInventory(){
+  // Warehouse
+  const whItems=Object.values(warehouse).map(w=>({...w,item:masterItems[w.id]})).filter(w=>w.item).sort((a,b)=>a.item.name.localeCompare(b.item.name));
+  const wLow=whItems.filter(w=>w.reorder>0&&w.qty<=w.reorder).length;
+  const wLowEl=document.getElementById('warehouseLowCount');
+  wLowEl.textContent=wLow>0?'⚠️ '+wLow+' low':'';wLowEl.style.display=wLow>0?'block':'none';
+  const whDiv=document.getElementById('warehouseList');
+  whDiv.innerHTML=whItems.length?whItems.map(w=>{
+    const isLow=w.reorder>0&&w.qty<=w.reorder,isOut=w.qty===0;
+    const badge=isOut?'<span class="stock-badge stock-out">Out</span>':isLow?'<span class="stock-badge stock-low">Low</span>':'<span class="stock-badge stock-ok">OK</span>';
+    return`<div class="inv-row">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:14px">${w.item.name} ${badge}</div>
+        <div class="muted" style="font-size:12px;margin-top:2px">Avg cost: $${w.avgCost.toFixed(3)}/unit · Reorder at: ${w.reorder||masterItems[w.id].reorder||'not set'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="text-align:right">
+          <div style="font-size:22px;font-weight:700" class="${isOut?'red':isLow?'orange':'green'}">${w.qty}</div>
+          <div class="muted" style="font-size:10px">units</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <button class="sm primary" onclick="editWarehouseQty('${w.id}')">✏️</button>
+          <button class="sm danger-solid" onclick="deleteWarehouseEntry('${w.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):'<p class="muted" style="font-size:13px">No warehouse stock yet.</p>';
+
+  // Machine stock
+  const filterLoc=document.getElementById('invLocFilter').value;
+  const locKeys=filterLoc==='all'?Object.keys(locations):[filterLoc];
+  const mDiv=document.getElementById('machineList');
+  let machineHTML='';
+  locKeys.sort((a,b)=>(locations[a]?locations[a].name:'').localeCompare(locations[b]?locations[b].name:'')).forEach(lk=>{
+    const mData=machines[lk];
+    const lName=locations[lk]?locations[lk].name:'Location';
+    const mItems=mData?Object.values(mData).filter(m=>m.itemId&&masterItems[m.itemId]).sort((a,b)=>masterItems[a.itemId].name.localeCompare(masterItems[b.itemId].name)):[];
+    if(!mItems.length&&filterLoc!=='all')return;
+    machineHTML+=`<div style="font-weight:600;font-size:13px;color:#1a6fc4;margin:8px 0 4px">${lName}</div>`;
+    if(!mItems.length){machineHTML+='<p class="muted" style="font-size:13px;margin-bottom:8px">No stock loaded.</p>';return;}
+    machineHTML+=mItems.map(m=>{
+      const it=masterItems[m.itemId];
+      return`<div class="inv-row">
+        <div style="flex:1"><div style="font-weight:500;font-size:14px">${it.name}</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="text-align:right">
+            <div style="font-size:20px;font-weight:700" class="${m.qty===0?'red':m.qty<=5?'orange':'green'}">${m.qty}</div>
+            <div class="muted" style="font-size:10px">in machine</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <button class="sm primary" onclick="editMachineQty('${lk}','${m.itemId}')">✏️</button>
+            <button class="sm danger-solid" onclick="deleteMachineEntry('${lk}','${m.itemId}')">✕</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  });
+  mDiv.innerHTML=machineHTML||'<p class="muted" style="font-size:13px">No machine stock yet.</p>';
+
+  // Total stock
+  const totalMap={};
+  whItems.forEach(w=>{if(!totalMap[w.id])totalMap[w.id]={name:w.item.name,warehouse:0,machine:0};totalMap[w.id].warehouse=w.qty;});
+  Object.values(machines).forEach(mData=>{Object.values(mData).filter(m=>m.itemId&&masterItems[m.itemId]).forEach(m=>{if(!totalMap[m.itemId])totalMap[m.itemId]={name:masterItems[m.itemId].name,warehouse:0,machine:0};totalMap[m.itemId].machine=(totalMap[m.itemId].machine||0)+m.qty;});});
+  const totals=Object.values(totalMap).sort((a,b)=>a.name.localeCompare(b.name));
+  const tDiv=document.getElementById('totalStockList');
+  tDiv.innerHTML=totals.length?`
+    <div style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:4px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.3px;padding:0 0 6px;border-bottom:1px solid #f0ede8;margin-bottom:4px">
+      <span>Item</span><span style="text-align:center">Warehouse</span><span style="text-align:center">Machines</span><span style="text-align:center">Total</span>
+    </div>`+totals.map(t=>{
+      const total=t.warehouse+t.machine;
+      return`<div class="total-row">
+        <div style="flex:1;font-weight:500">${t.name}</div>
+        <div style="width:80px;text-align:center;color:#888">${t.warehouse}</div>
+        <div style="width:80px;text-align:center;color:#1a6fc4">${t.machine}</div>
+        <div style="width:80px;text-align:center;font-weight:700" class="${total===0?'red':total<=5?'orange':'green'}">${total}</div>
+      </div>`;
+    }).join(''):'<p class="muted" style="font-size:13px">No inventory yet.</p>';
+
+  // Log
+  const logDiv=document.getElementById('invLog');
+  const icons={buy:'🟢',move:'🔵',sold:'🟡',adjust:'🔧'};
+  logDiv.innerHTML=invLogEntries.length?invLogEntries.slice(0,25).map(l=>`
+    <div class="log-row">
+      <div style="display:flex;justify-content:space-between">
+        <span style="font-weight:500">${icons[l.type]||'⚪'} ${l.note}</span>
+        <span class="muted" style="font-size:11px">${fmtDate(l.timestamp)}</span>
+      </div>
+    </div>`).join(''):'<p class="muted" style="font-size:13px">No activity yet.</p>';
+}
+
+// ── Visit sheet ───────────────────────────────────────────────
+function buildPrevRestockMap(){
+  prevRestockMap={};
+  const locReps=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
+  if(!locReps.length)return;
+  (locReps[0].lineItems||[]).forEach(l=>{if(l.itemId&&l.restock!==''&&l.restock!==null)prevRestockMap[l.itemId]=parseFloat(l.restock);});
+}
+function getPrevRestock(iId){return prevRestockMap.hasOwnProperty(iId)?prevRestockMap[iId]:null;}
+function calcSold(s){const a=parseFloat(s.arrival);if(isNaN(a))return null;const p=getPrevRestock(s.itemId);if(p===null)return null;return Math.max(0,p-a);}
+function calcRow(s){const sold=calcSold(s);const price=parseFloat(s.price)||0,cost=parseFloat(s.cost)||0;return{sold,rev:sold!==null?sold*price:null,profit:sold!==null?sold*(price-cost):null};}
+
+function showPrevRestockNote(){
+  const note=document.getElementById('prevRestockNote');
+  const locReps=allReports.filter(r=>r.loc===loc).sort((a,b)=>b.timestamp-a.timestamp);
+  if(!locReps.length){note.style.display='block';note.innerHTML='ℹ️ <strong>First visit.</strong> Enter qty & restock — sold tracks automatically next visit.';}
+  else{note.style.display='block';note.innerHTML='📌 Sold = last restock − today\'s arrival. Last visit: <strong>'+locReps[0].date+'</strong>';}
+}
+
+function itemOptions(selectedId){
+  const items=Object.values(masterItems).sort((a,b)=>a.name.localeCompare(b.name));
+  return'<option value="">-- Select --</option>'+items.map(i=>`<option value="${i.id}"${i.id===selectedId?' selected':''}>${i.name}</option>`).join('');
+}
+
+function renderAll(){renderMobileCards();renderDesktopTable();renderTotals();}
+
+function renderMobileCards(){
+  const container=document.getElementById('slotCardsMobile');if(!container)return;
+  container.innerHTML=slots.map((s,i)=>{
+    const{sold,rev,profit}=calcRow(s);const prev=getPrevRestock(s.itemId);
+    const soldColor=sold!==null&&sold>0?'#1a6b2a':'#888';
+    const it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
+    return`<div class="slot-card">
+      <div class="slot-card-header">
+        <span class="slot-label-tag">Slot ${s.slot||i+1}</span>
+        <button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border-color:#e8b4b0;padding:3px 8px;font-size:12px">✕</button>
+      </div>
+      <div class="grid-2" style="margin-bottom:8px">
+        <div class="input-group"><label>Slot label</label><input type="text" value="${esc(s.slot)}" placeholder="A1" data-idx="${i}" data-field="slot"/></div>
+        <div class="input-group"><label>Item</label><select data-idx="${i}" data-field="itemId" onchange="onItemSelect(${i},this.value)">${itemOptions(s.itemId)}</select></div>
+      </div>
+      <div class="grid-2" style="margin-bottom:8px">
+        <div class="input-group"><label>🟢 Arrival qty</label>
+          <input type="number" value="${esc(s.arrival)}" placeholder="0" min="0" inputmode="numeric" class="arrival-inp" data-idx="${i}" data-field="arrival"/>
+          ${prev!==null?`<span class="prev-tag">prev stocked: ${prev}</span>`:'<span class="prev-tag">no prior visit</span>'}
+        </div>
+        <div class="input-group"><label>🔵 Restock qty</label><input type="number" value="${esc(s.restock)}" placeholder="0" min="0" inputmode="numeric" class="restock-inp" data-idx="${i}" data-field="restock"/></div>
+      </div>
+      <div class="grid-2" style="margin-bottom:8px">
+        <div class="input-group"><label>Sell price ($)</label><input type="number" value="${esc(s.price)}" placeholder="${it?it.price.toFixed(2):'1.50'}" step="0.25" min="0" inputmode="decimal" data-idx="${i}" data-field="price"/></div>
+        <div class="input-group"><label>Avg cost ($)</label><input type="number" value="${esc(s.cost)}" placeholder="${it?it.cost.toFixed(2):'0.50'}" step="0.01" min="0" inputmode="decimal" data-idx="${i}" data-field="cost"/></div>
+      </div>
+      <div class="calc-row">
+        <div class="calc-item"><div class="calc-label">SOLD</div><div class="calc-val" style="color:${soldColor}" id="m-sold-${i}">${sold!==null?sold:prev===null?'—*':'—'}</div></div>
+        <div class="calc-item"><div class="calc-label">REVENUE</div><div class="calc-val" id="m-rev-${i}">${rev!==null?'$'+rev.toFixed(2):'—'}</div></div>
+        <div class="calc-item"><div class="calc-label">PROFIT</div><div class="calc-val" style="color:${profit===null?'#888':profit<0?'#a32d2d':'#1a6b2a'}" id="m-prof-${i}">${profit!==null?'$'+profit.toFixed(2):'—'}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDesktopTable(){
+  const body=document.getElementById('slotBody');if(!body)return;
+  body.innerHTML=slots.map((s,i)=>{
+    const{sold,rev,profit}=calcRow(s);const prev=getPrevRestock(s.itemId);
+    const it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
+    return`<tr>
+      <td><input type="text" value="${esc(s.slot)}" placeholder="A1" data-idx="${i}" data-field="slot"/></td>
+      <td><select data-idx="${i}" data-field="itemId" onchange="onItemSelect(${i},this.value)">${itemOptions(s.itemId)}</select></td>
+      <td class="arrival-col"><input type="number" value="${esc(s.arrival)}" placeholder="0" min="0" style="text-align:center" data-idx="${i}" data-field="arrival"/>${prev!==null?`<span class="prev-tag">prev: ${prev}</span>`:''}</td>
+      <td class="restock-col"><input type="number" value="${esc(s.restock)}" placeholder="0" min="0" style="text-align:center" data-idx="${i}" data-field="restock"/></td>
+      <td><input type="number" value="${esc(s.price)}" placeholder="${it?it.price.toFixed(2):'1.50'}" step="0.25" min="0" style="text-align:right" data-idx="${i}" data-field="price"/></td>
+      <td><input type="number" value="${esc(s.cost)}" placeholder="${it?it.cost.toFixed(2):'0.50'}" step="0.01" min="0" style="text-align:right" data-idx="${i}" data-field="cost"/></td>
+      <td style="text-align:center" id="d-sold-${i}">${sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—'}</td>
+      <td style="text-align:right" id="d-rev-${i}">${rev!==null?'$'+rev.toFixed(2):'—'}</td>
+      <td style="text-align:right" id="d-prof-${i}">${profit!==null?`<span class="${profit<0?'red':'green'}">$${profit.toFixed(2)}</span>`:'—'}</td>
+      <td><button class="sm danger-solid" data-remove-idx="${i}" style="background:transparent;color:#c0392b;border:1px solid #e8b4b0">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateRowCalcs(i){
+  const s=slots[i];const{sold,rev,profit}=calcRow(s);const prev=getPrevRestock(s.itemId);
+  const ms=document.getElementById('m-sold-'+i);const mr=document.getElementById('m-rev-'+i);const mp=document.getElementById('m-prof-'+i);
+  if(ms){ms.textContent=sold!==null?sold:prev===null?'—*':'—';ms.style.color=sold!==null&&sold>0?'#1a6b2a':'#888';}
+  if(mr)mr.textContent=rev!==null?'$'+rev.toFixed(2):'—';
+  if(mp){mp.textContent=profit!==null?'$'+profit.toFixed(2):'—';mp.style.color=profit===null?'#888':profit<0?'#a32d2d':'#1a6b2a';}
+  const ds=document.getElementById('d-sold-'+i);const dr=document.getElementById('d-rev-'+i);const dp=document.getElementById('d-prof-'+i);
+  if(ds)ds.innerHTML=sold!==null?`<span class="green">${sold}</span>`:prev===null?'<span class="muted">—*</span>':'—';
+  if(dr)dr.textContent=rev!==null?'$'+rev.toFixed(2):'—';
+  if(dp)dp.innerHTML=profit!==null?`<span class="${profit<0?'red':'green'}">$${profit.toFixed(2)}</span>`:'—';
+}
+
+function renderTotals(){
+  let totSold=0,totRev=0,totProfit=0,has=false;
+  slots.forEach(s=>{const{sold,rev,profit}=calcRow(s);if(sold!==null){totSold+=sold;totRev+=rev;totProfit+=profit;has=true;}});
+  const ts=document.getElementById('tot-sold');const tr=document.getElementById('tot-rev');const tp=document.getElementById('tot-profit');
+  if(ts)ts.textContent=has?totSold:'—';if(tr)tr.textContent=has?'$'+totRev.toFixed(2):'—';
+  if(tp){tp.textContent=has?'$'+totProfit.toFixed(2):'—';tp.className=has&&totProfit<0?'red':'green';}
+}
+
+window.onItemSelect=function(i,iId){
+  slots[i].itemId=iId;
+  if(iId&&masterItems[iId]){
+    const it=masterItems[iId];
+    if(!slots[i].price)slots[i].price=it.price;
+    if(warehouse[iId]&&warehouse[iId].avgCost)slots[i].cost=warehouse[iId].avgCost;
+    else if(!slots[i].cost)slots[i].cost=it.cost;
+  }
+  buildPrevRestockMap();renderAll();
+};
+
+document.addEventListener('input',function(e){
+  const inp=e.target.closest('[data-field]');if(!inp||inp.tagName==='SELECT')return;
+  const i=parseInt(inp.dataset.idx);const f=inp.dataset.field;slots[i][f]=inp.value;
+  buildPrevRestockMap();updateRowCalcs(i);renderTotals();
+});
+document.addEventListener('click',function(e){
+  const rb=e.target.closest('[data-remove-idx]');
+  if(rb){const i=parseInt(rb.dataset.removeIdx);if(confirm('Remove slot?')){slots.splice(i,1);renderAll();}return;}
+  const db2=e.target.closest('[data-delete-id]');
+  if(db2){window.deleteReport(db2.getAttribute('data-delete-id'));return;}
+});
+
+window.switchLoc=async function(){
+  loc=document.getElementById('locSel').value;
+  await loadSlots();
+};
+window.addSlot=function(){slots.push({slot:'',itemId:'',arrival:'',restock:'',price:'',cost:''});renderAll();setTimeout(()=>{const c=document.querySelectorAll('.slot-card');if(c.length)c[c.length-1].scrollIntoView({behavior:'smooth',block:'center'});},100);};
+window.saveSheet=async function(){await saveSlotsDB();toast('Sheet saved!');};
+
+window.submitReport=async function(){
+  const dateVal=document.getElementById('visitDate').value;
+  if(!dateVal){alert('Please select a visit date.');return;}
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const d=new Date(dateVal+'T12:00:00');
+    const dateLabel=MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+    const monthKey=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    const locName=locations[loc]?locations[loc].name:'Location';
+    let totSold=0,totRev=0,totProfit=0;
+    const lineItems=slots.filter(s=>s.itemId||s.slot).map(s=>{
+      const{sold,rev,profit}=calcRow(s);const prev=getPrevRestock(s.itemId);
+      const it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
+      if(sold!==null){totSold+=sold;totRev+=rev;totProfit+=profit;}
+      return{slot:s.slot,itemId:s.itemId,item:it?it.name:s.itemId,arrival:s.arrival,restock:s.restock,prevRestock:prev!==null?prev:null,price:parseFloat(s.price)||0,cost:parseFloat(s.cost)||0,sold,rev,profit};
+    });
+    await addDoc(collection(db,'reports'),{date:dateLabel,dateVal,monthKey,loc,name:locName,lineItems,totSold,totRev,totProfit,timestamp:Date.now()});
+    await saveSlotsDB();
+    await updateInventoryFromReport(lineItems,loc);
+    showStatus('Report saved for '+locName+' — '+dateLabel,'success');
+    await loadAllReports();buildPrevRestockMap();renderAll();showPrevRestockNote();renderInventory();
+    showTab('history');
+  }catch(e){showStatus('Error: '+e.message,'error');console.error(e);}
+  btn.disabled=false;btn.innerHTML='📄 Submit Report';
+};
+
+async function updateInventoryFromReport(lineItems,reportLoc){
+  for(const l of lineItems){
+    if(!l.itemId)continue;
+    const arrival=parseFloat(l.arrival);const restock=parseFloat(l.restock);
+    const it=masterItems[l.itemId];const locName=locations[reportLoc]?locations[reportLoc].name:'Location';
+    const loaded=(!isNaN(restock)&&!isNaN(arrival))?Math.max(0,restock-arrival):0;
+    if(!isNaN(restock)&&restock>=0){
+      if(!machines[reportLoc])machines[reportLoc]={id:reportLoc};
+      if(!machines[reportLoc][l.itemId])machines[reportLoc][l.itemId]={itemId:l.itemId,qty:0};
+      machines[reportLoc][l.itemId].qty=restock;
+      await saveMachineDoc(reportLoc);
+    }
+    if(loaded>0&&warehouse[l.itemId]){
+      warehouse[l.itemId].qty=Math.max(0,warehouse[l.itemId].qty-loaded);
+      await saveWarehouseItem(warehouse[l.itemId]);
+      await addInvLogEntry({type:'move',itemId:l.itemId,itemName:it?it.name:l.itemId,qty:loaded,loc:reportLoc,locName,timestamp:Date.now(),note:'Loaded '+loaded+' into machine at '+locName});
+    }
+    if(l.sold!==null&&l.sold!==undefined&&l.sold>0){
+      await addInvLogEntry({type:'sold',itemId:l.itemId,itemName:it?it.name:l.itemId,qty:l.sold,loc:reportLoc,locName,timestamp:Date.now(),note:'Sold '+l.sold+' at '+locName});
+    }
+  }
+}
+
+window.deleteReport=async function(reportId){
+  if(!confirm('Delete this report? Cannot be undone.'))return;
+  try{await deleteDoc(doc(db,'reports',reportId));await loadAllReports();buildPrevRestockMap();renderAll();showPrevRestockNote();renderHistory();toast('Report deleted.');}catch(e){showStatus('Error: '+e.message,'error');}
+};
+
+window.renderHistory=function(){
+  const filterLoc=document.getElementById('histLoc').value;
+  const filtered=filterLoc==='all'?allReports:allReports.filter(r=>r.loc===filterLoc);
+  const div=document.getElementById('historyList');
+  if(!filtered.length){div.innerHTML='<p class="muted" style="font-size:13px;padding:1rem 0">No reports yet.</p>';return;}
+  div.innerHTML=filtered.map(r=>`
+    <div class="history-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;gap:8px">
+        <div><div style="font-weight:700;font-size:15px">${r.name}</div><div class="muted" style="font-size:12px;margin-top:2px">${r.date}</div></div>
+        <button class="danger-solid sm" data-delete-id="${r.id}">🗑 Delete</button>
+      </div>
+      <div style="display:flex;gap:12px;font-size:13px;flex-wrap:wrap;margin-bottom:.75rem">
+        <span><strong>${r.totSold}</strong> units</span>
+        <span><strong>$${parseFloat(r.totRev||0).toFixed(2)}</strong> revenue</span>
+        <span class="${r.totProfit<0?'red':'green'}"><strong>$${parseFloat(r.totProfit||0).toFixed(2)}</strong> profit</span>
+      </div>
+      <div>${(r.lineItems||[]).map(l=>`
+        <div class="history-item-row">
+          <div><div style="font-weight:500">${l.item||l.itemId}</div><div class="muted" style="font-size:11px">Slot ${l.slot}</div></div>
+          <div style="display:flex;gap:5px;align-items:center">
+            <span class="qty-badge qty-arr">${l.arrival||'—'}</span>
+            <span class="muted" style="font-size:11px">→</span>
+            <span class="qty-badge qty-rst">${l.restock||'—'}</span>
+            <span class="muted" style="font-size:11px">·</span>
+            <span class="qty-badge qty-sold">${l.sold!==null?l.sold+' sold':'—'}</span>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+};
+
+function populateMonthSelector(){
+  const keys=new Set(allReports.map(r=>r.monthKey));
+  const today=new Date();keys.add(today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0'));
+  const sorted=[...keys].sort().reverse();
+  const sel=document.getElementById('monthSel');const cur=sel.value;
+  sel.innerHTML=sorted.map(k=>{const[y,m]=k.split('-');return`<option value="${k}"${k===cur?' selected':''}>${MONTHS[parseInt(m)-1]} ${y}</option>`;}).join('');
+  if(!sel.value&&sorted.length)sel.value=sorted[0];
+}
+
+window.renderMonthly=function(){
+  const monthKey=document.getElementById('monthSel').value;
+  const filterLoc=document.getElementById('monthLoc').value;
+  if(!monthKey)return;
+  const[y,m]=monthKey.split('-');const monthLabel=MONTHS[parseInt(m)-1]+' '+y;
+  const filtered=allReports.filter(r=>r.monthKey===monthKey&&(filterLoc==='all'||r.loc===filterLoc));
+  const itemMap={};
+  filtered.forEach(r=>{(r.lineItems||[]).forEach(l=>{if((!l.item&&!l.itemId)||l.sold===null||l.sold===undefined)return;const key=(l.itemId||l.item).toLowerCase();if(!itemMap[key])itemMap[key]={name:l.item||l.itemId,sold:0,rev:0,profit:0,visits:0};itemMap[key].sold+=l.sold;itemMap[key].rev+=l.rev||0;itemMap[key].profit+=l.profit||0;if(l.sold>0)itemMap[key].visits++;});});
+  const items=Object.values(itemMap).sort((a,b)=>b.sold-a.sold);
+  const totSold=items.reduce((s,i)=>s+i.sold,0),totRev=items.reduce((s,i)=>s+i.rev,0),totProfit=items.reduce((s,i)=>s+i.profit,0);
+  const maxSold=items.length?Math.max(items[0].sold,1):1;
+  const div=document.getElementById('monthlyContent');
+  if(!items.length){div.innerHTML='<div class="card"><p class="muted" style="font-size:13px">No reports for '+monthLabel+'.</p></div>';return;}
+  const top3=items.slice(0,Math.min(3,items.length));const bot3=items.length>3?items.slice(-Math.min(3,items.length)).reverse():[];
+  div.innerHTML=`
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-label">Units sold</div><div class="stat-value">${totSold}</div></div>
+      <div class="stat"><div class="stat-label">Revenue</div><div class="stat-value">$${totRev.toFixed(2)}</div></div>
+      <div class="stat"><div class="stat-label">Profit</div><div class="stat-value ${totProfit<0?'red':'green'}">$${totProfit.toFixed(2)}</div></div>
+      <div class="stat"><div class="stat-label">Visits</div><div class="stat-value">${filtered.length}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem">
+      <div class="card" style="border-color:#2d7a2d"><h3 style="color:#1a6b2a;margin-bottom:.5rem">⬆ Top sellers</h3>
+        ${top3.map(it=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${it.name}</span><span class="green">${it.sold}</span></div><div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#2d7a2d"></div></div></div>`).join('')}
+      </div>
+      ${bot3.length?`<div class="card" style="border-color:#c0392b"><h3 style="color:#a32d2d;margin-bottom:.5rem">⬇ Slowest</h3>${bot3.map(it=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${it.name}</span><span class="red">${it.sold}</span></div><div class="bar-wrap"><div class="bar" style="width:${Math.round(it.sold/maxSold*100)}%;background:#c0392b"></div></div></div>`).join('')}</div>`:''}
+    </div>
+    <div class="card"><h2 style="margin-bottom:.75rem">All items — ${monthLabel}</h2>
+      ${items.map((it,i)=>{
+        const margin=it.rev>0?Math.round(it.profit/it.rev*100):null;
+        const mColor=margin===null?'#888':margin>=50?'#1a6b2a':margin>=25?'#856404':margin>=0?'#555':'#a32d2d';
+        const mBg=margin===null?'transparent':margin>=50?'#d4edda':margin>=25?'#fff3cd':margin>=0?'#f4f4f0':'#fde8e8';
+        return`<div class="monthly-row">
+          <div><div style="font-weight:${i<3?'700':'400'};font-size:14px">${it.name}${i===0?'<span class="badge badge-top">top</span>':i===items.length-1?'<span class="badge badge-low">low</span>':''}</div>
+          <div class="muted" style="font-size:11px">${it.visits} visit${it.visits!==1?'s':''} · ${it.sold} units</div></div>
+          <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
+            <div style="text-align:right"><div style="font-size:13px;font-weight:600">$${it.rev.toFixed(2)}</div><div style="font-size:11px" class="${it.profit<0?'red':'green'}">$${it.profit.toFixed(2)} profit</div></div>
+            <span style="background:${mBg};color:${mColor};padding:3px 8px;border-radius:99px;font-size:12px;font-weight:700;min-width:44px;text-align:center">${margin!==null?margin+'%':'—'}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+};
+
+// ── Slot template editor ─────────────────────────────────────
+let templateSlots=[];
+
+window.openSlotTemplate=function(locId){
+  editingTemplateLocId=locId;
+  const lName=locations[locId]?locations[locId].name:'Location';
+  document.getElementById('templateLocName').textContent=lName;
+  // Load existing template or start fresh
+  templateSlots=slotTemplates[locId]&&slotTemplates[locId].slots.length
+    ?JSON.parse(JSON.stringify(slotTemplates[locId].slots))
+    :[{slot:'A1',itemId:'',price:''},{slot:'A2',itemId:'',price:''},{slot:'B1',itemId:'',price:''},{slot:'B2',itemId:'',price:''}];
+  // Check if there's history to import from
+  const importBar=document.getElementById('templateImportBar');
+  const importDesc=document.getElementById('templateImportDesc');
+  const locReports=allReports.filter(r=>r.loc===locId).sort((a,b)=>b.timestamp-a.timestamp);
+  if(locReports.length){
+    const last=locReports[0];
+    const itemCount=(last.lineItems||[]).filter(l=>l.itemId||l.item).length;
+    importDesc.textContent='Most recent visit on '+last.date+' had '+itemCount+' slot'+(itemCount!==1?'s':'')+'. Click Import to load those into the template.';
+    importBar.style.display='block';
+  } else {
+    importBar.style.display='none';
+  }
+  document.getElementById('slotTemplateCard').style.display='';
+  document.getElementById('slotTemplateCard').scrollIntoView({behavior:'smooth',block:'start'});
+  renderTemplateSlots();
+};
+
+window.importFromHistory=function(){
+  if(!editingTemplateLocId)return;
+  const locReports=allReports.filter(r=>r.loc===editingTemplateLocId).sort((a,b)=>b.timestamp-a.timestamp);
+  if(!locReports.length){toast('No history found for this location.');return;}
+  const last=locReports[0];
+  templateSlots=(last.lineItems||[]).filter(l=>l.itemId||l.slot).map(l=>{
+    // Try to match itemId from master items — fall back to name lookup
+    let resolvedItemId=l.itemId||'';
+    if(!resolvedItemId&&l.item){
+      const match=Object.values(masterItems).find(it=>it.name.toLowerCase()===l.item.toLowerCase());
+      if(match) resolvedItemId=match.id;
+    }
+    const it=resolvedItemId&&masterItems[resolvedItemId]?masterItems[resolvedItemId]:null;
+    return{
+      slot:l.slot||'',
+      itemId:resolvedItemId,
+      price:parseFloat(l.price)||(it?it.price:0)
+    };
+  });
+  document.getElementById('templateImportBar').style.display='none';
+  renderTemplateSlots();
+  toast('Imported '+templateSlots.length+' slots from '+last.date+'!');
+};
+
+window.closeSlotTemplate=function(){
+  document.getElementById('slotTemplateCard').style.display='none';
+  editingTemplateLocId=null;
+  templateSlots=[];
+};
+
+window.addTemplateSlot=function(){
+  templateSlots.push({slot:'',itemId:'',price:''});
+  renderTemplateSlots();
+};
+
+window.removeTemplateSlot=function(i){
+  templateSlots.splice(i,1);renderTemplateSlots();
+};
+
+window.updTemplate=function(i,f,v){
+  templateSlots[i][f]=v;
+  // Auto-fill sell price from master item when item selected
+  if(f==='itemId'&&v&&masterItems[v]){
+    const it=masterItems[v];
+    if(!templateSlots[i].price) templateSlots[i].price=it.price;
+    renderTemplateSlots();
+  }
+};
+
+function renderTemplateSlots(){
+  const container=document.getElementById('templateSlotList');
+  if(!container)return;
+  container.innerHTML=templateSlots.map((s,i)=>`
+    <div style="background:#f9f8f6;border:1.5px solid #e8e4de;border-radius:12px;padding:.75rem;margin-bottom:.5rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase">Slot ${i+1}</span>
+        <button class="sm danger-solid" onclick="removeTemplateSlot(${i})" style="background:transparent;color:#c0392b;border-color:#e8b4b0;padding:3px 8px;font-size:12px">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Slot label</label>
+          <input type="text" value="${esc(s.slot)}" placeholder="A1" style="padding:8px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%" onchange="updTemplate(${i},'slot',this.value)"/>
+        </div>
+        <div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Item</label>
+          <select style="padding:8px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%;-webkit-appearance:none" onchange="updTemplate(${i},'itemId',this.value)">
+            ${itemOptions(s.itemId)}
+          </select>
+        </div>
+        <div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Sell price ($)</label>
+          <input type="number" value="${esc(s.price)}" placeholder="2.00" step="0.25" min="0" inputmode="decimal" style="padding:8px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%" onchange="updTemplate(${i},'price',this.value)"/>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+window.saveSlotTemplate=async function(){
+  if(!editingTemplateLocId)return;
+  // Clean up — only save slots that have at least a slot label or item
+  const toSave=templateSlots.filter(s=>s.slot||s.itemId).map(s=>({
+    slot:s.slot||'',itemId:s.itemId||'',price:parseFloat(s.price)||0,cost:parseFloat(s.cost)||0,arrival:'',restock:''
+  }));
+  await saveSlotTemplateDB(editingTemplateLocId,toSave);
+  // If this is the currently active location, reload the visit sheet
+  if(editingTemplateLocId===loc){
+    slots=toSave.map(s=>({...s,arrival:'',restock:''}));
+    buildPrevRestockMap();renderAll();showPrevRestockNote();
+  }
+  toast('Slot template saved for '+(locations[editingTemplateLocId]?locations[editingTemplateLocId].name:'location')+'!');
+  closeSlotTemplate();
+};
+
+window.showTab=async function(t){
+  ['sheet','history','monthly','inventory','items','locations'].forEach(n=>{
+    document.getElementById('pane-'+n).style.display=n===t?'':'none';
+    const nb=document.getElementById('nav-'+n);if(nb)nb.classList.toggle('active',n===t);
+    const db3=document.getElementById('dtab-'+n);if(db3)db3.classList.toggle('active',n===t);
+  });
+  if(t==='history'){await loadAllReports();buildPrevRestockMap();renderHistory();}
+  if(t==='monthly'){await loadAllReports();populateMonthSelector();renderMonthly();}
+  if(t==='inventory'){await loadWarehouse();await loadMachines();await loadInvLog();await loadPurchaseLedger();renderInventory();renderPurchaseHistory();}
+  if(t==='items')renderMasterItems();
+  if(t==='locations'){await loadSlotTemplates();renderLocationList();}
+};
+
+async function init(){
+  try{
+    document.getElementById('visitDate').value=new Date().toISOString().split('T')[0];
+    showStatus('Connecting to database...','info');
+    await Promise.all([loadLocations(),loadSlotTemplates(),loadPurchaseLedger(),loadMasterItems(),loadWarehouse(),loadMachines(),loadAllReports()]);
+    updateAllLocationDropdowns();
+    updateAllItemDropdowns();
+    await loadSlots();
+    populateMonthSelector();
+    showStatus('Connected! Data saves automatically.','success');
+  }catch(e){
+    console.error('Init error:',e);
+    showStatus('Connection error: '+e.message+'. Check internet and try refreshing.','error');
+    // Still render the sheet so it's not completely broken
+    try{updateAllLocationDropdowns();updateAllItemDropdowns();renderAll();}catch(e2){}
+  }
+}
+init();
+</script>
+</body>
+</html>
