@@ -175,7 +175,16 @@ button:disabled{opacity:.5}
 
   <!-- HISTORY -->
   <div id="pane-history" style="display:none">
-    <div style="margin-bottom:.75rem"><label>Filter by location</label><select id="histLoc"></select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.75rem;align-items:end">
+      <div><label>Filter by location</label><select id="histLoc"></select></div>
+      <div id="histRenameWrap" style="display:none">
+        <label>Rename this location</label>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="histLocRename" placeholder="Enter new name"/>
+          <button class="sm success" id="histLocRenameBtn">&#x2713;</button>
+        </div>
+      </div>
+    </div>
     <div id="historyList"><p class="muted" style="font-size:13px">Loading...</p></div>
   </div>
 
@@ -537,7 +546,29 @@ document.getElementById('addPurchaseBtn').addEventListener('click',async functio
 document.getElementById('purchaseItemFilter').addEventListener('change',renderPurchaseHistory);
 document.getElementById('invLocFilter').addEventListener('change',renderInventory);
 document.getElementById('itemCatFilter').addEventListener('change',renderMasterItems);
-document.getElementById('histLoc').addEventListener('change',renderHistory);
+document.getElementById('histLoc').addEventListener('change',function(){
+  var v=document.getElementById('histLoc').value;
+  var wrap=document.getElementById('histRenameWrap');
+  var inp=document.getElementById('histLocRename');
+  if(v&&v!=='all'&&locations[v]){
+    wrap.style.display='';
+    inp.value=locations[v].name;
+  } else {
+    wrap.style.display='none';
+  }
+  renderHistory();
+});
+document.getElementById('histLocRenameBtn').addEventListener('click',async function(){
+  var v=document.getElementById('histLoc').value;
+  var newName=document.getElementById('histLocRename').value.trim();
+  if(!v||v==='all'||!newName){alert('Please enter a name.');return;}
+  locations[v].name=newName;
+  await fbSet('locations',v,locations[v]);
+  updateAllLocDropdowns();
+  document.getElementById('histLoc').value=v;
+  showToast('Location renamed to "'+newName+'"!');
+  renderHistory();
+});
 document.getElementById('monthSel').addEventListener('change',renderMonthly);
 document.getElementById('monthLoc').addEventListener('change',renderMonthly);
 document.getElementById('locSel').addEventListener('change',async function(){loc=this.value;await loadSlots();});
