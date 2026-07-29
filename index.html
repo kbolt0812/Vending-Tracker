@@ -1040,18 +1040,31 @@ document.addEventListener('click',async function(e){
     rep.totSold=tots.totSold;rep.totRev=tots.totRev;rep.totProfit=tots.totProfit;
     rep._editing=false;
     try{
-      await fbSet('reports',rep.id,{
-        date:rep.date,dateVal:rep.dateVal,monthKey:rep.monthKey,
-        loc:rep.loc,name:rep.name,
+      showStatus('Saving report...','info');
+      // Use update to patch only these fields on the existing document
+      await db.collection('reports').doc(rep.id).update({
+        date:rep.date,
+        dateVal:rep.dateVal,
+        monthKey:rep.monthKey,
+        loc:rep.loc,
+        name:rep.name,
         lineItems:rep.lineItems,
-        totSold:rep.totSold,totRev:rep.totRev,totProfit:rep.totProfit,
-        timestamp:rep.timestamp
+        totSold:rep.totSold,
+        totRev:rep.totRev,
+        totProfit:rep.totProfit
       });
+      // Preserve current filter selection
+      var savedFilter=document.getElementById('histLoc').value;
       await loadAllReports();
-      buildPrevRestockMap();renderAll();showPrevRestockNote();renderHistory();
+      buildPrevRestockMap();
+      renderAll();
+      showPrevRestockNote();
+      // Restore filter after reload
+      document.getElementById('histLoc').value=savedFilter;
+      renderHistory();
       populateMonthSelector();
-      showToast('Report updated!');
-    }catch(e){showStatus('Error saving: '+e.message,'error');console.error(e);}
+      showStatus('Report saved successfully!','success');
+    }catch(e){showStatus('Error saving: '+e.message,'error');console.error('Save error:',e);}
   }
   if(action==='editloc'){
     var el=locations[id];if(!el)return;editingLocId=id;
