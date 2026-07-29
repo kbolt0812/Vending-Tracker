@@ -433,13 +433,20 @@ document.getElementById('saveLocBtn').addEventListener('click',async function(){
   var name=document.getElementById('locNameInput').value.trim();
   var address=document.getElementById('locAddress').value.trim();
   if(!name){alert('Please enter a location name.');return;}
+  var isEdit=!!editingLocId;
   var id=editingLocId||('loc_'+slugId(name)+'_'+Date.now());
   var obj={id:id,name:name,address:address};
   locations[id]=obj;
   await fbSet('locations',id,obj);
   if(!loc)loc=id;
+  // If editing, update location name shown on visit sheet dropdown immediately
+  if(isEdit){
+    updateAllLocDropdowns();
+    // Keep current loc selection
+    document.getElementById('locSel').value=loc;
+  }
   cancelLocEdit();updateAllLocDropdowns();renderLocationList();
-  showToast(editingLocId?'Location updated!':'Location added!');editingLocId=null;
+  showToast(isEdit?'Location "'+name+'" updated!':'Location added!');editingLocId=null;
 });
 document.getElementById('cancelLocBtn').addEventListener('click',cancelLocEdit);
 function cancelLocEdit(){
@@ -595,8 +602,11 @@ function renderPurchaseHistory(){
 // ── Visit sheet ───────────────────────────────────────────────
 function buildPrevRestockMap(){
   prevRestockMap={};
-  var locReps=allReports.filter(function(r){return r.loc===loc;}).sort(function(a,b){return b.timestamp-a.timestamp;});
+  // Always use allReports which is kept fresh after every delete/save
+  // Filter out any reports that have _editing flag (in-progress edits)
+  var locReps=allReports.filter(function(r){return r.loc===loc&&!r._deleted;}).sort(function(a,b){return b.timestamp-a.timestamp;});
   if(!locReps.length)return;
+  // Use the most recent SUBMITTED report (highest timestamp) for prev restock
   (locReps[0].lineItems||[]).forEach(function(l){if(l.itemId&&l.restock!==''&&l.restock!==null)prevRestockMap[l.itemId]=parseFloat(l.restock);});
 }
 function getPrevRestock(iId){return prevRestockMap.hasOwnProperty(iId)?prevRestockMap[iId]:null;}
@@ -894,7 +904,16 @@ document.addEventListener('click',async function(e){
 
   if(action==='delreport'){
     if(!confirm('Delete this report?'))return;
-    try{await fbDel('reports',id);await loadAllReports();buildPrevRestockMap();renderAll();showPrevRestockNote();renderHistory();showToast('Report deleted.');}catch(e){showStatus('Error: '+e.message,'error');}
+    try{
+      await fbDel('reports',id);
+      // Reload fresh from Firebase so deleted report is gone before recalculating
+      await loadAllReports();
+      buildPrevRestockMap();
+      renderAll();
+      showPrevRestockNote();
+      renderHistory();
+      showToast('Report deleted. Sold calculations updated.');
+    }catch(e){showStatus('Error: '+e.message,'error');}
   }
   if(action==='editreport'){
     var rep=allReports.find(function(r){return r.id===id;});if(!rep)return;
@@ -917,9 +936,13 @@ document.addEventListener('click',async function(e){
     }catch(e){showStatus('Error saving: '+e.message,'error');}
   }
   if(action==='editloc'){
-    var l=locations[id];if(!l)return;editingLocId=id;
-    document.getElementById('locNameInput').value=l.name;document.getElementById('locAddress').value=l.address||'';
-    document.getElementById('locFormTitle').textContent='✏️ Edit location';document.getElementById('saveLocBtn').textContent='💾 Save changes';document.getElementById('cancelLocBtn').style.display='';
+    var el=locations[id];if(!el)return;editingLocId=id;
+    document.getElementById('locNameInput').value=el.name;
+    document.getElementById('locAddress').value=el.address||'';
+    document.getElementById('locFormTitle').textContent='✏️ Edit location';
+    document.getElementById('saveLocBtn').textContent='💾 Save changes';
+    document.getElementById('cancelLocBtn').style.display='';
+    document.getElementById('pane-locations').scrollIntoView({behavior:'smooth',block:'start'});
   }
   if(action==='delloc'){
     var dl=locations[id];
