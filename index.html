@@ -763,10 +763,21 @@ function renderHistory(){
   if(!filtered.length){div.innerHTML='<p class="muted" style="font-size:13px;padding:1rem 0">No reports yet.</p>';return;}
   div.innerHTML=filtered.map(function(r){
     var editing=r._editing||false;
+    var locOpts=Object.values(locations).sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(l){return'<option value="'+l.id+'"'+(l.id===r.loc?' selected':'')+'>'+l.name+'</option>';}).join('');
     return'<div class="history-card" id="hcard-'+r.id+'">'
     +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;gap:8px">'
-    +'<div><div style="font-weight:700;font-size:15px">'+r.name+'</div><div class="muted" style="font-size:12px;margin-top:2px">'+r.date+'</div></div>'
-    +'<div style="display:flex;gap:6px">'
+    +'<div style="flex:1">'
+    +(editing
+      ?'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">'
+        +'<div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Location</label>'
+        +'<select data-action="hchangeloc" data-rid="'+r.id+'" style="padding:7px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%">'+locOpts+'</select></div>'
+        +'<div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Visit date</label>'
+        +'<input type="date" value="'+(r.dateVal||'')+'" data-action="hchangedate" data-rid="'+r.id+'" style="padding:7px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%"/></div>'
+        +'</div>'
+      :'<div style="font-weight:700;font-size:15px">'+r.name+'</div><div class="muted" style="font-size:12px;margin-top:2px">'+r.date+'</div>'
+    )
+    +'</div>'
+    +'<div style="display:flex;gap:6px;flex-shrink:0">'
     +(editing
       ?'<button class="sm success" data-action="savereport" data-id="'+r.id+'">💾 Save</button><button class="sm" data-action="cancelreport" data-id="'+r.id+'">Cancel</button>'
       :'<button class="sm primary" data-action="editreport" data-id="'+r.id+'">✏️ Edit</button><button class="danger-solid sm" data-action="delreport" data-id="'+r.id+'">🗑</button>'
@@ -907,6 +918,26 @@ document.addEventListener('input',function(e){
   }
 });
 document.addEventListener('change',function(e){
+  // Location change on history card
+  var hlocsel=e.target.closest('[data-action="hchangeloc"]');
+  if(hlocsel){
+    var rid=hlocsel.dataset.rid;
+    var rep=allReports.find(function(r){return r.id===rid;});if(!rep)return;
+    rep.loc=hlocsel.value;
+    rep.name=locations[hlocsel.value]?locations[hlocsel.value].name:'Location';
+    return;
+  }
+  // Date change on history card
+  var hdatesel=e.target.closest('[data-action="hchangedate"]');
+  if(hdatesel){
+    var rid=hdatesel.dataset.rid;
+    var rep=allReports.find(function(r){return r.id===rid;});if(!rep)return;
+    var d=new Date(hdatesel.value+'T12:00:00');
+    rep.dateVal=hdatesel.value;
+    rep.date=MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+    rep.monthKey=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    return;
+  }
   var sel=e.target.closest('[data-field]');
   if(sel&&sel.tagName==='SELECT'){
     var i=parseInt(sel.dataset.idx);slots[i][sel.dataset.field]=sel.value;
@@ -961,8 +992,16 @@ document.addEventListener('click',async function(e){
     rep.totSold=tots.totSold;rep.totRev=tots.totRev;rep.totProfit=tots.totProfit;
     rep._editing=false;
     try{
-      await fbSet('reports',rep.id,{date:rep.date,dateVal:rep.dateVal,monthKey:rep.monthKey,loc:rep.loc,name:rep.name,lineItems:rep.lineItems,totSold:rep.totSold,totRev:rep.totRev,totProfit:rep.totProfit,timestamp:rep.timestamp});
+      await fbSet('reports',rep.id,{
+        date:rep.date,dateVal:rep.dateVal,monthKey:rep.monthKey,
+        loc:rep.loc,name:rep.name,
+        lineItems:rep.lineItems,
+        totSold:rep.totSold,totRev:rep.totRev,totProfit:rep.totProfit,
+        timestamp:rep.timestamp
+      });
+      await loadAllReports();
       buildPrevRestockMap();renderAll();showPrevRestockNote();renderHistory();
+      populateMonthSelector();
       showToast('Report updated!');
     }catch(e){showStatus('Error saving: '+e.message,'error');}
   }
