@@ -803,6 +803,7 @@ function renderHistory(){
     +'<span><strong>'+r.totSold+'</strong> units</span>'
     +'<span><strong>$'+parseFloat(r.totRev||0).toFixed(2)+'</strong> revenue</span>'
     +'<span class="'+(r.totProfit<0?'red':'green')+'"><strong>$'+parseFloat(r.totProfit||0).toFixed(2)+'</strong> profit</span>'
+    +(r.loc&&locations[r.loc]&&r.name!==locations[r.loc].name?'<span class="muted" style="font-size:11px">(saved as: '+r.name+')</span>':'')
     +'</div>'
     +'<div>'
     +(r.lineItems||[]).map(function(l,li){
@@ -816,7 +817,12 @@ function renderHistory(){
         +'<div style="text-align:center;min-width:50px"><div style="font-size:10px;color:#888">Sold</div><div style="font-size:14px;font-weight:700;color:#1a6b2a" id="hsold-'+r.id+'-'+li+'">'+(l.sold!==null?l.sold:'—')+'</div></div>'
         +'</div></div>';
       } else {
-        return'<div class="history-item-row"><div><div style="font-weight:500">'+(l.item||l.itemId)+'</div><div class="muted" style="font-size:11px">Slot '+l.slot+'</div></div><div style="display:flex;gap:5px;align-items:center"><span class="qty-badge qty-arr">'+(l.arrival||'—')+'</span><span class="muted" style="font-size:11px">→</span><span class="qty-badge qty-rst">'+(l.restock||'—')+'</span><span class="muted" style="font-size:11px">·</span><span class="qty-badge qty-sold">'+(l.sold!==null?l.sold+' sold':'—')+'</span></div></div>';
+        // Recalculate sold display using previous report as baseline
+        var dispPrev=getPrevRestockForReport(r.id,l.itemId);
+        if(dispPrev===null&&l.prevRestock!==null&&l.prevRestock!==undefined) dispPrev=parseFloat(l.prevRestock);
+        var dispArrival=parseFloat(l.arrival);
+        var dispSold=(!isNaN(dispPrev)&&!isNaN(dispArrival))?Math.max(0,dispPrev-dispArrival):l.sold;
+        return'<div class="history-item-row"><div><div style="font-weight:500">'+(l.item||l.itemId)+'</div><div class="muted" style="font-size:11px">Slot '+l.slot+(dispPrev!==null&&!isNaN(dispPrev)?' · prev stocked: '+dispPrev:'')+'</div></div><div style="display:flex;gap:5px;align-items:center"><span class="qty-badge qty-arr">'+(l.arrival||'—')+'</span><span class="muted" style="font-size:11px">→</span><span class="qty-badge qty-rst">'+(l.restock||'—')+'</span><span class="muted" style="font-size:11px">·</span><span class="qty-badge qty-sold">'+(dispSold!==null&&dispSold!==undefined?dispSold+' sold':'—')+'</span></div></div>';
       }
     }).join('')
     +'</div></div>';
