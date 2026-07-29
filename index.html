@@ -987,6 +987,29 @@ document.addEventListener('click',async function(e){
   }
   if(action==='savereport'){
     var rep=allReports.find(function(r){return r.id===id;});if(!rep)return;
+    // Read location and date directly from DOM at save time — most reliable approach
+    var card=document.getElementById('hcard-'+id);
+    if(card){
+      var locSel=card.querySelector('[data-action="hchangeloc"]');
+      var dateSel=card.querySelector('[data-action="hchangedate"]');
+      if(locSel&&locSel.value){
+        rep.loc=locSel.value;
+        rep.name=locations[locSel.value]?locations[locSel.value].name:'Location';
+      }
+      if(dateSel&&dateSel.value){
+        var d=new Date(dateSel.value+'T12:00:00');
+        rep.dateVal=dateSel.value;
+        rep.date=MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+        rep.monthKey=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+      }
+      // Read any updated arrival/restock qty inputs
+      var qtyInputs=card.querySelectorAll('[data-action="hqty"]');
+      qtyInputs.forEach(function(inp){
+        var li=parseInt(inp.dataset.li);
+        var hf=inp.dataset.hfield;
+        if(rep.lineItems[li])rep.lineItems[li][hf]=inp.value;
+      });
+    }
     rep.lineItems=rep.lineItems.map(function(l){return recalcLineItem(l);});
     var tots=calcReportTotals(rep.lineItems);
     rep.totSold=tots.totSold;rep.totRev=tots.totRev;rep.totProfit=tots.totProfit;
@@ -1003,7 +1026,7 @@ document.addEventListener('click',async function(e){
       buildPrevRestockMap();renderAll();showPrevRestockNote();renderHistory();
       populateMonthSelector();
       showToast('Report updated!');
-    }catch(e){showStatus('Error saving: '+e.message,'error');}
+    }catch(e){showStatus('Error saving: '+e.message,'error');console.error(e);}
   }
   if(action==='editloc'){
     var el=locations[id];if(!el)return;editingLocId=id;
