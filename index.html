@@ -778,26 +778,15 @@ function renderHistory(){
   var div=document.getElementById('historyList');
   if(!filtered.length){div.innerHTML='<p class="muted" style="font-size:13px;padding:1rem 0">No reports yet.</p>';return;}
   div.innerHTML=filtered.map(function(r){
-    var editing=r._editing||false;
-    var locOpts=Object.values(locations).sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(l){return'<option value="'+l.id+'"'+(l.id===r.loc?' selected':'')+'>'+l.name+'</option>';}).join('');
     return'<div class="history-card" id="hcard-'+r.id+'">'
     +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;gap:8px">'
     +'<div style="flex:1">'
-    +(editing
-      ?'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">'
-        +'<div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Location</label>'
-        +'<select data-action="hchangeloc" data-rid="'+r.id+'" style="padding:7px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%">'+locOpts+'</select></div>'
-        +'<div><label style="font-size:11px;color:#666;margin-bottom:3px;display:block">Visit date</label>'
-        +'<input type="date" value="'+(r.dateVal||'')+'" data-action="hchangedate" data-rid="'+r.id+'" style="padding:7px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;width:100%"/></div>'
-        +'</div>'
-      :'<div style="font-weight:700;font-size:15px">'+r.name+'</div><div class="muted" style="font-size:12px;margin-top:2px">'+r.date+'</div>'
-    )
+    +'<div style="font-weight:700;font-size:15px">'+r.name+'</div>'
+    +'<div class="muted" style="font-size:12px;margin-top:2px">'+r.date+'</div>'
     +'</div>'
     +'<div style="display:flex;gap:6px;flex-shrink:0">'
-    +(editing
-      ?'<button class="sm success" data-action="savereport" data-id="'+r.id+'">💾 Save</button><button class="sm" data-action="cancelreport" data-id="'+r.id+'">Cancel</button>'
-      :'<button class="sm primary" data-action="editreport" data-id="'+r.id+'">✏️ Edit</button><button class="danger-solid sm" data-action="delreport" data-id="'+r.id+'">🗑</button>'
-    )
+    +'<button class="sm primary" data-action="editreport" data-id="'+r.id+'">✏️ Edit</button>'
+    +'<button class="danger-solid sm" data-action="delreport" data-id="'+r.id+'">🗑</button>'
     +'</div></div>'
     +'<div style="display:flex;gap:12px;font-size:13px;flex-wrap:wrap;margin-bottom:.75rem" id="htotals-'+r.id+'">'
     +'<span><strong>'+r.totSold+'</strong> units</span>'
@@ -807,23 +796,20 @@ function renderHistory(){
     +'</div>'
     +'<div>'
     +(r.lineItems||[]).map(function(l,li){
-      if(editing){
-        return'<div class="history-item-row" style="flex-wrap:wrap;gap:6px">'
-        +'<div style="flex:1;min-width:100px"><div style="font-weight:500">'+(l.item||l.itemId)+'</div><div class="muted" style="font-size:11px">Slot '+l.slot+'</div></div>'
-        +'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'
-        +'<div><label style="font-size:10px;color:#888;display:block">Arrival</label><input type="number" value="'+(l.arrival||'')+'" min="0" inputmode="numeric" style="width:64px;padding:5px 7px;border-radius:8px;border:1.5px solid #b8ddb0;background:#f0f7ee;font-size:14px;text-align:center" data-action="hqty" data-rid="'+r.id+'" data-li="'+li+'" data-hfield="arrival"/></div>'
-        +'<span class="muted" style="font-size:11px">→</span>'
-        +'<div><label style="font-size:10px;color:#888;display:block">Restock</label><input type="number" value="'+(l.restock||'')+'" min="0" inputmode="numeric" style="width:64px;padding:5px 7px;border-radius:8px;border:1.5px solid #a8cff0;background:#e8f3ff;font-size:14px;text-align:center" data-action="hqty" data-rid="'+r.id+'" data-li="'+li+'" data-hfield="restock"/></div>'
-        +'<div style="text-align:center;min-width:50px"><div style="font-size:10px;color:#888">Sold</div><div style="font-size:14px;font-weight:700;color:#1a6b2a" id="hsold-'+r.id+'-'+li+'">'+(l.sold!==null?l.sold:'—')+'</div></div>'
-        +'</div></div>';
-      } else {
-        // Recalculate sold display using previous report as baseline
-        var dispPrev=getPrevRestockForReport(r.id,l.itemId);
-        if(dispPrev===null&&l.prevRestock!==null&&l.prevRestock!==undefined) dispPrev=parseFloat(l.prevRestock);
-        var dispArrival=parseFloat(l.arrival);
-        var dispSold=(!isNaN(dispPrev)&&!isNaN(dispArrival))?Math.max(0,dispPrev-dispArrival):l.sold;
-        return'<div class="history-item-row"><div><div style="font-weight:500">'+(l.item||l.itemId)+'</div><div class="muted" style="font-size:11px">Slot '+l.slot+(dispPrev!==null&&!isNaN(dispPrev)?' · prev stocked: '+dispPrev:'')+'</div></div><div style="display:flex;gap:5px;align-items:center"><span class="qty-badge qty-arr">'+(l.arrival||'—')+'</span><span class="muted" style="font-size:11px">→</span><span class="qty-badge qty-rst">'+(l.restock||'—')+'</span><span class="muted" style="font-size:11px">·</span><span class="qty-badge qty-sold">'+(dispSold!==null&&dispSold!==undefined?dispSold+' sold':'—')+'</span></div></div>';
-      }
+      var dispPrev=getPrevRestockForReport(r.id,l.itemId);
+      if(dispPrev===null&&l.prevRestock!==null&&l.prevRestock!==undefined) dispPrev=parseFloat(l.prevRestock);
+      var dispArrival=parseFloat(l.arrival);
+      var dispSold=(!isNaN(dispPrev)&&!isNaN(dispArrival))?Math.max(0,dispPrev-dispArrival):l.sold;
+      return'<div class="history-item-row">'
+      +'<div><div style="font-weight:500">'+(l.item||l.itemId)+'</div>'
+      +'<div class="muted" style="font-size:11px">Slot '+l.slot+(dispPrev!==null&&!isNaN(dispPrev)?' · prev: '+dispPrev:'')+'</div></div>'
+      +'<div style="display:flex;gap:5px;align-items:center">'
+      +'<span class="qty-badge qty-arr">'+(l.arrival||'—')+'</span>'
+      +'<span class="muted" style="font-size:11px">→</span>'
+      +'<span class="qty-badge qty-rst">'+(l.restock||'—')+'</span>'
+      +'<span class="muted" style="font-size:11px">·</span>'
+      +'<span class="qty-badge qty-sold">'+(dispSold!==null&&dispSold!==undefined?dispSold+' sold':'—')+'</span>'
+      +'</div></div>';
     }).join('')
     +'</div></div>';
   }).join('');
@@ -1003,68 +989,30 @@ document.addEventListener('click',async function(e){
     }catch(e){showStatus('Error: '+e.message,'error');}
   }
   if(action==='editreport'){
+    // Load this report's data into the visit sheet so user can fix and resubmit
     var rep=allReports.find(function(r){return r.id===id;});if(!rep)return;
-    rep._editing=true;renderHistory();
-  }
-  if(action==='cancelreport'){
-    var rep=allReports.find(function(r){return r.id===id;});if(!rep)return;
-    rep._editing=false;renderHistory();
-  }
-  if(action==='savereport'){
-    var rep=allReports.find(function(r){return r.id===id;});if(!rep)return;
-    // Read location and date directly from DOM at save time — most reliable approach
-    var card=document.getElementById('hcard-'+id);
-    if(card){
-      var locSel=card.querySelector('[data-action="hchangeloc"]');
-      var dateSel=card.querySelector('[data-action="hchangedate"]');
-      if(locSel&&locSel.value){
-        rep.loc=locSel.value;
-        rep.name=locations[locSel.value]?locations[locSel.value].name:'Location';
-      }
-      if(dateSel&&dateSel.value){
-        var d=new Date(dateSel.value+'T12:00:00');
-        rep.dateVal=dateSel.value;
-        rep.date=MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
-        rep.monthKey=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-      }
-      // Read any updated arrival/restock qty inputs
-      var qtyInputs=card.querySelectorAll('[data-action="hqty"]');
-      qtyInputs.forEach(function(inp){
-        var li=parseInt(inp.dataset.li);
-        var hf=inp.dataset.hfield;
-        if(rep.lineItems[li])rep.lineItems[li][hf]=inp.value;
-      });
-    }
-    rep.lineItems=rep.lineItems.map(function(l){return recalcLineItem(l,rep.id);});
-    var tots=calcReportTotals(rep.lineItems);
-    rep.totSold=tots.totSold;rep.totRev=tots.totRev;rep.totProfit=tots.totProfit;
-    rep._editing=false;
-    try{
-      showStatus('Saving report...','info');
-      // Use update to patch only these fields on the existing document
-      await db.collection('reports').doc(rep.id).update({
-        date:rep.date,
-        dateVal:rep.dateVal,
-        monthKey:rep.monthKey,
-        loc:rep.loc,
-        name:rep.name,
-        lineItems:rep.lineItems,
-        totSold:rep.totSold,
-        totRev:rep.totRev,
-        totProfit:rep.totProfit
-      });
-      // Preserve current filter selection
-      var savedFilter=document.getElementById('histLoc').value;
-      await loadAllReports();
-      buildPrevRestockMap();
-      renderAll();
-      showPrevRestockNote();
-      // Restore filter after reload
-      document.getElementById('histLoc').value=savedFilter;
-      renderHistory();
-      populateMonthSelector();
-      showStatus('Report saved successfully!','success');
-    }catch(e){showStatus('Error saving: '+e.message,'error');console.error('Save error:',e);}
+    if(!confirm('This will load the report into the Visit Sheet so you can correct it and resubmit. The original report will NOT be deleted automatically — delete it from History after resubmitting. Continue?'))return;
+    // Switch to the correct location
+    loc=rep.loc;
+    document.getElementById('locSel').value=loc;
+    // Set the visit date
+    if(rep.dateVal)document.getElementById('visitDate').value=rep.dateVal;
+    // Load the slots from the report line items
+    slots=(rep.lineItems||[]).map(function(l){
+      return{
+        slot:l.slot||'',
+        itemId:l.itemId||'',
+        arrival:l.arrival||'',
+        restock:l.restock||'',
+        price:l.price||'',
+        cost:l.cost||''
+      };
+    });
+    buildPrevRestockMap();
+    renderAll();
+    showPrevRestockNote();
+    showTab('sheet');
+    showToast('Report loaded into Visit Sheet. Fix quantities and resubmit.');
   }
   if(action==='editloc'){
     var el=locations[id];if(!el)return;editingLocId=id;
