@@ -748,8 +748,24 @@ function calcReportTotals(lineItems){
   lineItems.forEach(function(l){if(l.sold!==null&&l.sold!==undefined){totSold+=l.sold;totRev+=l.rev||0;totProfit+=l.profit||0;}});
   return{totSold:totSold,totRev:totRev,totProfit:totProfit};
 }
-function recalcLineItem(l){
-  var prev=parseFloat(l.prevRestock);var arrival=parseFloat(l.arrival);var restock=parseFloat(l.restock);
+function getPrevRestockForReport(reportId, itemId){
+  // Find the report just before this one for this location/item and return its restock qty
+  var thisRep=allReports.find(function(r){return r.id===reportId;});
+  if(!thisRep) return null;
+  // Get all reports for same location, sorted newest first
+  var locReps=allReports.filter(function(r){return r.loc===thisRep.loc&&r.id!==reportId;}).sort(function(a,b){return b.timestamp-a.timestamp;});
+  // Find the most recent one before this report
+  var prevReps=locReps.filter(function(r){return r.timestamp<thisRep.timestamp;});
+  if(!prevReps.length) return null;
+  var prevRep=prevReps[0];
+  var prevLine=(prevRep.lineItems||[]).find(function(l){return l.itemId===itemId;});
+  return prevLine&&prevLine.restock!==''&&prevLine.restock!==null?parseFloat(prevLine.restock):null;
+}
+function recalcLineItem(l, reportId){
+  var arrival=parseFloat(l.arrival);
+  // Try to get prevRestock from the actual previous report first, fall back to stored value
+  var prev=reportId?getPrevRestockForReport(reportId,l.itemId):null;
+  if(prev===null) prev=parseFloat(l.prevRestock);
   var sold=(!isNaN(prev)&&!isNaN(arrival))?Math.max(0,prev-arrival):null;
   var price=parseFloat(l.price)||0;
   var cost=warehouse[l.itemId]&&warehouse[l.itemId].avgCost?warehouse[l.itemId].avgCost:(masterItems[l.itemId]?masterItems[l.itemId].cost:parseFloat(l.cost)||0);
@@ -905,7 +921,10 @@ document.addEventListener('input',function(e){
     var rep=allReports.find(function(r){return r.id===rid;});if(!rep)return;
     rep.lineItems[li][hf]=hinp.value;
     var l=rep.lineItems[li];
-    var prev=parseFloat(l.prevRestock);var arrival=parseFloat(l.arrival);
+    // Use previous report's restock as the baseline for sold calculation
+    var prev=getPrevRestockForReport(rid,l.itemId);
+    if(prev===null) prev=parseFloat(l.prevRestock);
+    var arrival=parseFloat(l.arrival);
     var sold=(!isNaN(prev)&&!isNaN(arrival))?Math.max(0,prev-arrival):null;
     var soldEl=document.getElementById('hsold-'+rid+'-'+li);
     if(soldEl)soldEl.textContent=sold!==null?sold:'—';
@@ -1010,7 +1029,7 @@ document.addEventListener('click',async function(e){
         if(rep.lineItems[li])rep.lineItems[li][hf]=inp.value;
       });
     }
-    rep.lineItems=rep.lineItems.map(function(l){return recalcLineItem(l);});
+    rep.lineItems=rep.lineItems.map(function(l){return recalcLineItem(l,rep.id);});
     var tots=calcReportTotals(rep.lineItems);
     rep.totSold=tots.totSold;rep.totRev=tots.totRev;rep.totProfit=tots.totProfit;
     rep._editing=false;
