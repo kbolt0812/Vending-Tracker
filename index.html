@@ -641,8 +641,8 @@ function renderPurchaseHistory(){
 }
 
 // ── Visit sheet ───────────────────────────────────────────────
-function buildPrevRestockMap(){
-  prevRestockMap={};
+function getBaselineReport(){
+  // Get the previous report for the current location before the selected visit date
   var visitDate=document.getElementById('visitDate')?document.getElementById('visitDate').value:'';
   var locReps=allReports.filter(function(r){return r.loc===loc&&!r._deleted;})
     .sort(function(a,b){
@@ -650,26 +650,46 @@ function buildPrevRestockMap(){
       if(da!==db2) return db2.localeCompare(da);
       return b.timestamp-a.timestamp;
     });
-  if(!locReps.length)return;
-  // If we have a visit date selected, find the most recent report BEFORE that date
-  // Otherwise use the most recent report overall
-  var baseline=null;
+  if(!locReps.length) return null;
   if(visitDate){
-    // Only use a report that is strictly BEFORE this visit date
     var beforeDate=locReps.filter(function(r){return(r.dateVal||'')<visitDate;});
-    baseline=beforeDate.length?beforeDate[0]:null;
-  } else {
-    baseline=locReps.length?locReps[0]:null;
+    return beforeDate.length?beforeDate[0]:null;
   }
-  // If no previous report exists, leave prevRestockMap empty — sold shows as —
-  if(!baseline)return;
+  return locReps[0]||null;
+}
+function buildPrevRestockMap(){
+  prevRestockMap={};
+  // prevRestockMap is keyed by "slot|itemId" to handle duplicates and moves
+  var baseline=getBaselineReport();
+  if(!baseline) return;
   (baseline.lineItems||[]).forEach(function(l){
-    if(l.itemId&&l.restock!==''&&l.restock!==null)
-      prevRestockMap[l.itemId]=parseFloat(l.restock);
+    if(l.itemId&&l.restock!==''&&l.restock!==null){
+      var key=(l.slot||'')+'|'+l.itemId;
+      prevRestockMap[key]=parseFloat(l.restock);
+    }
   });
 }
-function getPrevRestock(iId){return prevRestockMap.hasOwnProperty(iId)?prevRestockMap[iId]:null;}
-function calcSold(s){var a=parseFloat(s.arrival);if(isNaN(a))return null;var p=getPrevRestock(s.itemId);if(p===null)return null;return Math.max(0,p-a);}
+function getPrevRestock(slot,iId){
+  // Match by slot+item first (exact), then item-only fallback for legacy
+  var exactKey=(slot||'')+'|'+iId;
+  if(prevRestockMap.hasOwnProperty(exactKey)) return prevRestockMap[exactKey];
+  // If slot changed but item is same and only appears once in prev report
+  var itemKeys=Object.keys(prevRestockMap).filter(function(k){return k.split('|')[1]===iId;});
+  if(itemKeys.length===1) return prevRestockMap[itemKeys[0]];
+  return null;
+}
+function calcSold(s){
+  var a=parseFloat(s.arrival);if(isNaN(a))return null;
+  // Check if slot has a DIFFERENT item in prev report — if so, no baseline
+  var baseline=getBaselineReport();
+  if(baseline&&s.slot){
+    var prevSlotLine=(baseline.lineItems||[]).find(function(l){return l.slot===s.slot;});
+    if(prevSlotLine&&prevSlotLine.itemId&&prevSlotLine.itemId!==s.itemId) return null;
+  }
+  var p=getPrevRestock(s.slot,s.itemId);
+  if(p===null) return null;
+  return Math.max(0,p-a);
+}
 function calcRow(s){var sold=calcSold(s);var price=parseFloat(s.price)||0;var cost=warehouse[s.itemId]&&warehouse[s.itemId].avgCost?warehouse[s.itemId].avgCost:(masterItems[s.itemId]?masterItems[s.itemId].cost:parseFloat(s.cost)||0);return{sold:sold,rev:sold!==null?sold*price:null,profit:sold!==null?sold*(price-cost):null};}
 function showPrevRestockNote(){
   var note=document.getElementById('prevRestockNote');
@@ -685,7 +705,7 @@ function renderAll(){renderMobileCards();renderDesktopTable();renderTotals();}
 function renderMobileCards(){
   var container=document.getElementById('slotCardsMobile');if(!container)return;
   container.innerHTML=slots.map(function(s,i){
-    var r=calcRow(s);var prev=getPrevRestock(s.itemId);
+    var r=calcRow(s);var prev=getPrevRestock(s.slot,s.itemId);
     var soldStr=r.sold!==null?r.sold:prev===null?'—*':'—';
     var soldColor=r.sold!==null&&r.sold>0?'#1a6b2a':'#888';
     var it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
@@ -699,7 +719,7 @@ function renderMobileCards(){
 function renderDesktopTable(){
   var body=document.getElementById('slotBody');if(!body)return;
   body.innerHTML=slots.map(function(s,i){
-    var r=calcRow(s);var prev=getPrevRestock(s.itemId);
+    var r=calcRow(s);var prev=getPrevRestock(s.slot,s.itemId);
     var it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
     return'<tr><td><input type="text" value="'+esc(s.slot)+'" placeholder="A1" data-idx="'+i+'" data-field="slot"/></td>'
     +'<td><select data-idx="'+i+'" data-field="itemId">'+itemOptions(s.itemId)+'</select></td>'
@@ -713,7 +733,7 @@ function renderDesktopTable(){
   }).join('');
 }
 function updateRowCalcs(i){
-  var s=slots[i];var r=calcRow(s);var prev=getPrevRestock(s.itemId);
+  var s=slots[i];var r=calcRow(s);var prev=getPrevRestock(s.slot,s.itemId);
   var ms=document.getElementById('m-sold-'+i);var mr=document.getElementById('m-rev-'+i);var mp=document.getElementById('m-prof-'+i);
   if(ms){ms.textContent=r.sold!==null?r.sold:prev===null?'—*':'—';ms.style.color=r.sold!==null&&r.sold>0?'#1a6b2a':'#888';}
   if(mr)mr.textContent=r.rev!==null?'$'+r.rev.toFixed(2):'—';
@@ -776,27 +796,55 @@ function calcReportTotals(lineItems){
   lineItems.forEach(function(l){if(l.sold!==null&&l.sold!==undefined){totSold+=l.sold;totRev+=l.rev||0;totProfit+=l.profit||0;}});
   return{totSold:totSold,totRev:totRev,totProfit:totProfit};
 }
-function getPrevRestockForReport(reportId, itemId){
+function getPrevReport(reportId){
+  // Get the most recent report for the same location BEFORE this report's visit date
   var thisRep=allReports.find(function(r){return r.id===reportId;});
   if(!thisRep) return null;
-  // Sort by visit date (dateVal) not by submitted timestamp
-  // This way resubmitted reports still find the correct previous visit
-  var locReps=allReports.filter(function(r){return r.loc===thisRep.loc&&r.id!==reportId;})
+  var thisDate=thisRep.dateVal||'';
+  var locReps=allReports
+    .filter(function(r){return r.loc===thisRep.loc&&r.id!==reportId;})
     .sort(function(a,b){
       var da=a.dateVal||'';var db2=b.dateVal||'';
-      if(da!==db2) return db2.localeCompare(da); // newer date first
-      return b.timestamp-a.timestamp; // same date: newer submission first
+      if(da!==db2) return db2.localeCompare(da);
+      return b.timestamp-a.timestamp;
     });
-  // Find the most recent visit that happened BEFORE this report's visit date
-  var thisDate=thisRep.dateVal||'';
   var prevReps=locReps.filter(function(r){
     var rDate=r.dateVal||'';
     return rDate<thisDate||(rDate===thisDate&&r.timestamp<thisRep.timestamp);
   });
-  if(!prevReps.length) return null;
-  var prevRep=prevReps[0];
-  var prevLine=(prevRep.lineItems||[]).find(function(l){return l.itemId===itemId;});
-  return prevLine&&prevLine.restock!==''&&prevLine.restock!==null?parseFloat(prevLine.restock):null;
+  return prevReps.length?prevReps[0]:null;
+}
+
+function getPrevRestockForReport(reportId, itemId, slotLabel){
+  // Match by SLOT LABEL + ITEM — handles moves, swaps, duplicates correctly
+  // If slot label provided: find that exact slot in prev report with same item
+  // If no slot match found: return null (item moved in or new)
+  var thisRep=allReports.find(function(r){return r.id===reportId;});
+  if(!thisRep) return null;
+  var prevRep=getPrevReport(reportId);
+  if(!prevRep) return null;
+
+  var prevLines=prevRep.lineItems||[];
+
+  if(slotLabel){
+    // Primary: find same slot with same item in previous report
+    var exactMatch=prevLines.find(function(l){
+      return l.slot===slotLabel&&l.itemId===itemId;
+    });
+    if(exactMatch&&exactMatch.restock!==''&&exactMatch.restock!==null)
+      return parseFloat(exactMatch.restock);
+    // If same slot exists but has DIFFERENT item — slot was replaced, no baseline
+    var sameSlot=prevLines.find(function(l){return l.slot===slotLabel;});
+    if(sameSlot&&sameSlot.itemId!==itemId) return null;
+  }
+
+  // Fallback: if no slot label, try matching by item only (legacy data)
+  // But only if there's exactly one matching item (not duplicates)
+  var itemMatches=prevLines.filter(function(l){return l.itemId===itemId;});
+  if(itemMatches.length===1&&itemMatches[0].restock!==''&&itemMatches[0].restock!==null)
+    return parseFloat(itemMatches[0].restock);
+
+  return null;
 }
 function recalcLineItem(l, reportId){
   var arrival=parseFloat(l.arrival);
@@ -829,7 +877,7 @@ function renderHistory(){
       // Recalculate totals from actual previous reports — not stored values
       var calcSold2=0,calcRev2=0,calcProfit2=0,hasAny=false;
       (r.lineItems||[]).forEach(function(l){
-        var prev2=getPrevRestockForReport(r.id,l.itemId);
+        var prev2=getPrevRestockForReport(r.id,l.itemId,l.slot);
         var arr2=parseFloat(l.arrival);
         var sold2=(prev2!==null&&!isNaN(prev2)&&!isNaN(arr2))?Math.max(0,prev2-arr2):null;
         var price2=parseFloat(l.price)||0;
@@ -845,7 +893,7 @@ function renderHistory(){
     +'<div>'
     +(r.lineItems||[]).map(function(l,li){
       // Always recalculate sold from actual previous report — never use stored values
-      var dispPrev=getPrevRestockForReport(r.id,l.itemId);
+      var dispPrev=getPrevRestockForReport(r.id,l.itemId,l.slot);
       var dispArrival=parseFloat(l.arrival);
       // If no previous report exists dispPrev is null — sold must show —
       var dispSold=(dispPrev!==null&&!isNaN(dispPrev)&&!isNaN(dispArrival))?Math.max(0,dispPrev-dispArrival):null;
@@ -883,11 +931,11 @@ function renderMonthly(){
   filtered.forEach(function(r){
     (r.lineItems||[]).forEach(function(l){
       if(!l.item&&!l.itemId) return;
-      // Recalculate sold from actual previous report — same logic as history tab
-      var prev=getPrevRestockForReport(r.id,l.itemId);
+      // Recalculate sold using slot+item matching — handles moves, swaps, duplicates
+      var prev=getPrevRestockForReport(r.id,l.itemId,l.slot);
       var arrival=parseFloat(l.arrival);
       var sold=(prev!==null&&!isNaN(prev)&&!isNaN(arrival))?Math.max(0,prev-arrival):null;
-      if(sold===null) return; // no previous report = no sold data for this visit
+      if(sold===null) return;
       var price=parseFloat(l.price)||0;
       var cost=warehouse[l.itemId]&&warehouse[l.itemId].avgCost?warehouse[l.itemId].avgCost:(masterItems[l.itemId]?masterItems[l.itemId].cost:parseFloat(l.cost)||0);
       var rev=sold*price;
@@ -934,7 +982,7 @@ document.getElementById('submitBtn').addEventListener('click',async function(){
     var locName=locations[loc]?locations[loc].name:'Location';
     var totSold=0,totRev=0,totProfit=0;
     var lineItems=slots.filter(function(s){return s.itemId||s.slot;}).map(function(s){
-      var r=calcRow(s);var prev=getPrevRestock(s.itemId);var it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
+      var r=calcRow(s);var prev=getPrevRestock(s.slot,s.itemId);var it=s.itemId&&masterItems[s.itemId]?masterItems[s.itemId]:null;
       if(r.sold!==null){totSold+=r.sold;totRev+=r.rev;totProfit+=r.profit;}
       var autoC=warehouse[s.itemId]&&warehouse[s.itemId].avgCost?warehouse[s.itemId].avgCost:(it?it.cost:parseFloat(s.cost)||0);return{slot:s.slot,itemId:s.itemId,item:it?it.name:s.itemId,arrival:s.arrival,restock:s.restock,prevRestock:prev!==null?prev:null,price:parseFloat(s.price)||0,cost:autoC,sold:r.sold,rev:r.rev,profit:r.profit};
     });
