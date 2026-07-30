@@ -880,7 +880,26 @@ function renderMonthly(){
   var parts=monthKey.split('-');var monthLabel=MONTHS[parseInt(parts[1])-1]+' '+parts[0];
   var filtered=allReports.filter(function(r){return r.monthKey===monthKey&&(filterLoc==='all'||r.loc===filterLoc);});
   var itemMap={};
-  filtered.forEach(function(r){(r.lineItems||[]).forEach(function(l){if((!l.item&&!l.itemId)||l.sold===null||l.sold===undefined)return;var key=(l.itemId||l.item).toLowerCase();if(!itemMap[key])itemMap[key]={name:l.item||l.itemId,sold:0,rev:0,profit:0,visits:0};itemMap[key].sold+=l.sold;itemMap[key].rev+=l.rev||0;itemMap[key].profit+=l.profit||0;if(l.sold>0)itemMap[key].visits++;});});
+  filtered.forEach(function(r){
+    (r.lineItems||[]).forEach(function(l){
+      if(!l.item&&!l.itemId) return;
+      // Recalculate sold from actual previous report — same logic as history tab
+      var prev=getPrevRestockForReport(r.id,l.itemId);
+      var arrival=parseFloat(l.arrival);
+      var sold=(prev!==null&&!isNaN(prev)&&!isNaN(arrival))?Math.max(0,prev-arrival):null;
+      if(sold===null) return; // no previous report = no sold data for this visit
+      var price=parseFloat(l.price)||0;
+      var cost=warehouse[l.itemId]&&warehouse[l.itemId].avgCost?warehouse[l.itemId].avgCost:(masterItems[l.itemId]?masterItems[l.itemId].cost:parseFloat(l.cost)||0);
+      var rev=sold*price;
+      var profit=sold*(price-cost);
+      var key=(l.itemId||l.item).toLowerCase();
+      if(!itemMap[key])itemMap[key]={name:l.item||l.itemId,sold:0,rev:0,profit:0,visits:0};
+      itemMap[key].sold+=sold;
+      itemMap[key].rev+=rev;
+      itemMap[key].profit+=profit;
+      if(sold>0)itemMap[key].visits++;
+    });
+  });
   var items=Object.values(itemMap).sort(function(a,b){return b.sold-a.sold;});
   var totSold=items.reduce(function(s,i){return s+i.sold;},0);
   var totRev=items.reduce(function(s,i){return s+i.rev;},0);
