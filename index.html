@@ -653,13 +653,16 @@ function buildPrevRestockMap(){
   if(!locReps.length)return;
   // If we have a visit date selected, find the most recent report BEFORE that date
   // Otherwise use the most recent report overall
-  var baseline;
+  var baseline=null;
   if(visitDate){
+    // Only use a report that is strictly BEFORE this visit date
     var beforeDate=locReps.filter(function(r){return(r.dateVal||'')<visitDate;});
-    baseline=beforeDate.length?beforeDate[0]:locReps[0];
+    baseline=beforeDate.length?beforeDate[0]:null;
   } else {
-    baseline=locReps[0];
+    baseline=locReps.length?locReps[0]:null;
   }
+  // If no previous report exists, leave prevRestockMap empty — sold shows as —
+  if(!baseline)return;
   (baseline.lineItems||[]).forEach(function(l){
     if(l.itemId&&l.restock!==''&&l.restock!==null)
       prevRestockMap[l.itemId]=parseFloat(l.restock);
