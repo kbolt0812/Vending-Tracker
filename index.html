@@ -166,11 +166,118 @@ button:disabled{opacity:.5}
     </div>
     <div style="display:flex;flex-direction:column;gap:8px">
       <button id="addSlotBtn" style="border-style:dashed">+ Add Slot</button>
+      <button id="moveStockBtn" style="border-color:#7B5EA7;color:#7B5EA7;background:#F5F0FF">&#x1F4E6; Move / Swap Stock</button>
       <div class="flex-row">
         <button class="primary" id="saveSheetBtn">&#x1F4BE; Save Sheet</button>
         <button class="success" id="submitBtn">&#x1F4C4; Submit Report</button>
       </div>
     </div>
+
+  <!-- Move/Swap Modal -->
+  <div id="moveModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;overflow-y:auto;padding:1rem">
+    <div style="background:#fff;border-radius:16px;padding:1.25rem;max-width:500px;margin:2rem auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <h3 style="margin:0">&#x1F4E6; Move / Swap Stock</h3>
+        <button id="closeMoveModal" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888;min-height:auto;padding:0">&#x2715;</button>
+      </div>
+
+      <div style="background:#e8f3ff;border:1px solid #a8cff0;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:1rem">
+        &#x2139;&#xFE0F; Use this when you move items between slots, replace an item, or add a new item to a slot. It adds the correct line items to your visit sheet automatically.
+      </div>
+
+      <div id="moveSteps">
+        <!-- Step 1 -->
+        <div id="moveStep1">
+          <p style="font-size:13px;font-weight:600;color:#666;margin-bottom:.75rem">What are you doing?</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="full" data-movetype="move" style="text-align:left;padding:12px 14px;border-radius:10px;border:1.5px solid #ddd">
+              &#x27A1;&#xFE0F; <strong>Move item to a different slot</strong><br>
+              <span style="font-size:12px;color:#888;font-weight:400">e.g. Sprite moves from A5 to D3</span>
+            </button>
+            <button class="full" data-movetype="swap" style="text-align:left;padding:12px 14px;border-radius:10px;border:1.5px solid #ddd">
+              &#x1F501; <strong>Swap two items between slots</strong><br>
+              <span style="font-size:12px;color:#888;font-weight:400">e.g. Coke and Water switch slots</span>
+            </button>
+            <button class="full" data-movetype="replace" style="text-align:left;padding:12px 14px;border-radius:10px;border:1.5px solid #ddd">
+              &#x1F504; <strong>Replace item in a slot</strong><br>
+              <span style="font-size:12px;color:#888;font-weight:400">e.g. Remove Coke from A1, put Sprite in A1</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Move -->
+        <div id="moveStep2move" style="display:none">
+          <p style="font-size:13px;font-weight:600;color:#666;margin-bottom:.75rem">&#x27A1;&#xFE0F; Move item to a different slot</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div><label>From slot</label><input type="text" id="moveFromSlot" placeholder="e.g. A5"/></div>
+            <div><label>Item being moved</label><select id="moveFromItem"><option value="">-- Select --</option></select></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div><label>Qty left in old slot</label><input type="number" id="moveFromQty" placeholder="5" min="0" inputmode="numeric"/></div>
+            <div><label>To slot</label><input type="text" id="moveToSlot" placeholder="e.g. D3"/></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem">
+            <div><label>Qty to put in new slot</label><input type="number" id="moveToQty" placeholder="5" min="0" inputmode="numeric"/></div>
+            <div><label>Sell price ($)</label><input type="number" id="moveSellPrice" placeholder="2.00" step="0.25" min="0" inputmode="decimal"/></div>
+          </div>
+          <div class="flex-row">
+            <button id="backFromMove">&#x2190; Back</button>
+            <button class="success" id="applyMove">&#x2714; Add to Sheet</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Swap -->
+        <div id="moveStep2swap" style="display:none">
+          <p style="font-size:13px;font-weight:600;color:#666;margin-bottom:.75rem">&#x1F501; Swap two items</p>
+          <div style="background:#f9f8f6;border-radius:10px;padding:.75rem;margin-bottom:.75rem">
+            <p style="font-size:12px;font-weight:600;color:#888;margin-bottom:6px">SLOT 1</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+              <div><label>Slot label</label><input type="text" id="swapSlot1" placeholder="e.g. A1"/></div>
+              <div><label>Item currently here</label><select id="swapItem1"><option value="">-- Select --</option></select></div>
+            </div>
+            <div><label>Qty left in this slot</label><input type="number" id="swapQty1" placeholder="5" min="0" inputmode="numeric"/></div>
+          </div>
+          <div style="background:#f9f8f6;border-radius:10px;padding:.75rem;margin-bottom:.75rem">
+            <p style="font-size:12px;font-weight:600;color:#888;margin-bottom:6px">SLOT 2</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+              <div><label>Slot label</label><input type="text" id="swapSlot2" placeholder="e.g. B2"/></div>
+              <div><label>Item currently here</label><select id="swapItem2"><option value="">-- Select --</option></select></div>
+            </div>
+            <div><label>Qty left in this slot</label><input type="number" id="swapQty2" placeholder="3" min="0" inputmode="numeric"/></div>
+          </div>
+          <div class="flex-row">
+            <button id="backFromSwap">&#x2190; Back</button>
+            <button class="success" id="applySwap">&#x2714; Add to Sheet</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Replace -->
+        <div id="moveStep2replace" style="display:none">
+          <p style="font-size:13px;font-weight:600;color:#666;margin-bottom:.75rem">&#x1F504; Replace item in slot</p>
+          <div style="background:#f9f8f6;border-radius:10px;padding:.75rem;margin-bottom:.75rem">
+            <p style="font-size:12px;font-weight:600;color:#888;margin-bottom:6px">OUTGOING</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+              <div><label>Slot label</label><input type="text" id="replaceSlot" placeholder="e.g. A1"/></div>
+              <div><label>Item going out</label><select id="replaceOldItem"><option value="">-- Select --</option></select></div>
+            </div>
+            <div><label>Qty left (arrival)</label><input type="number" id="replaceOldQty" placeholder="3" min="0" inputmode="numeric"/></div>
+          </div>
+          <div style="background:#f9f8f6;border-radius:10px;padding:.75rem;margin-bottom:.75rem">
+            <p style="font-size:12px;font-weight:600;color:#888;margin-bottom:6px">INCOMING</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+              <div><label>New item</label><select id="replaceNewItem"><option value="">-- Select --</option></select></div>
+              <div><label>Qty stocked</label><input type="number" id="replaceNewQty" placeholder="10" min="0" inputmode="numeric"/></div>
+            </div>
+            <div><label>Sell price ($)</label><input type="number" id="replaceNewPrice" placeholder="2.00" step="0.25" min="0" inputmode="decimal"/></div>
+          </div>
+          <div class="flex-row">
+            <button id="backFromReplace">&#x2190; Back</button>
+            <button class="success" id="applyReplace">&#x2714; Add to Sheet</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   </div>
 
   <!-- HISTORY -->
@@ -670,12 +777,9 @@ function buildPrevRestockMap(){
   });
 }
 function getPrevRestock(slot,iId){
-  // Match by slot+item first (exact), then item-only fallback for legacy
+  // Strict match: same slot + same item only
   var exactKey=(slot||'')+'|'+iId;
   if(prevRestockMap.hasOwnProperty(exactKey)) return prevRestockMap[exactKey];
-  // If slot changed but item is same and only appears once in prev report
-  var itemKeys=Object.keys(prevRestockMap).filter(function(k){return k.split('|')[1]===iId;});
-  if(itemKeys.length===1) return prevRestockMap[itemKeys[0]];
   return null;
 }
 function calcSold(s){
@@ -816,9 +920,8 @@ function getPrevReport(reportId){
 }
 
 function getPrevRestockForReport(reportId, itemId, slotLabel){
-  // Match by SLOT LABEL + ITEM — handles moves, swaps, duplicates correctly
-  // If slot label provided: find that exact slot in prev report with same item
-  // If no slot match found: return null (item moved in or new)
+  // Match STRICTLY by slot label + item
+  // If the slot didn't have this exact item last visit = new placement = no baseline
   var thisRep=allReports.find(function(r){return r.id===reportId;});
   if(!thisRep) return null;
   var prevRep=getPrevReport(reportId);
@@ -827,23 +930,17 @@ function getPrevRestockForReport(reportId, itemId, slotLabel){
   var prevLines=prevRep.lineItems||[];
 
   if(slotLabel){
-    // Primary: find same slot with same item in previous report
+    // Only match if the SAME slot had the SAME item last visit
     var exactMatch=prevLines.find(function(l){
       return l.slot===slotLabel&&l.itemId===itemId;
     });
     if(exactMatch&&exactMatch.restock!==''&&exactMatch.restock!==null)
       return parseFloat(exactMatch.restock);
-    // If same slot exists but has DIFFERENT item — slot was replaced, no baseline
-    var sameSlot=prevLines.find(function(l){return l.slot===slotLabel;});
-    if(sameSlot&&sameSlot.itemId!==itemId) return null;
+    // Slot exists with different item, or slot is new — no baseline either way
+    return null;
   }
 
-  // Fallback: if no slot label, try matching by item only (legacy data)
-  // But only if there's exactly one matching item (not duplicates)
-  var itemMatches=prevLines.filter(function(l){return l.itemId===itemId;});
-  if(itemMatches.length===1&&itemMatches[0].restock!==''&&itemMatches[0].restock!==null)
-    return parseFloat(itemMatches[0].restock);
-
+  // No slot label at all (legacy data only) — no calculation possible
   return null;
 }
 function recalcLineItem(l, reportId){
@@ -1024,6 +1121,103 @@ document.getElementById('submitBtn').addEventListener('click',async function(){
 });
 document.getElementById('saveSheetBtn').addEventListener('click',async function(){await saveSlotsDB();showToast('Sheet saved!');});
 document.getElementById('addSlotBtn').addEventListener('click',function(){slots.push({slot:'',itemId:'',arrival:'',restock:'',price:'',cost:''});renderAll();setTimeout(function(){var c=document.querySelectorAll('.slot-card');if(c.length)c[c.length-1].scrollIntoView({behavior:'smooth',block:'center'});},100);});
+
+// ── Move/Swap modal ───────────────────────────────────────────
+function openMoveModal(){
+  // Populate all item dropdowns in modal
+  var items=Object.values(masterItems).sort(function(a,b){return a.name.localeCompare(b.name);});
+  var opts='<option value="">-- Select --</option>'+items.map(function(i){return'<option value="'+i.id+'">'+i.name+'</option>';}).join('');
+  ['moveFromItem','moveToSlot','swapItem1','swapItem2','replaceOldItem','replaceNewItem'].forEach(function(id){
+    var el=document.getElementById(id);if(el&&el.tagName==='SELECT')el.innerHTML=opts;
+  });
+  // Reset to step 1
+  showMoveStep('step1');
+  document.getElementById('moveModal').style.display='block';
+}
+function closeMoveModal(){document.getElementById('moveModal').style.display='none';}
+function showMoveStep(step){
+  ['step1','step2move','step2swap','step2replace'].forEach(function(s){
+    document.getElementById('moveStep2'+s.replace('step2',''))||document.getElementById('move'+s.charAt(0).toUpperCase()+s.slice(1));
+  });
+  document.getElementById('moveStep1').style.display=step==='step1'?'':'none';
+  document.getElementById('moveStep2move').style.display=step==='move'?'':'none';
+  document.getElementById('moveStep2swap').style.display=step==='swap'?'':'none';
+  document.getElementById('moveStep2replace').style.display=step==='replace'?'':'none';
+}
+
+document.getElementById('moveStockBtn').addEventListener('click',openMoveModal);
+document.getElementById('closeMoveModal').addEventListener('click',closeMoveModal);
+document.getElementById('backFromMove').addEventListener('click',function(){showMoveStep('step1');});
+document.getElementById('backFromSwap').addEventListener('click',function(){showMoveStep('step1');});
+document.getElementById('backFromReplace').addEventListener('click',function(){showMoveStep('step1');});
+
+// Step 1 — pick type
+document.querySelectorAll('[data-movetype]').forEach(function(btn){
+  btn.addEventListener('click',function(){showMoveStep(btn.getAttribute('data-movetype'));});
+});
+
+// Apply Move
+document.getElementById('applyMove').addEventListener('click',function(){
+  var fromSlot=document.getElementById('moveFromSlot').value.trim();
+  var fromItem=document.getElementById('moveFromItem').value;
+  var fromQty=document.getElementById('moveFromQty').value;
+  var toSlot=document.getElementById('moveToSlot').value.trim();
+  var toQty=document.getElementById('moveToQty').value;
+  var sellPrice=document.getElementById('moveSellPrice').value;
+  if(!fromSlot||!fromItem||!toSlot){alert('Please fill in all fields.');return;}
+  var it=masterItems[fromItem];
+  var price=parseFloat(sellPrice)||(it?it.price:0);
+  var cost=warehouse[fromItem]&&warehouse[fromItem].avgCost?warehouse[fromItem].avgCost:(it?it.cost:0);
+  // Old slot: arrival = qty left, restock = 0 (emptied)
+  slots.push({slot:fromSlot,itemId:fromItem,arrival:fromQty,restock:'0',price:price,cost:cost});
+  // New slot: arrival = 0 (nothing was there), restock = qty put in
+  slots.push({slot:toSlot,itemId:fromItem,arrival:'0',restock:toQty,price:price,cost:cost});
+  renderAll();closeMoveModal();
+  showToast('Move added to sheet — '+fromSlot+' → '+toSlot);
+});
+
+// Apply Swap
+document.getElementById('applySwap').addEventListener('click',function(){
+  var slot1=document.getElementById('swapSlot1').value.trim();
+  var item1=document.getElementById('swapItem1').value;
+  var qty1=document.getElementById('swapQty1').value;
+  var slot2=document.getElementById('swapSlot2').value.trim();
+  var item2=document.getElementById('swapItem2').value;
+  var qty2=document.getElementById('swapQty2').value;
+  if(!slot1||!item1||!slot2||!item2){alert('Please fill in all fields.');return;}
+  var it1=masterItems[item1];var it2=masterItems[item2];
+  var cost1=warehouse[item1]&&warehouse[item1].avgCost?warehouse[item1].avgCost:(it1?it1.cost:0);
+  var cost2=warehouse[item2]&&warehouse[item2].avgCost?warehouse[item2].avgCost:(it2?it2.cost:0);
+  // Slot 1 out (old item), slot 1 in (new item from slot 2)
+  slots.push({slot:slot1,itemId:item1,arrival:qty1,restock:'0',price:it1?it1.price:0,cost:cost1});
+  slots.push({slot:slot1,itemId:item2,arrival:'0',restock:qty2,price:it2?it2.price:0,cost:cost2});
+  // Slot 2 out (old item), slot 2 in (new item from slot 1)
+  slots.push({slot:slot2,itemId:item2,arrival:qty2,restock:'0',price:it2?it2.price:0,cost:cost2});
+  slots.push({slot:slot2,itemId:item1,arrival:'0',restock:qty1,price:it1?it1.price:0,cost:cost1});
+  renderAll();closeMoveModal();
+  showToast('Swap added to sheet — '+slot1+' ↔ '+slot2);
+});
+
+// Apply Replace
+document.getElementById('applyReplace').addEventListener('click',function(){
+  var slot=document.getElementById('replaceSlot').value.trim();
+  var oldItem=document.getElementById('replaceOldItem').value;
+  var oldQty=document.getElementById('replaceOldQty').value;
+  var newItem=document.getElementById('replaceNewItem').value;
+  var newQty=document.getElementById('replaceNewQty').value;
+  var newPrice=document.getElementById('replaceNewPrice').value;
+  if(!slot||!oldItem||!newItem){alert('Please fill in all fields.');return;}
+  var oldIt=masterItems[oldItem];var newIt=masterItems[newItem];
+  var oldCost=warehouse[oldItem]&&warehouse[oldItem].avgCost?warehouse[oldItem].avgCost:(oldIt?oldIt.cost:0);
+  var newCost=warehouse[newItem]&&warehouse[newItem].avgCost?warehouse[newItem].avgCost:(newIt?newIt.cost:0);
+  var price=parseFloat(newPrice)||(newIt?newIt.price:0);
+  // Old item out: arrival = qty left, restock = 0
+  slots.push({slot:slot,itemId:oldItem,arrival:oldQty,restock:'0',price:oldIt?oldIt.price:0,cost:oldCost});
+  // New item in: arrival = 0, restock = qty stocked
+  slots.push({slot:slot,itemId:newItem,arrival:'0',restock:newQty,price:price,cost:newCost});
+  renderAll();closeMoveModal();
+  showToast('Replacement added to sheet — '+slot);
+});
 
 // ── Global event delegation ───────────────────────────────────
 document.addEventListener('input',function(e){
