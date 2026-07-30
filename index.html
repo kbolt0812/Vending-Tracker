@@ -334,7 +334,7 @@ firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-let loc='',locations={},masterItems={},warehouse={},machines={},invLogEntries=[],allReports=[],slots=[],prevRestockMap={},slotTemplates={},editingTemplateLocId=null,editingItemId=null,editingLocId=null,purchaseLedger=[],templateSlots=[];
+let loc='',locations={},masterItems={},warehouse={},machines={},invLogEntries=[],allReports=[],slots=[],prevRestockMap={},slotTemplates={},editingTemplateLocId=null,editingItemId=null,editingLocId=null,purchaseLedger=[],templateSlots=[],editingReportId=null;
 
 // ── Helpers ───────────────────────────────────────────────────
 function showStatus(msg,type){var b=document.getElementById('statusBar');b.textContent=msg;b.className='status-bar '+(type||'info');setTimeout(function(){b.className='status-bar';},4000);}
@@ -571,7 +571,17 @@ document.getElementById('histLocRenameBtn').addEventListener('click',async funct
 });
 document.getElementById('monthSel').addEventListener('change',renderMonthly);
 document.getElementById('monthLoc').addEventListener('change',renderMonthly);
-document.getElementById('locSel').addEventListener('change',async function(){loc=this.value;await loadSlots();});
+document.getElementById('locSel').addEventListener('change',async function(){
+  loc=this.value;
+  // If switching location, cancel any pending edit
+  if(editingReportId){
+    editingReportId=null;
+    document.getElementById('submitBtn').innerHTML='&#x1F4C4; Submit Report';
+    document.getElementById('submitBtn').style.background='';
+    document.getElementById('submitBtn').style.borderColor='';
+  }
+  await loadSlots();
+});
 
 function renderInventory(){
   var whItems=Object.values(warehouse).map(function(w){return Object.assign({},w,{item:masterItems[w.id]});}).filter(function(w){return w.item;}).sort(function(a,b){return a.item.name.localeCompare(b.item.name);});
@@ -633,12 +643,27 @@ function renderPurchaseHistory(){
 // ── Visit sheet ───────────────────────────────────────────────
 function buildPrevRestockMap(){
   prevRestockMap={};
-  // Always use allReports which is kept fresh after every delete/save
-  // Filter out any reports that have _editing flag (in-progress edits)
-  var locReps=allReports.filter(function(r){return r.loc===loc&&!r._deleted;}).sort(function(a,b){return b.timestamp-a.timestamp;});
+  var visitDate=document.getElementById('visitDate')?document.getElementById('visitDate').value:'';
+  var locReps=allReports.filter(function(r){return r.loc===loc&&!r._deleted;})
+    .sort(function(a,b){
+      var da=a.dateVal||'';var db2=b.dateVal||'';
+      if(da!==db2) return db2.localeCompare(da);
+      return b.timestamp-a.timestamp;
+    });
   if(!locReps.length)return;
-  // Use the most recent SUBMITTED report (highest timestamp) for prev restock
-  (locReps[0].lineItems||[]).forEach(function(l){if(l.itemId&&l.restock!==''&&l.restock!==null)prevRestockMap[l.itemId]=parseFloat(l.restock);});
+  // If we have a visit date selected, find the most recent report BEFORE that date
+  // Otherwise use the most recent report overall
+  var baseline;
+  if(visitDate){
+    var beforeDate=locReps.filter(function(r){return(r.dateVal||'')<visitDate;});
+    baseline=beforeDate.length?beforeDate[0]:locReps[0];
+  } else {
+    baseline=locReps[0];
+  }
+  (baseline.lineItems||[]).forEach(function(l){
+    if(l.itemId&&l.restock!==''&&l.restock!==null)
+      prevRestockMap[l.itemId]=parseFloat(l.restock);
+  });
 }
 function getPrevRestock(iId){return prevRestockMap.hasOwnProperty(iId)?prevRestockMap[iId]:null;}
 function calcSold(s){var a=parseFloat(s.arrival);if(isNaN(a))return null;var p=getPrevRestock(s.itemId);if(p===null)return null;return Math.max(0,p-a);}
@@ -749,13 +774,22 @@ function calcReportTotals(lineItems){
   return{totSold:totSold,totRev:totRev,totProfit:totProfit};
 }
 function getPrevRestockForReport(reportId, itemId){
-  // Find the report just before this one for this location/item and return its restock qty
   var thisRep=allReports.find(function(r){return r.id===reportId;});
   if(!thisRep) return null;
-  // Get all reports for same location, sorted newest first
-  var locReps=allReports.filter(function(r){return r.loc===thisRep.loc&&r.id!==reportId;}).sort(function(a,b){return b.timestamp-a.timestamp;});
-  // Find the most recent one before this report
-  var prevReps=locReps.filter(function(r){return r.timestamp<thisRep.timestamp;});
+  // Sort by visit date (dateVal) not by submitted timestamp
+  // This way resubmitted reports still find the correct previous visit
+  var locReps=allReports.filter(function(r){return r.loc===thisRep.loc&&r.id!==reportId;})
+    .sort(function(a,b){
+      var da=a.dateVal||'';var db2=b.dateVal||'';
+      if(da!==db2) return db2.localeCompare(da); // newer date first
+      return b.timestamp-a.timestamp; // same date: newer submission first
+    });
+  // Find the most recent visit that happened BEFORE this report's visit date
+  var thisDate=thisRep.dateVal||'';
+  var prevReps=locReps.filter(function(r){
+    var rDate=r.dateVal||'';
+    return rDate<thisDate||(rDate===thisDate&&r.timestamp<thisRep.timestamp);
+  });
   if(!prevReps.length) return null;
   var prevRep=prevReps[0];
   var prevLine=(prevRep.lineItems||[]).find(function(l){return l.itemId===itemId;});
@@ -870,6 +904,11 @@ document.getElementById('submitBtn').addEventListener('click',async function(){
       if(r.sold!==null){totSold+=r.sold;totRev+=r.rev;totProfit+=r.profit;}
       var autoC=warehouse[s.itemId]&&warehouse[s.itemId].avgCost?warehouse[s.itemId].avgCost:(it?it.cost:parseFloat(s.cost)||0);return{slot:s.slot,itemId:s.itemId,item:it?it.name:s.itemId,arrival:s.arrival,restock:s.restock,prevRestock:prev!==null?prev:null,price:parseFloat(s.price)||0,cost:autoC,sold:r.sold,rev:r.rev,profit:r.profit};
     });
+    // If editing an existing report, replace it (delete old, save new with same dateVal)
+    if(editingReportId){
+      await fbDel('reports',editingReportId);
+      editingReportId=null;
+    }
     await fbAdd('reports',{date:dateLabel,dateVal:dateVal,monthKey:monthKey,loc:loc,name:locName,lineItems:lineItems,totSold:totSold,totRev:totRev,totProfit:totProfit,timestamp:Date.now()});
     await saveSlotsDB();
     // Update inventory
@@ -892,6 +931,10 @@ document.getElementById('submitBtn').addEventListener('click',async function(){
       if(l.sold!==null&&l.sold>0){await addInvLogEntry({type:'sold',itemId:l.itemId,itemName:it?it.name:l.itemId,qty:l.sold,loc:loc,locName:locName,timestamp:Date.now(),note:'Sold '+l.sold+' at '+locName});}
     }
     showStatus('Report saved for '+locName+' — '+dateLabel,'success');
+    // Reset submit button to normal
+    document.getElementById('submitBtn').innerHTML='&#x1F4C4; Submit Report';
+    document.getElementById('submitBtn').style.background='';
+    document.getElementById('submitBtn').style.borderColor='';
     await loadAllReports();buildPrevRestockMap();renderAll();showPrevRestockNote();renderInventory();
     showTab('history');
   }catch(e){showStatus('Error: '+e.message,'error');console.error(e);}
@@ -989,30 +1032,25 @@ document.addEventListener('click',async function(e){
     }catch(e){showStatus('Error: '+e.message,'error');}
   }
   if(action==='editreport'){
-    // Load this report's data into the visit sheet so user can fix and resubmit
     var rep=allReports.find(function(r){return r.id===id;});if(!rep)return;
-    if(!confirm('This will load the report into the Visit Sheet so you can correct it and resubmit. The original report will NOT be deleted automatically — delete it from History after resubmitting. Continue?'))return;
-    // Switch to the correct location
+    if(!confirm('This will load the report into the Visit Sheet so you can correct and resubmit it. The original will be automatically replaced. Continue?'))return;
+    // Store the ID so submit knows to replace it
+    editingReportId=rep.id;
     loc=rep.loc;
     document.getElementById('locSel').value=loc;
-    // Set the visit date
     if(rep.dateVal)document.getElementById('visitDate').value=rep.dateVal;
-    // Load the slots from the report line items
     slots=(rep.lineItems||[]).map(function(l){
-      return{
-        slot:l.slot||'',
-        itemId:l.itemId||'',
-        arrival:l.arrival||'',
-        restock:l.restock||'',
-        price:l.price||'',
-        cost:l.cost||''
-      };
+      return{slot:l.slot||'',itemId:l.itemId||'',arrival:l.arrival||'',restock:l.restock||'',price:l.price||'',cost:l.cost||''};
     });
     buildPrevRestockMap();
     renderAll();
     showPrevRestockNote();
+    // Update submit button to show editing mode
+    document.getElementById('submitBtn').innerHTML='&#x1F4BE; Update Report';
+    document.getElementById('submitBtn').style.background='#d4680a';
+    document.getElementById('submitBtn').style.borderColor='#d4680a';
     showTab('sheet');
-    showToast('Report loaded into Visit Sheet. Fix quantities and resubmit.');
+    showStatus('Editing report from '+rep.date+'. Fix quantities and click Update Report.','info');
   }
   if(action==='editloc'){
     var el=locations[id];if(!el)return;editingLocId=id;
@@ -1112,6 +1150,7 @@ document.addEventListener('click',async function(e){
 async function init(){
   try{
     document.getElementById('visitDate').value=new Date().toISOString().split('T')[0];
+document.getElementById('visitDate').addEventListener('change',function(){buildPrevRestockMap();renderAll();showPrevRestockNote();});
     showStatus('Connecting to database...','info');
     await loadLocations();
     await loadSlotTemplates();
