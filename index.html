@@ -825,27 +825,39 @@ function renderHistory(){
     +'<button class="sm primary" data-action="editreport" data-id="'+r.id+'">✏️ Edit</button>'
     +'<button class="danger-solid sm" data-action="delreport" data-id="'+r.id+'">🗑</button>'
     +'</div></div>'
-    +'<div style="display:flex;gap:12px;font-size:13px;flex-wrap:wrap;margin-bottom:.75rem" id="htotals-'+r.id+'">'
-    +'<span><strong>'+r.totSold+'</strong> units</span>'
-    +'<span><strong>$'+parseFloat(r.totRev||0).toFixed(2)+'</strong> revenue</span>'
-    +'<span class="'+(r.totProfit<0?'red':'green')+'"><strong>$'+parseFloat(r.totProfit||0).toFixed(2)+'</strong> profit</span>'
-    +(r.loc&&locations[r.loc]&&r.name!==locations[r.loc].name?'<span class="muted" style="font-size:11px">(saved as: '+r.name+')</span>':'')
-    +'</div>'
+    +(function(){
+      // Recalculate totals from actual previous reports — not stored values
+      var calcSold2=0,calcRev2=0,calcProfit2=0,hasAny=false;
+      (r.lineItems||[]).forEach(function(l){
+        var prev2=getPrevRestockForReport(r.id,l.itemId);
+        var arr2=parseFloat(l.arrival);
+        var sold2=(prev2!==null&&!isNaN(prev2)&&!isNaN(arr2))?Math.max(0,prev2-arr2):null;
+        var price2=parseFloat(l.price)||0;
+        var cost2=warehouse[l.itemId]&&warehouse[l.itemId].avgCost?warehouse[l.itemId].avgCost:(masterItems[l.itemId]?masterItems[l.itemId].cost:0);
+        if(sold2!==null){calcSold2+=sold2;calcRev2+=sold2*price2;calcProfit2+=sold2*(price2-cost2);hasAny=true;}
+      });
+      return'<div style="display:flex;gap:12px;font-size:13px;flex-wrap:wrap;margin-bottom:.75rem" id="htotals-'+r.id+'">'
+      +'<span><strong>'+(hasAny?calcSold2:'—')+'</strong> units</span>'
+      +'<span><strong>'+(hasAny?'$'+calcRev2.toFixed(2):'—')+'</strong> revenue</span>'
+      +(hasAny?'<span class="'+(calcProfit2<0?'red':'green')+'"><strong>$'+calcProfit2.toFixed(2)+'</strong> profit</span>':'')
+      +'</div>';
+    })()
     +'<div>'
     +(r.lineItems||[]).map(function(l,li){
+      // Always recalculate sold from actual previous report — never use stored values
       var dispPrev=getPrevRestockForReport(r.id,l.itemId);
-      if(dispPrev===null&&l.prevRestock!==null&&l.prevRestock!==undefined) dispPrev=parseFloat(l.prevRestock);
       var dispArrival=parseFloat(l.arrival);
-      var dispSold=(!isNaN(dispPrev)&&!isNaN(dispArrival))?Math.max(0,dispPrev-dispArrival):l.sold;
+      // If no previous report exists dispPrev is null — sold must show —
+      var dispSold=(dispPrev!==null&&!isNaN(dispPrev)&&!isNaN(dispArrival))?Math.max(0,dispPrev-dispArrival):null;
       return'<div class="history-item-row">'
       +'<div><div style="font-weight:500">'+(l.item||l.itemId)+'</div>'
-      +'<div class="muted" style="font-size:11px">Slot '+l.slot+(dispPrev!==null&&!isNaN(dispPrev)?' · prev: '+dispPrev:'')+'</div></div>'
+      +'<div class="muted" style="font-size:11px">Slot '+l.slot+(dispPrev!==null?(' · prev: '+dispPrev):'')+'</div></div>'
       +'<div style="display:flex;gap:5px;align-items:center">'
       +'<span class="qty-badge qty-arr">'+(l.arrival||'—')+'</span>'
       +'<span class="muted" style="font-size:11px">→</span>'
       +'<span class="qty-badge qty-rst">'+(l.restock||'—')+'</span>'
       +'<span class="muted" style="font-size:11px">·</span>'
-      +'<span class="qty-badge qty-sold">'+(dispSold!==null&&dispSold!==undefined?dispSold+' sold':'—')+'</span>'
+      +'<span class="qty-badge qty-sold">'+(dispSold!==null?dispSold+' sold':'—')+'</span>'
       +'</div></div>';
     }).join('')
     +'</div></div>';
