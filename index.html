@@ -120,6 +120,10 @@ button:disabled{opacity:.5}
 <body>
 <div class="container">
   <div id="statusBar" class="status-bar"></div>
+  <div id="connIndicator" style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:.75rem;padding:6px 12px;border-radius:99px;background:#d4edda;color:#1a6b2a;width:fit-content">
+    <span id="connDot" style="width:8px;height:8px;border-radius:50%;background:#2d7a2d;display:inline-block"></span>
+    <span id="connText">Online</span>
+  </div>
   <h1>&#x1F3EA; LB Vending Tracker</h1>
   <div class="desktop-tabs">
     <button class="dtab active" id="dtab-sheet">&#x1F4CB; Visit Sheet</button>
@@ -441,7 +445,7 @@ firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-let loc='',locations={},masterItems={},warehouse={},machines={},invLogEntries=[],allReports=[],slots=[],prevRestockMap={},slotTemplates={},editingTemplateLocId=null,editingItemId=null,editingLocId=null,purchaseLedger=[],templateSlots=[],editingReportId=null;
+let loc='',locations={},masterItems={},warehouse={},machines={},invLogEntries=[],allReports=[],slots=[],prevRestockMap={},slotTemplates={},editingTemplateLocId=null,editingItemId=null,editingLocId=null,purchaseLedger=[],templateSlots=[],editingReportId=null,isOnline=true,offlineQueue=[];
 
 // ── Helpers ───────────────────────────────────────────────────
 function showStatus(msg,type){var b=document.getElementById('statusBar');b.textContent=msg;b.className='status-bar '+(type||'info');setTimeout(function(){b.className='status-bar';},4000);}
@@ -679,6 +683,7 @@ document.getElementById('histLocRenameBtn').addEventListener('click',async funct
 document.getElementById('monthSel').addEventListener('change',renderMonthly);
 document.getElementById('monthLoc').addEventListener('change',renderMonthly);
 document.getElementById('locSel').addEventListener('change',async function(){
+  saveLocalBackup();
   loc=this.value;
   // If switching location, cancel any pending edit
   if(editingReportId){
@@ -1083,12 +1088,42 @@ document.getElementById('submitBtn').addEventListener('click',async function(){
       if(r.sold!==null){totSold+=r.sold;totRev+=r.rev;totProfit+=r.profit;}
       var autoC=warehouse[s.itemId]&&warehouse[s.itemId].avgCost?warehouse[s.itemId].avgCost:(it?it.cost:parseFloat(s.cost)||0);return{slot:s.slot,itemId:s.itemId,item:it?it.name:s.itemId,arrival:s.arrival,restock:s.restock,prevRestock:prev!==null?prev:null,price:parseFloat(s.price)||0,cost:autoC,sold:r.sold,rev:r.rev,profit:r.profit};
     });
-    // If editing an existing report, replace it (delete old, save new with same dateVal)
+    var reportData={date:dateLabel,dateVal:dateVal,monthKey:monthKey,loc:loc,name:locName,lineItems:lineItems,totSold:totSold,totRev:totRev,totProfit:totProfit,timestamp:Date.now()};
+    // If editing an existing report, replace it
     if(editingReportId){
-      await fbDel('reports',editingReportId);
+      if(isOnline) await fbDel('reports',editingReportId);
       editingReportId=null;
     }
-    await fbAdd('reports',{date:dateLabel,dateVal:dateVal,monthKey:monthKey,loc:loc,name:locName,lineItems:lineItems,totSold:totSold,totRev:totRev,totProfit:totProfit,timestamp:Date.now()});
+    if(!isOnline){
+      // Save to offline queue
+      var invUpdates=[];
+      // Queue inventory updates too
+      lineItems.forEach(function(l){
+        if(!l.itemId) return;
+        var arrival=parseFloat(l.arrival);var restock=parseFloat(l.restock);
+        var loaded=(!isNaN(restock)&&!isNaN(arrival))?Math.max(0,restock-arrival):0;
+        if(!isNaN(restock)&&restock>=0){
+          if(!machines[loc])machines[loc]={id:loc};
+          if(!machines[loc][l.itemId])machines[loc][l.itemId]={itemId:l.itemId,qty:0};
+          machines[loc][l.itemId].qty=restock;
+          invUpdates.push({type:'machine',locId:loc,data:JSON.parse(JSON.stringify(machines[loc]))});
+        }
+        if(loaded>0&&warehouse[l.itemId]){
+          warehouse[l.itemId].qty=Math.max(0,warehouse[l.itemId].qty-loaded);
+          invUpdates.push({type:'warehouse',id:l.itemId,data:JSON.parse(JSON.stringify(warehouse[l.itemId]))});
+        }
+      });
+      offlineQueue.push({type:'report',data:reportData,inventoryUpdates:invUpdates});
+      saveOfflineQueue();
+      clearLocalBackup();
+      showStatus('No internet — report queued! Will auto-sync when you reconnect.','error');
+      // Still update local state so visit sheet shows correct data
+      allReports.unshift({id:'offline-'+Date.now(),...reportData});
+      buildPrevRestockMap();renderAll();showPrevRestockNote();
+      btn.disabled=false;btn.innerHTML='&#x1F4C4; Submit Report';
+      return;
+    }
+    await fbAdd('reports',reportData);
     await saveSlotsDB();
     // Update inventory
     for(var i=0;i<lineItems.length;i++){
@@ -1109,6 +1144,7 @@ document.getElementById('submitBtn').addEventListener('click',async function(){
       }
       if(l.sold!==null&&l.sold>0){await addInvLogEntry({type:'sold',itemId:l.itemId,itemName:it?it.name:l.itemId,qty:l.sold,loc:loc,locName:locName,timestamp:Date.now(),note:'Sold '+l.sold+' at '+locName});}
     }
+    clearLocalBackup();
     showStatus('Report saved for '+locName+' — '+dateLabel,'success');
     // Reset submit button to normal
     document.getElementById('submitBtn').innerHTML='&#x1F4C4; Submit Report';
@@ -1222,7 +1258,7 @@ document.getElementById('applyReplace').addEventListener('click',function(){
 // ── Global event delegation ───────────────────────────────────
 document.addEventListener('input',function(e){
   var inp=e.target.closest('[data-field]');
-  if(inp&&inp.tagName!=='SELECT'){var i=parseInt(inp.dataset.idx);var f=inp.dataset.field;slots[i][f]=inp.value;buildPrevRestockMap();updateRowCalcs(i);renderTotals();}
+  if(inp&&inp.tagName!=='SELECT'){var i=parseInt(inp.dataset.idx);var f=inp.dataset.field;slots[i][f]=inp.value;buildPrevRestockMap();updateRowCalcs(i);renderTotals();saveLocalBackup();}
   var tinp=e.target.closest('[data-tfield]');
   if(tinp&&tinp.tagName!=='SELECT'){var ti=parseInt(tinp.dataset.tidx);var tf=tinp.dataset.tfield;templateSlots[ti][tf]=tinp.value;}
   // History qty edit — live update sold count
@@ -1423,6 +1459,105 @@ document.addEventListener('click',async function(e){
 });
 
 // ── Init ──────────────────────────────────────────────────────
+// ── Offline/Online detection ──────────────────────────────────
+function updateConnIndicator(){
+  var dot=document.getElementById('connDot');
+  var text=document.getElementById('connText');
+  var bar=document.getElementById('connIndicator');
+  if(isOnline){
+    dot.style.background='#2d7a2d';text.textContent='Online';
+    bar.style.background='#d4edda';bar.style.color='#1a6b2a';
+  } else {
+    dot.style.background='#c0392b';text.textContent='Offline — data saves locally';
+    bar.style.background='#fde8e8';bar.style.color='#a32d2d';
+  }
+}
+window.addEventListener('online',function(){
+  isOnline=true;updateConnIndicator();
+  showStatus('Back online! Syncing any queued reports...','success');
+  syncOfflineQueue();
+});
+window.addEventListener('offline',function(){
+  isOnline=false;updateConnIndicator();
+  showStatus('No internet connection. Data will save locally and sync when you reconnect.','error');
+});
+
+// ── Local backup (saves as you type) ─────────────────────────
+function saveLocalBackup(){
+  try{
+    localStorage.setItem('vt-backup-slots',JSON.stringify(slots));
+    localStorage.setItem('vt-backup-loc',loc);
+    localStorage.setItem('vt-backup-date',document.getElementById('visitDate').value);
+  }catch(e){}
+}
+function loadLocalBackup(){
+  try{
+    var backupLoc=localStorage.getItem('vt-backup-loc');
+    var backupSlots=localStorage.getItem('vt-backup-slots');
+    var backupDate=localStorage.getItem('vt-backup-date');
+    if(backupLoc&&backupLoc===loc&&backupSlots){
+      var parsed=JSON.parse(backupSlots);
+      // Only restore if backup has arrival/restock data entered
+      var hasData=parsed.some(function(s){return s.arrival||s.restock;});
+      if(hasData){
+        if(confirm('We found unsaved data from your last visit to this location. Would you like to restore it?')){
+          slots=parsed;
+          if(backupDate)document.getElementById('visitDate').value=backupDate;
+          buildPrevRestockMap();renderAll();showPrevRestockNote();
+          showStatus('Unsaved data restored!','success');
+          return true;
+        }
+      }
+    }
+  }catch(e){}
+  return false;
+}
+function clearLocalBackup(){
+  try{localStorage.removeItem('vt-backup-slots');localStorage.removeItem('vt-backup-loc');localStorage.removeItem('vt-backup-date');}catch(e){}
+}
+
+// ── Offline queue ─────────────────────────────────────────────
+function loadOfflineQueue(){
+  try{var q=localStorage.getItem('vt-offline-queue');offlineQueue=q?JSON.parse(q):[];}catch(e){offlineQueue=[];}
+}
+function saveOfflineQueue(){
+  try{localStorage.setItem('vt-offline-queue',JSON.stringify(offlineQueue));}catch(e){}
+}
+async function syncOfflineQueue(){
+  if(!offlineQueue.length)return;
+  showStatus('Syncing '+offlineQueue.length+' queued report(s) to Firebase...','info');
+  var synced=0;
+  var failed=[];
+  for(var i=0;i<offlineQueue.length;i++){
+    try{
+      var item=offlineQueue[i];
+      if(item.type==='report'){
+        await fbAdd('reports',item.data);
+        // Also handle inventory updates that were queued
+        if(item.inventoryUpdates){
+          for(var j=0;j<item.inventoryUpdates.length;j++){
+            var u=item.inventoryUpdates[j];
+            if(u.type==='warehouse')await fbSet('warehouse',u.id,u.data);
+            if(u.type==='machine')await fbSet('machines',u.locId,u.data);
+            if(u.type==='log')await fbAdd('invLog',u.data);
+          }
+        }
+      }
+      synced++;
+    }catch(e){failed.push(offlineQueue[i]);}
+  }
+  offlineQueue=failed;
+  saveOfflineQueue();
+  if(synced>0){
+    await loadAllReports();
+    buildPrevRestockMap();renderAll();showPrevRestockNote();
+    showStatus(synced+' report(s) synced successfully!','success');
+  }
+  if(failed.length>0){
+    showStatus(failed.length+' report(s) failed to sync. Will retry when online.','error');
+  }
+}
+
 async function init(){
   try{
     document.getElementById('visitDate').value=new Date().toISOString().split('T')[0];
@@ -1438,8 +1573,13 @@ document.getElementById('visitDate').addEventListener('change',function(){buildP
     updateAllLocDropdowns();
     updateAllItemDropdowns();
     await loadSlots();
+    loadLocalBackup();
     populateMonthSelector();
     showStatus('Connected! Data saves automatically.','success');
+    if(offlineQueue.length>0&&isOnline){
+      showStatus(offlineQueue.length+' queued report(s) waiting to sync...','info');
+      setTimeout(syncOfflineQueue,2000);
+    }
   }catch(e){
     console.error('Init error:',e);
     showStatus('Connection error: '+e.message+'. Check internet and refresh.','error');
