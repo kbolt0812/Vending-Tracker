@@ -326,6 +326,7 @@ async function loadSlots(){
   try{const s=await getDoc(doc(db,'slots',loc));if(s.exists())slots=s.data().slots||[];}catch(e){}
   if(!slots.length) slots=[{slot:'A1',itemId:'',arrival:'',restock:'',price:'',cost:''},{slot:'A2',itemId:'',arrival:'',restock:'',price:'',cost:''},{slot:'B1',itemId:'',arrival:'',restock:'',price:'',cost:''},{slot:'B2',itemId:'',arrival:'',restock:'',price:'',cost:''}];
   slots=slots.map(s=>({...s,arrival:'',restock:''}));
+  slots.sort((a,b)=>(a.slot||'').localeCompare(b.slot||'',undefined,{numeric:true,sensitivity:'base'}));
   buildPrevRestockMap();renderAll();showPrevRestockNote();
 }
 async function saveSlotsDB(){try{await setDoc(doc(db,'slots',loc),{slots});}catch(e){}}
@@ -593,6 +594,7 @@ function renderInventory(){
     Object.values(mData).filter(m=>m.itemId&&masterItems[m.itemId]).forEach(m=>{
       if(!totalMap[m.itemId])totalMap[m.itemId]={id:m.itemId,name:masterItems[m.itemId].name,qty:0,reorder:masterItems[m.itemId].reorder||0};
       totalMap[m.itemId].qty+=m.qty;
+      totalMap[m.itemId].machQty=(totalMap[m.itemId].machQty||0)+m.qty;
     });
   });
   const totals=Object.values(totalMap).sort((a,b)=>a.name.localeCompare(b.name));
@@ -604,24 +606,23 @@ function renderInventory(){
 
   const div=document.getElementById('totalStockList');
   if(!totals.length){div.innerHTML='<p class="muted" style="font-size:13px">No inventory yet. Add items on the Items tab, then add stock via visit reports.</p>';return;}
-  div.innerHTML=totals.map(t=>{
-    const isLow=t.reorder>0&&t.qty<=t.reorder;
-    const isOut=t.qty===0;
-    const badge=isOut?'<span class="stock-badge stock-out">Out</span>':isLow?'<span class="stock-badge stock-low">Low</span>':'';
-    return`<div class="inv-row">
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:14px">${t.name} ${badge}</div>
-        ${t.reorder>0?`<div class="muted" style="font-size:12px;margin-top:2px">Reorder at: ${t.reorder}</div>`:''}
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="text-align:right">
-          <div style="font-size:24px;font-weight:700" class="${isOut?'red':isLow?'orange':'green'}">${t.qty}</div>
-          <div class="muted" style="font-size:10px">units</div>
-        </div>
-        <button class="sm primary" onclick="editTotalQty('${t.id}')">&#x270F;&#xFE0F;</button>
-      </div>
-    </div>`;
-  }).join('');
+  div.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 72px 72px 72px 36px;gap:4px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.3px;padding:0 0 6px;border-bottom:1px solid #f0ede8;margin-bottom:4px">
+      <span>Item</span><span style="text-align:center">Warehouse</span><span style="text-align:center">Machines</span><span style="text-align:center">Total</span><span></span>
+    </div>`+totals.map(t=>{
+      const whQty=warehouse[t.id]?warehouse[t.id].qty:0;
+      const machQty=t.machQty||0;
+      const total=t.qty;
+      const isLow=t.reorder>0&&total<=t.reorder;
+      const isOut=total===0;
+      return`<div class="total-row" style="display:grid;grid-template-columns:1fr 72px 72px 72px 36px;gap:4px;align-items:center">
+        <div style="font-weight:500">${t.name}${isOut?'<span class="stock-badge stock-out" style="margin-left:6px">Out</span>':isLow?'<span class="stock-badge stock-low" style="margin-left:6px">Low</span>':''}</div>
+        <div style="text-align:center;color:#888">${whQty}</div>
+        <div style="text-align:center;color:#1a6fc4">${Math.max(0,machQty)}</div>
+        <div style="text-align:center;font-weight:700" class="${isOut?'red':isLow?'orange':'green'}">${total}</div>
+        <div><button class="sm primary" onclick="editTotalQty('${t.id}')">&#x270F;&#xFE0F;</button></div>
+      </div>`;
+    }).join('');
 }
 
 window.editTotalQty=async function(itemId){
