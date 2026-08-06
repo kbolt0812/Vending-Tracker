@@ -302,8 +302,15 @@ button:disabled{opacity:.5}
   <!-- MONTHLY -->
   <div id="pane-monthly" style="display:none">
     <div class="grid-2" style="margin-bottom:.75rem">
-      <div><label>Month</label><select id="monthSel"></select></div>
       <div><label>Location</label><select id="monthLoc"></select></div>
+      <div style="display:flex;align-items:flex-end;gap:8px">
+        <button id="selectAllMonths" class="sm" style="white-space:nowrap">All</button>
+        <button id="clearAllMonths" class="sm" style="white-space:nowrap">Clear</button>
+      </div>
+    </div>
+    <div style="margin-bottom:.75rem">
+      <label style="margin-bottom:6px;display:block">Select months <span id="selectedMonthCount" style="color:#1a6fc4;font-weight:600"></span></label>
+      <div id="monthCheckboxes" style="display:flex;flex-wrap:wrap;gap:6px"></div>
     </div>
     <div id="monthlyContent"></div>
   </div>
@@ -521,7 +528,7 @@ async function showTab(t){
   if(t==='history'){await loadAllReports();buildPrevRestockMap();renderHistory();}
   if(t==='monthly'){await loadAllReports();populateMonthSelector();renderMonthly();}
   if(t==='inventory'){await loadWarehouse();await loadMachines();await loadInvLog();await loadPurchaseLedger();renderInventory();renderPurchaseHistory();}
-  if(t==='items')renderMasterItems();
+  if(t==='items'){await loadMasterItems();updateAllItemDropdowns();renderMasterItems();}
   if(t==='locations'){await loadSlotTemplates();renderLocationList();}
 }
 
@@ -680,8 +687,16 @@ document.getElementById('histLocRenameBtn').addEventListener('click',async funct
   showToast('Location renamed to "'+newName+'"!');
   renderHistory();
 });
-document.getElementById('monthSel').addEventListener('change',renderMonthly);
+
 document.getElementById('monthLoc').addEventListener('change',renderMonthly);
+document.getElementById('selectAllMonths').addEventListener('click',function(){
+  document.querySelectorAll('.month-cb').forEach(function(cb){cb.checked=true;});
+  updateSelectedMonthCount();renderMonthly();
+});
+document.getElementById('clearAllMonths').addEventListener('click',function(){
+  document.querySelectorAll('.month-cb').forEach(function(cb){cb.checked=false;});
+  updateSelectedMonthCount();renderMonthly();
+});
 document.getElementById('locSel').addEventListener('change',async function(){
   saveLocalBackup();
   loc=this.value;
@@ -1019,16 +1034,55 @@ function populateMonthSelector(){
   var keys=new Set(allReports.map(function(r){return r.monthKey;}));
   var today=new Date();keys.add(today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0'));
   var sorted=[...keys].sort().reverse();
-  var sel=document.getElementById('monthSel');var cur=sel.value;
-  sel.innerHTML=sorted.map(function(k){var parts=k.split('-');return'<option value="'+k+'"'+(k===cur?' selected':'')+'>'+MONTHS[parseInt(parts[1])-1]+' '+parts[0]+'</option>';}).join('');
-  if(!sel.value&&sorted.length)sel.value=sorted[0];
+  var container=document.getElementById('monthCheckboxes');
+  if(!container)return;
+  // Keep currently checked months
+  var checked=new Set();
+  document.querySelectorAll('.month-cb:checked').forEach(function(cb){checked.add(cb.value);});
+  // If none checked yet, check the most recent month by default
+  if(!checked.size&&sorted.length) checked.add(sorted[0]);
+  container.innerHTML=sorted.map(function(k){
+    var parts=k.split('-');
+    var label=MONTHS[parseInt(parts[1])-1]+' '+parts[0];
+    var isChecked=checked.has(k);
+    return'<label style="display:flex;align-items:center;gap:5px;padding:6px 12px;background:'+(isChecked?'#1a6fc4':'#f4f4f0')+';color:'+(isChecked?'#fff':'#1a1a1a')+';border-radius:99px;cursor:pointer;font-size:13px;font-weight:500;border:1.5px solid '+(isChecked?'#1a6fc4':'#ddd')+';user-select:none">'
+    +'<input type="checkbox" class="month-cb" value="'+k+'"'+(isChecked?' checked':'')+' style="display:none"/>'
+    +label+'</label>';
+  }).join('');
+  // Add click handlers to update styles
+  document.querySelectorAll('.month-cb').forEach(function(cb){
+    cb.parentElement.addEventListener('click',function(){
+      cb.checked=!cb.checked;
+      cb.parentElement.style.background=cb.checked?'#1a6fc4':'#f4f4f0';
+      cb.parentElement.style.color=cb.checked?'#fff':'#1a1a1a';
+      cb.parentElement.style.borderColor=cb.checked?'#1a6fc4':'#ddd';
+      updateSelectedMonthCount();
+      renderMonthly();
+    });
+  });
+  updateSelectedMonthCount();
+}
+function updateSelectedMonthCount(){
+  var count=document.querySelectorAll('.month-cb:checked').length;
+  var el=document.getElementById('selectedMonthCount');
+  if(el)el.textContent=count?'('+count+' selected)':'';
+}
+function getSelectedMonths(){
+  var selected=[];
+  document.querySelectorAll('.month-cb:checked').forEach(function(cb){selected.push(cb.value);});
+  return selected;
 }
 function renderMonthly(){
-  var monthKey=document.getElementById('monthSel').value;
+  var selectedMonths=getSelectedMonths();
   var filterLoc=document.getElementById('monthLoc').value;
-  if(!monthKey)return;
-  var parts=monthKey.split('-');var monthLabel=MONTHS[parseInt(parts[1])-1]+' '+parts[0];
-  var filtered=allReports.filter(function(r){return r.monthKey===monthKey&&(filterLoc==='all'||r.loc===filterLoc);});
+  var div=document.getElementById('monthlyContent');
+  if(!selectedMonths.length){div.innerHTML='<div class="card"><p class="muted" style="font-size:13px">Select one or more months above.</p></div>';return;}
+  // Build label
+  var monthLabel=selectedMonths.length===1
+    ?(function(){var p=selectedMonths[0].split('-');return MONTHS[parseInt(p[1])-1]+' '+p[0];})()
+    :selectedMonths.length+' months selected';
+  // Filter reports to selected months
+  var filtered=allReports.filter(function(r){return selectedMonths.includes(r.monthKey)&&(filterLoc==='all'||r.loc===filterLoc);});
   var itemMap={};
   filtered.forEach(function(r){
     (r.lineItems||[]).forEach(function(l){
@@ -1055,7 +1109,6 @@ function renderMonthly(){
   var totRev=items.reduce(function(s,i){return s+i.rev;},0);
   var totProfit=items.reduce(function(s,i){return s+i.profit;},0);
   var maxSold=items.length?Math.max(items[0].sold,1):1;
-  var div=document.getElementById('monthlyContent');
   if(!items.length){div.innerHTML='<div class="card"><p class="muted" style="font-size:13px">No reports for '+monthLabel+'.</p></div>';return;}
   var top3=items.slice(0,Math.min(3,items.length));
   var bot3=items.length>3?items.slice(-Math.min(3,items.length)).reverse():[];
